@@ -1,3 +1,9 @@
+## Campus Fire
+
+Pour lancer faire `npm start` pour lancer le front, puis `node server.js` pour lancer le back. 
+
+---
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
