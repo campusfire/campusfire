@@ -7,7 +7,7 @@ class App extends React.Component {
     super(props);
 
     fetch('/ping').then(function(resp){
-      console.log(resp.text());
+      resp.text().then(txt => console.log(txt));
     })
   }
 
