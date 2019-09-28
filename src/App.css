@@ -20,3 +20,40 @@
 .App-link {
   color: #09d3ac;
 }
+
+.Display{
+  background-color: #012346;
+  min-height: 100vh;
+  color: white;
+  text-align: center;
+}
+
+.Display-logo{
+  max-height: 10vh;
+}
+
+.postit{
+  width: 195px;
+  height: 195px;
+  background-color: #ffa;
+  font-family: Pacifico, Arial, sans-serif;
+  float:left;
+  margin: 10px;
+  padding: 10px;
+  font-size: 22pt;
+  box-shadow: 2px 2px #00000022;
+  color: black;
+  text-align: left;
+}
+
+.postit:nth-child(1n){
+  transform: rotate(1deg);
+}
+
+.postit:nth-child(2n){
+  transform: rotate(-2deg);
+}
+
+.postit:nth-child(3n){
+  transform: rotate(3deg);
+}

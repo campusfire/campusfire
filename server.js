@@ -8,6 +8,14 @@ app.get('/ping', function (req, res) {
  return res.send('pong');
 });
 
+app.get('/display/:key', function(req, res){
+    if(req.params.key == 'fire'){
+        res.send('ok');
+    }else
+
+    res.send('ko');
+});
+
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });

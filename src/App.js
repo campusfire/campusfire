@@ -1,6 +1,11 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+
+import Display from './Display';
+
+import { Switch, Route } from "react-router-dom";
+import Mobile from "./Mobile";
+
 
 class App extends React.Component {
   constructor(props){
@@ -13,7 +18,14 @@ class App extends React.Component {
 
   render(){
     return (
-      <div className="App">
+        <Switch>
+          <Route path="/display/:key" component={Display} />
+
+          <Route path="/">
+            <Mobile />
+          </Route>
+        </Switch>
+        /*<div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <p>
@@ -28,7 +40,7 @@ class App extends React.Component {
             Learn React
           </a>
         </header>
-      </div>
+      </div>*/
     );
   }
 
