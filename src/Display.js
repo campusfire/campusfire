@@ -4,7 +4,7 @@ import './App.css';
 
 
 class Display extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
 
         this.state = {
@@ -12,11 +12,11 @@ class Display extends React.Component {
         };
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.checkKey(this.props.match.params.key);
     }
 
-    checkKey(key){
+    checkKey(key) {
         const _this = this;
         fetch('/display/'+key).then(function(resp){
             resp.text().then(function(txt){
@@ -32,13 +32,15 @@ class Display extends React.Component {
         })
     }
 
-    render(){
+    render() {
         const postits = [];
 
-        for(const t in this.state.texts){
+        for (const t in this.state.texts) {
             postits.push(<PostIt text={this.state.texts[t]} />);
 
         }
+
+        const pointer = <Pointer color="red" x={300} y={200}/>;
 
         return (
             <div className="Display">
@@ -48,6 +50,8 @@ class Display extends React.Component {
                 </header>
 
                 {postits}
+
+                {pointer}
             </div>
         );
     }
@@ -61,6 +65,30 @@ function PostIt(props){
             {props.text}
         </div>
     );
+}
+
+class Pointer extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            color: props.color,
+            x: props.x,
+            y: props.y
+        }
+    }
+
+    render() {
+        return (
+            <div className="pointer" style={{
+                backgroundColor: this.state.color,
+                position: 'absolute',
+                left: `${this.state.x}px`,
+                top: `${this.state.y}px`
+            }}>
+            </div>
+        );
+    }
 }
 
 

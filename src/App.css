@@ -57,3 +57,10 @@
 .postit:nth-child(3n){
   transform: rotate(3deg);
 }
+
+.pointer{
+  height: 15px;
+  width: 15px;
+  border-radius: 8px;
+  z-index: 3000;
+}

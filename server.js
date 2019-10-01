@@ -1,5 +1,5 @@
 const express = require('express');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
 app.use(express.static(path.join(__dirname, 'build')));
@@ -9,7 +9,7 @@ app.get('/ping', function (req, res) {
 });
 
 app.get('/display/:key', function(req, res){
-    if(req.params.key == 'fire'){
+    if(req.params.key === 'fire'){
         res.send('ok');
     }else
 
