@@ -10,10 +10,6 @@ import Mobile from "./Mobile";
 class App extends React.Component {
   constructor(props){
     super(props);
-
-    fetch('/ping').then(function(resp){
-      resp.text().then(txt => console.log(txt));
-    })
   }
 
   render(){
@@ -21,26 +17,12 @@ class App extends React.Component {
         <Switch>
           <Route path="/display/:key" component={Display} />
 
+          <Route path="/m/:key" component={Mobile} />
+
           <Route path="/">
             <Mobile />
           </Route>
         </Switch>
-        /*<div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>*/
     );
   }
 
