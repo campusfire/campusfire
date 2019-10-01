@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const qr = require('qrcode');
+let clientKey;
 const app = express();
 app.use(express.static(path.join(__dirname, 'build')));
 
@@ -13,8 +15,9 @@ function makeid(length) {
     }
     return result;
 }
-
-var clientKey = makeid(8);
+function genId(){
+    clientKey = makeid(8);
+}
 
 app.get('/ping', function (req, res) {
  return res.send('pong');
@@ -30,10 +33,13 @@ app.get('/display/:key', function(req, res){
 
 app.get('/mobile/:key', function(req, res){
     if(req.params.key == clientKey){
-        clientKey = makeid(8);
-        res.send('ok');
-    }else
-
+        genId();
+        let code = "://localhost:3000/display/" + clientKey;
+        qr.toFile('qr.png', code, function(err){
+            res.sendFile(path.resolve(__dirname+'/../qr.png'))
+    });
+        res.send('ok');}
+        else
         res.send('ko');
 });
 

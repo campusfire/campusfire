@@ -6,6 +6,7 @@
   "dependencies": {
     "body-parser": "latest",
     "express": "^4.17.1",
+    "qrcode": "^1.4.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-nipple": "^1.0.1",
