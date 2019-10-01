@@ -6,7 +6,6 @@
   "dependencies": {
     "body-parser": "latest",
     "express": "^4.17.1",
-    "nodemon": "^1.19.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-router-dom": "^5.1.1",
@@ -16,6 +15,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "dev": "nodemon server.js",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -32,5 +32,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.3"
   }
 }
