@@ -1,7 +1,9 @@
 import React from 'react';
 import logo from './cfwhite.png';
+import Peer from 'peerjs';
 import './App.css';
 
+let peer;
 
 class Display extends React.Component {
     constructor(props) {
@@ -14,6 +16,14 @@ class Display extends React.Component {
 
     componentDidMount() {
         this.checkKey(this.props.match.params.key);
+        console.log('peer');
+        peer = new Peer('borne', {host: 'localhost', port: 8080, path: '/peer'});
+        peer.on('connection', (conn) => {
+            conn.on('data', (data) => {
+                // Will print 'hi!'
+                console.log(data);
+            });
+        });
     }
 
     checkKey(key) {

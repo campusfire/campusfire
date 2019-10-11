@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const ExpressPeerServer = require('peer').ExpressPeerServer;
 const path = require('path');
 const app = express();
 app.use(express.static(path.join(__dirname, 'build')));
@@ -14,7 +15,7 @@ function makeid(length) {
     return result;
 }
 
-var clientKey = makeid(8);
+let clientKey = makeid(8);
 
 app.get('/ping', function (req, res) {
  return res.send('pong');
@@ -39,10 +40,22 @@ app.get('/mobile/:key', function(req, res){
 
 app.get('/key', function(req, res){
     res.send(clientKey);
-})
+});
 
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(process.env.PORT || 8080);
+const server = app.listen(process.env.PORT || 8080);
+
+const options = {
+    debug: true
+};
+
+const peerserver = ExpressPeerServer(server, options);
+
+app.use('/peer', peerserver);
+peerserver.on('connection', function(c){
+    console.log('coucou');
+    console.log(c);
+});
