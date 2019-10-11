@@ -4,14 +4,18 @@ import Peer from 'peerjs';
 import './App.css';
 
 let peer;
+let disp;
 
 class Display extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            texts: []
+            texts: [],
+            cursor: {x: 0, y:0}
         };
+
+        disp = this;
     }
 
     componentDidMount() {
@@ -19,11 +23,24 @@ class Display extends React.Component {
         console.log('peer');
         peer = new Peer('borne', {host: 'localhost', port: 8080, path: '/peer'});
         peer.on('connection', (conn) => {
+            console.log('connexion client');
             conn.on('data', (data) => {
                 // Will print 'hi!'
-                console.log(data);
+                if(data.length ==2){
+                    this.moveCursor(data);
+                }
             });
         });
+    }
+
+    moveCursor(data){
+        //console.log(data);
+        data[1] *= 0.2;
+        let dx = data[1]*Math.cos(data[0]),
+            dy = -data[1]*Math.sin(data[0]);
+        //console.log(dx, dy);
+        console.log(data[0]);
+        disp.setState({texts: [], cursor: {x: disp.state.cursor.x+dx, y:disp.state.cursor.y+dy}});
     }
 
     checkKey(key) {
@@ -50,7 +67,7 @@ class Display extends React.Component {
 
         }
 
-        const pointer = <Pointer color="red" x={300} y={200}/>;
+        const pointer = <Pointer color="red" x={this.state.cursor.x} y={this.state.cursor.y}/>;
 
         return (
             <div className="Display">
@@ -86,6 +103,11 @@ class Pointer extends React.Component {
             x: props.x,
             y: props.y
         }
+    }
+
+    componentDidUpdate(props){
+        this.state.x = props.x;
+        this.state.y = props.y;
     }
 
     render() {
