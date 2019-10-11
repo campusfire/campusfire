@@ -15,7 +15,7 @@ class App extends React.Component {
   render(){
     return (
         <Switch>
-          <Route path="/display/:key" component={Display} />
+          <Route path="/d/:key" component={Display} />
 
           <Route path="/m/:key" component={Mobile} />
 
