@@ -49,28 +49,27 @@ class Display extends React.Component {
   }
 
   checkKey(key) {
-    const _this = this;
     fetch(`/display/${key}`)
       .then((resp) => {
         resp.text()
           .then((txt) => {
             console.log(txt);
-            if (txt === 'ok') { _this.setState({ texts: ['Ok'] }); } else { _this.setState({ texts: ['Pas de display'] }); }
+            if (txt === 'ok') {
+              this.setState({ texts: ['Ok'] });
+            } else {
+              this.setState({ texts: ['Pas de display'] });
+            }
           })
           .catch(() => {
-            _this.setState({ texts: 'Erreur serveur' });
+            this.setState({ texts: 'Erreur serveur' });
           });
       });
   }
 
   render() {
-    const postits = [];
+    const { texts, cursor: { x, y } } = this.state;
 
-    for (const t in this.state.texts) {
-      postits.push(<PostIt text={this.state.texts[t]} />);
-    }
-
-    const pointer = <Pointer color="red" x={this.state.cursor.x} y={this.state.cursor.y} />;
+    const postits = texts.map((text) => <PostIt text={text} />);
 
     return (
       <div className="Display">
@@ -81,17 +80,18 @@ class Display extends React.Component {
 
         {postits}
 
-        {pointer}
+        <Pointer color="red" x={x} y={y} />
       </div>
     );
   }
 }
 
 function PostIt(props) {
+  const { text } = props;
   console.log(props);
   return (
     <div className="postit">
-      {props.text}
+      {text}
     </div>
   );
 }
@@ -110,6 +110,5 @@ function Pointer(props) {
     />
   );
 }
-
 
 export default Display;
