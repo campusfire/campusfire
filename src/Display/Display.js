@@ -3,9 +3,6 @@ import Peer from 'peerjs';
 import logo from '../Assets/cfwhite.png';
 import '../App.css';
 
-let peer;
-let disp;
-
 class Display extends React.Component {
   constructor(props) {
     super(props);
@@ -14,18 +11,17 @@ class Display extends React.Component {
       texts: [],
       cursor: { x: 0, y: 0 },
     };
-
-    disp = this;
   }
 
   componentDidMount() {
     this.checkKey(this.props.match.params.key);
     console.log('peer');
-    peer = new Peer('borne', { host: 'localhost', port: 8080, path: '/peer' });
+    const peer = new Peer('borne', { host: 'localhost', port: 8080, path: '/peer' });
     peer.on('connection', (conn) => {
       console.log('connexion client');
       conn.on('data', (data) => {
         // Will print 'hi!'
+        console.log('test');
         if (data.length === 2) {
           this.moveCursor(data);
         }
@@ -35,9 +31,9 @@ class Display extends React.Component {
 
   moveCursor(data) {
     // console.log(data);
-    data[1] *= 0.2;
-    const dx = data[1] * Math.cos(data[0]);
-    const dy = -data[1] * Math.sin(data[0]);
+    const displacement = data[1] * 0.2;
+    const dx = displacement * Math.cos(data[0]);
+    const dy = -displacement * Math.sin(data[0]);
     // console.log(dx, dy);
     console.log(data[0]);
     this.setState((state) => ({
