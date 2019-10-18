@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactNipple from 'react-nipple';
-import Peer from 'peerjs';
+import io from 'socket.io-client';
 import logo from '../Assets/logo.svg';
 import '../App.css';
 
@@ -12,7 +12,7 @@ class Mobile extends Component {
   constructor() {
     super();
     this.state = {
-      conn: null,
+      socket: null,
     };
 
     this.handleMove = this.handleMove.bind(this);
@@ -23,24 +23,17 @@ class Mobile extends Component {
     const { params: { key } } = match;
     if (match) {
       checkKey(key);
-      const peer = new Peer(`cl-${key}`, { host: 'localhost', port: 8080, path: '/peer' });
-      const conn = peer.connect('borne');
-      console.log('peer');
-      conn.on('open', () => {
-        console.log('connected!');
-        conn.send('hi!');
-      });
+      const socket = io();
       this.setState({
-        conn,
+        socket,
       });
     }
   }
 
   handleMove(event, data) {
-    const { conn } = this.state;
-    if (conn) {
-      console.log(data, event);
-      conn.send([data.angle.radian, data.distance]);
+    const { socket } = this.state;
+    if (socket) {
+      socket.emit('move', [data.angle.radian, data.distance]);
     }
   }
 

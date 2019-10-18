@@ -1,9 +1,10 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const { ExpressPeerServer } = require('peer');
-const path = require('path');
 
 const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
+const path = require('path');
+
 app.use(express.static(path.join(__dirname, 'build')));
 
 function makeid(length) {
@@ -27,7 +28,7 @@ app.get('/display/:key', (req, res) => {
 });
 
 app.get('/mobile/:key', (req, res) => {
-  if (req.params.key == clientKey) {
+  if (req.params.key === clientKey) {
     clientKey = makeid(8);
     res.send('ok');
   } else { res.send('ko'); }
@@ -46,17 +47,17 @@ app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
+io.on('connection', (socket) => {
+  console.log('Socket connected');
 
-const server = app.listen(process.env.PORT || 8080);
+  socket.on('move', (data) => {
+    console.log('moving');
+    io.emit('data', data);
+  });
 
-const options = {
-  debug: true,
-};
-
-const peerserver = ExpressPeerServer(server, options);
-
-app.use('/peer', peerserver);
-peerserver.on('connection', (c) => {
-  console.log('coucou');
-  console.log(c);
+  socket.on('disconnect', () => {
+    console.log('socket disconnected');
+  });
 });
+
+http.listen(process.env.PORT || 8080);

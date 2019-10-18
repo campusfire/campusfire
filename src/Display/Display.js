@@ -1,5 +1,5 @@
 import React from 'react';
-import Peer from 'peerjs';
+import socketIo from 'socket.io-client';
 import logo from '../Assets/cfwhite.png';
 import '../App.css';
 
@@ -15,18 +15,22 @@ class Display extends React.Component {
 
   componentDidMount() {
     this.checkKey(this.props.match.params.key);
-    console.log('peer');
-    const peer = new Peer('borne', { host: 'localhost', port: 8080, path: '/peer' });
-    peer.on('connection', (conn) => {
-      console.log('connexion client');
-      conn.on('data', (data) => {
-        // Will print 'hi!'
-        console.log('test');
-        if (data.length === 2) {
-          this.moveCursor(data);
-        }
-      });
+    const io = socketIo();
+    io.on('data', (data) => {
+      if (data.length === 2) {
+        this.moveCursor(data);
+      }
     });
+    // io.on('connection', (socket) => {
+    //   console.log('connexion client');
+    //   socket.on('data', (data) => {
+    //     // Will print 'hi!'
+    //     console.log('test');
+    //     if (data.length === 2) {
+    //       this.moveCursor(data);
+    //     }
+    //   });
+    // });
   }
 
   moveCursor(data) {
@@ -35,7 +39,6 @@ class Display extends React.Component {
     const dx = displacement * Math.cos(data[0]);
     const dy = -displacement * Math.sin(data[0]);
     // console.log(dx, dy);
-    console.log(data[0]);
     this.setState((state) => ({
       cursor: {
         x: state.cursor.x + dx,
