@@ -5,6 +5,8 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const path = require('path');
 
+let displayId;
+
 app.use(express.static(path.join(__dirname, 'build')));
 
 function makeid(length) {
@@ -50,13 +52,18 @@ app.use((req, res, next) => {
 io.on('connection', (socket) => {
   console.log('Socket connected');
 
+  socket.on('display', () => {
+    console.log(`display : ${displayId}`);
+    displayId = socket.id;
+  });
+
   socket.on('move', (data) => {
     console.log('moving');
-    io.emit('data', data);
+    io.to(displayId).emit('data', data);
   });
 
   socket.on('disconnect', () => {
-    console.log('socket disconnected');
+    console.log('Socket disconnected');
   });
 });
 

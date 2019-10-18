@@ -1,5 +1,5 @@
 import React from 'react';
-import socketIo from 'socket.io-client';
+import io from 'socket.io-client';
 import logo from '../Assets/cfwhite.png';
 import '../App.css';
 
@@ -15,13 +15,14 @@ class Display extends React.Component {
 
   componentDidMount() {
     this.checkKey(this.props.match.params.key);
-    const io = socketIo();
-    io.on('data', (data) => {
+    const socket = io();
+    socket.emit('display');
+    socket.on('data', (data) => {
       if (data.length === 2) {
         this.moveCursor(data);
       }
     });
-    // io.on('connection', (socket) => {
+    // socket.on('connection', (socket) => {
     //   console.log('connexion client');
     //   socket.on('data', (data) => {
     //     // Will print 'hi!'
