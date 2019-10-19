@@ -53,12 +53,10 @@ io.on('connection', (socket) => {
   console.log('Socket connected');
 
   socket.on('display', () => {
-    console.log(`display : ${displayId}`);
     displayId = socket.id;
   });
 
   socket.on('move', (data) => {
-    console.log('moving');
     io.to(displayId).emit('data', data);
   });
 

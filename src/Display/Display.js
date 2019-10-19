@@ -53,7 +53,6 @@ class Display extends React.Component {
       .then((resp) => {
         resp.text()
           .then((txt) => {
-            console.log(txt);
             if (txt === 'ok') {
               this.setState({ texts: ['Ok'] });
             } else {
