@@ -82,7 +82,7 @@ class Display extends React.Component {
         ? (
           <div className="Display">
             <header>
-              <img src={logo} className="Display  -logo" alt="logo" />
+              <img src={logo} className="Display-logo" alt="logo" />
               <div id="post" style={{ backgroundColor: 'green', width: '50px', height: '50px' }} />
             </header>
             {postits}
