@@ -13,6 +13,7 @@ class Display extends React.Component {
       socket: null,
       texts: [],
       cursor: { x: 0, y: 0 },
+      keyChecked: false,
     };
   }
 
@@ -42,9 +43,6 @@ class Display extends React.Component {
         socket.emit('start_posting');
       }
     });
-    this.setState({
-      socket,
-    });
   }
 
   moveCursor(data) {
@@ -65,72 +63,36 @@ class Display extends React.Component {
         resp.text()
           .then((txt) => {
             if (txt === 'ok') {
-              this.setState({ texts: ['Ok'] });
+              this.setState({ keyChecked: true });
             } else {
-              this.setState({ texts: ['Pas de display'] });
+              this.setState({ keyChecked: false });
             }
           })
           .catch(() => {
-            this.setState({ texts: 'Erreur serveur' });
+            this.setState({ keyChecked: false });
           });
       });
   }
 
   render() {
-    const { texts, cursor: { x, y } } = this.state;
+    const { texts, cursor: { x, y }, keyChecked } = this.state;
     const postits = texts.map((text) => <PostIt text={text} />);
     return (
-      <div className="Display">
-        <header>
-          <img src={logo} className="Display-logo" alt="logo" />
-          <div id="post" style={{ backgroundColor: 'green', width: '50px', height: '50px' }} />
-        </header>
-
-        {postits}
-        <Pointer id="pointer" color="red" x={x} y={y} />
-
-        <Pointer color="red" x={x} y={y} />
-
-        <footer>
-          <Qr image = "/qr"/>
-        </footer>
-
-      </div>
+      keyChecked
+        ? (
+          <div className="Display">
+            <header>
+              <img src={logo} className="Display  -logo" alt="logo" />
+              <div id="post" style={{ backgroundColor: 'green', width: '50px', height: '50px' }} />
+            </header>
+            {postits}
+            <Pointer id="pointer" color="red" x={x} y={y} />
+          </div>
+        ) : (
+          <div className="Display" />
+        )
     );
   }
-}
-
-function PostIt(props) {
-  const { text } = props;
-  console.log(props);
-  return (
-    <div className="postit">
-      {text}
-    </div>
-  );
-}
-
-function Pointer(props) {
-  const { color, x, y } = props;
-  return (
-    <div
-      className="pointer"
-      style={{
-        backgroundColor: color,
-        position: 'absolute',
-        left: `${x}px`,
-        top: `${y}px`,
-      }}
-    />
-  );
-}
-
-function Qr(props){
-  const { image } = props;
-  return (
-      <img src= {image} className="qr"/>
-
-  )
 }
 
 export default Display;
