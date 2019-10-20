@@ -5,6 +5,16 @@ import '../App.css';
 import PostIt from './PostIt';
 import Pointer from './Pointer';
 
+function makeid(length) {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 class Display extends React.Component {
   constructor(props) {
     super(props);
@@ -76,14 +86,14 @@ class Display extends React.Component {
 
   render() {
     const { texts, cursor: { x, y }, keyChecked } = this.state;
-    const postits = texts.map((text) => <PostIt text={text} />);
+    const postits = texts.map((text) => <PostIt key = {text} id={text} text={text} />);
     return (
       keyChecked
         ? (
           <div className="Display">
             <header>
               <img src={logo} className="Display-logo" alt="logo" />
-              <div id="post" style={{ backgroundColor: 'green', width: '50px', height: '50px' }} />
+              <div id="post" className="post" >Poster</div>
             </header>
             {postits}
             <Pointer id="pointer" color="red" x={x} y={y} />

@@ -1,9 +1,9 @@
 import React from 'react';
 
 function PostIt(props) {
-  const { text } = props;
+  const { key, id, text } = props;
   return (
-    <div className="postit">
+    <div className="postit" id={id} key={key}>
       {text}
     </div>
   );

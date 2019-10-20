@@ -63,11 +63,21 @@ app.get('/display/:key', (req, res) => {
 });
 
 app.get('/mobile/:key', (req, res) => {
-  if (req.params.key === clientKey) {
-    clientKey = makeid(8);
+  for (var i = 0, len=clients.length; i<len; ++i) {
+    if (req.params.key === clients[i].clientKey) {
+      var txt = 'ok';
+      if (clients.length < 4){
+      clientKey = makeid(8);
+      }
+      break;
+    }
+  }
+  if (txt === 'ok') {
     res.send('ok');
-  } else { res.send('ko'); }
+  }
+  else { res.send('ko'); }
 });
+
 
 app.get('/key', (req, res) => {
   res.send(clientKey);

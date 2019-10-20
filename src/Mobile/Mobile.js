@@ -2,12 +2,9 @@ import React, { Component } from 'react';
 import ReactNipple from 'react-nipple';
 import io from 'socket.io-client';
 import logo from '../Assets/logo.svg';
+import hax from '../Assets/hax.jpg';
+import kek from '../Assets/kek.mp3';
 import '../App.css';
-
-function checkKey(key) {
-
-  return true;
-}
 
 class Mobile extends Component {
   constructor() {
@@ -28,22 +25,30 @@ class Mobile extends Component {
   componentDidMount() {
     const { match } = this.props;
     const { params: { key } } = match;
-    if (match) {
-      checkKey(key);
-      const socket = io();
-      socket.emit('storeClientInfo', {clientKey : key, clientId: this.state.socket});
-      socket.emit('cursor');
-      socket.on('start_posting', () => {
-        this.setState({
-          type: true,
+    fetch(`/mobile/${key}`)
+        .then((resp) => {
+          resp.text()
+              .then((txt) => {
+                let init = txt === 'ok';
+                if (match && init) {
+                  const socket = io();
+                  socket.emit('storeClientInfo', {clientKey : key, clientId: this.state.socket});
+                  socket.emit('cursor');
+                  socket.on('start_posting', () => {
+                    this.setState({
+                      type: true,
+                    });
+                    document.getElementById('input').focus();
+                  });
+                  this.setState({
+                    socket,
+                  });
+                  console.log(this.state.socket);
+                }
+              });
         });
-        document.getElementById('input').focus();
-      });
-      this.setState({
-        socket,
-      });
-    }
   }
+
 
   handleMove(_, data) {
     const { socket } = this.state;
@@ -87,26 +92,39 @@ class Mobile extends Component {
 
   render() {
     const { type } = this.state;
-    return (
-      <div className="Display" onClick={this.handleClick}>
-        <header>
-          <img src={logo} className="Display-logo" alt="logo" />
-        </header>
-        <div style={{ display: type ? 'block' : 'none' }}>
-          <input id="input" onKeyUp={this.handleEnterKey} />
-          <button onClick={this.handlePost}>Poster</button>
-        </div>
-        <ReactNipple
-          option={{ mode: 'dynamic' }}
-          style={{
-            flex: '1 1 auto',
-            position: 'relative',
-          }}
-          onMove={this.handleMove}
-          onClick={this.handleEnd}
-        />
-      </div>
-    );
+    if (this.state.socket != null) {
+      return (
+          <div className="Mobile" onClick={this.handleClick}>
+            <header>
+              <img src={logo} className="Display-logo" alt="logo"/>
+            </header>
+            <div style={{display: type ? 'block' : 'none'}}>
+              <input id="input" onKeyUp={this.handleEnterKey}/>
+              <button onClick={this.handlePost}>Poster</button>
+            </div>
+            <ReactNipple
+                option={{mode: 'dynamic'}}
+                style={{
+                  flex: '1 1 auto',
+                  position: 'relative',
+                }}
+                onMove={this.handleMove}
+                onClick={this.handleEnd}
+            />
+          </div>
+      );
+    }
+    else{
+      return(
+          <div className="MobileError">
+            <img src={hax} className = "hax"/>
+            <audio autoPlay>
+              <source src={kek} type="audio/mp3"/>
+
+            </audio>
+          </div>
+      )
+    }
   }
 }
 
