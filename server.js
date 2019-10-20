@@ -3,11 +3,19 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+const qr = require('qrcode');
 const path = require('path');
 
 let displayId;
 
+let clientlist = [];
+
 app.use(express.static(path.join(__dirname, 'build')));
+
+function genQr(str){
+  code = "http://localhost:3000/mobile/"+str;
+  qr.toFile('qr.png', code);
+}
 
 function makeid(length) {
   let result = '';
@@ -16,6 +24,8 @@ function makeid(length) {
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
+  clientlist.push(result);
+  genQr(result);
   return result;
 }
 
@@ -39,6 +49,10 @@ app.get('/mobile/:key', (req, res) => {
 app.get('/key', (req, res) => {
   res.send(clientKey);
 });
+
+app.get('/qr', (req,res) => {
+  res.sendFile(path.resolve(__dirname+'/qr.png'))
+})
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
