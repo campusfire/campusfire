@@ -40,7 +40,7 @@ class Display extends React.Component {
     const dx = displacement * Math.cos(data[0]);
     const dy = -displacement * Math.sin(data[0]);
     // console.log(dx, dy);
-    this.state.texts.push("kek");
+    //this.state.texts.push("kek");
     this.setState((state) => ({
       cursor: {
         x: state.cursor.x + dx,
