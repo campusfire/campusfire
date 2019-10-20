@@ -2,19 +2,23 @@ import React from 'react';
 import io from 'socket.io-client';
 import logo from '../Assets/cfwhite.png';
 import '../App.css';
+import PostIt from './PostIt';
+import Pointer from './Pointer';
 
 class Display extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      socket: null,
       texts: [],
       cursor: { x: 0, y: 0 },
     };
   }
 
   componentDidMount() {
-    this.checkKey(this.props.match.params.key);
+    const { match: { params: { key } } } = this.props;
+    this.checkKey(key);
     const socket = io();
     socket.emit('display');
     socket.on('data', (data) => {
@@ -22,25 +26,31 @@ class Display extends React.Component {
         this.moveCursor(data);
       }
     });
-    // socket.on('connection', (socket) => {
-    //   console.log('connexion client');
-    //   socket.on('data', (data) => {
-    //     // Will print 'hi!'
-    //     console.log('test');
-    //     if (data.length === 2) {
-    //       this.moveCursor(data);
-    //     }
-    //   });
-    // });
+    socket.on('posting', (content) => {
+      const { texts } = this.state;
+      texts.push(content);
+      this.setState({
+        texts,
+      });
+    });
+    socket.on('remote_click', () => {
+      const { cursor: { x, y } } = this.state;
+      const {
+        left, right, top, bottom,
+      } = document.getElementById('post').getBoundingClientRect();
+      if (x > left && x < right && y > top && y < bottom) {
+        socket.emit('start_posting');
+      }
+    });
+    this.setState({
+      socket,
+    });
   }
 
   moveCursor(data) {
-    // console.log(data);
     const displacement = data[1] * 0.2;
     const dx = displacement * Math.cos(data[0]);
     const dy = -displacement * Math.sin(data[0]);
-    // console.log(dx, dy);
-    //this.state.texts.push("kek");
     this.setState((state) => ({
       cursor: {
         x: state.cursor.x + dx,
@@ -68,17 +78,16 @@ class Display extends React.Component {
 
   render() {
     const { texts, cursor: { x, y } } = this.state;
-
     const postits = texts.map((text) => <PostIt text={text} />);
-
     return (
       <div className="Display">
         <header>
           <img src={logo} className="Display-logo" alt="logo" />
-
+          <div id="post" style={{ backgroundColor: 'green', width: '50px', height: '50px' }} />
         </header>
 
         {postits}
+        <Pointer id="pointer" color="red" x={x} y={y} />
 
         <Pointer color="red" x={x} y={y} />
 
@@ -92,7 +101,7 @@ class Display extends React.Component {
 }
 
 function PostIt(props) {
-  let { text } = props;
+  const { text } = props;
   console.log(props);
   return (
     <div className="postit">
