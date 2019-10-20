@@ -87,6 +87,10 @@ class Display extends React.Component {
             </header>
             {postits}
             <Pointer id="pointer" color="red" x={x} y={y} />
+
+            <footer>
+                <img src="/qr" alt="" className="qr" />
+            </footer>
           </div>
         ) : (
           <div className="Display" />
