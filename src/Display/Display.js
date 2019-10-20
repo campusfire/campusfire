@@ -40,11 +40,12 @@ class Display extends React.Component {
     const dx = displacement * Math.cos(data[0]);
     const dy = -displacement * Math.sin(data[0]);
     // console.log(dx, dy);
+    //this.state.texts.push("kek");
     this.setState((state) => ({
       cursor: {
         x: state.cursor.x + dx,
         y: state.cursor.y + dy,
-      },
+      }
     }));
   }
 
@@ -80,13 +81,18 @@ class Display extends React.Component {
         {postits}
 
         <Pointer color="red" x={x} y={y} />
+
+        <footer>
+          <Qr image = "/qr"/>
+        </footer>
+
       </div>
     );
   }
 }
 
 function PostIt(props) {
-  const { text } = props;
+  let { text } = props;
   console.log(props);
   return (
     <div className="postit">
@@ -108,6 +114,14 @@ function Pointer(props) {
       }}
     />
   );
+}
+
+function Qr(props){
+  const { image } = props;
+  return (
+      <img src= {image} className="qr"/>
+
+  )
 }
 
 export default Display;

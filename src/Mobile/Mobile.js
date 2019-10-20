@@ -4,7 +4,8 @@ import io from 'socket.io-client';
 import logo from '../Assets/logo.svg';
 import '../App.css';
 
-function checkKey() {
+function checkKey(key) {
+
   return true;
 }
 
