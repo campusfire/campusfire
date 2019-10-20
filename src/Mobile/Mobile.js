@@ -31,6 +31,7 @@ class Mobile extends Component {
     if (match) {
       checkKey(key);
       const socket = io();
+      socket.emit('storeClientInfo', {clientKey : key, clientId: this.state.socket});
       socket.emit('cursor');
       socket.on('start_posting', () => {
         this.setState({

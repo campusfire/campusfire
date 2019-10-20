@@ -8,6 +8,7 @@ const path = require('path');
 
 let displayId;
 let cursorId;
+let clients = [];
 
 let clientlist = [];
 
@@ -25,12 +26,36 @@ function makeid(length) {
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
+  clientInfo = {clientKey: result, clientId : null};
+  clients.push(clientInfo);
   clientlist.push(result);
   genQr(result);
   return result;
 }
 
-let clientKey = makeid(8);
+function updatesocket(clientKey, id){
+  for( var i=0, len=clients.length; i<len; ++i ){
+    var c = clients[i];
+
+    if(c.clientInfo === clientKey){
+      clients[i].clientId = id;
+      break;
+    }
+  }
+}
+
+function deleteid(clientKey){                         // sera utile pour déconnecter les users
+  for( var i=0, len=clients.length; i<len; ++i ){
+    var c = clients[i];
+
+    if(c.clientInfo === clientKey){
+      clients.splice(i,1);
+      break;
+    }
+  }
+}
+
+let clientKey = makeid(8); // last client key
 
 app.get('/ping', (req, res) => res.send('pong'));
 
@@ -65,7 +90,24 @@ app.use((req, res, next) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('Socket connected');
+  console.log('Socket ' + socket.id +  ' connected');
+  for( var i=0, len=clients.length; i<len; ++i ) {
+    var c = clients[i];
+    console.log(clients[i].clientId + ' ' + clients[i].clientKey);
+  }
+
+  socket.on('storeClientInfo', function (data) {
+
+    for( var i=0, len=clients.length; i<len; ++i ){
+      var c = clients[i];
+      //console.log(data.clientKey);
+      if(c.clientKey === data.clientKey){
+        clients[i].clientId = socket.id;
+        console.log(clients[i].clientId + ' ' + clients[i].clientKey);
+        break;
+      }
+    }
+  });
 
   socket.on('display', () => {
     displayId = socket.id;
@@ -91,8 +133,17 @@ io.on('connection', (socket) => {
     io.to(displayId).emit('posting', content);
   });
 
-  socket.on('disconnect', () => {
-    console.log('Socket disconnected');
+  socket.on('disconnect', function (data) {
+
+    for( var i=0, len=clients.length; i<len; ++i ){
+      var c = clients[i];
+
+      if(c.clientKey === data.clientKey){
+        clients[i].clientId = null;
+        //console.log(clients[i].clientId + ' ' + clients[i].clientKey);
+        break;
+      }
+    }
   });
 });
 
