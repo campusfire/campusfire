@@ -1,6 +1,5 @@
 const express = require('express');
 
-const bodyParser = require('body-parser');
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
@@ -9,11 +8,11 @@ const path = require('path');
 
 let displayId;
 let cursorId;
-let clients = [];
+const clients = [];
 
 app.use(express.static(path.join(__dirname, 'build')));
 
-function genQr(str){
+function genQr(str) {
   qr.toFile('qr.png', str);
 }
 
@@ -24,29 +23,29 @@ function makeid(length) {
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
-  clientInfo = {clientKey: result, clientId : null};
+  clientInfo = { clientKey: result, clientId: null };
   clients.push(clientInfo);
   genQr(result);
   return result;
 }
 
-function updatesocket(clientKey, id){
-  for( var i=0, len=clients.length; i<len; ++i ){
-    var c = clients[i];
+function updatesocket(clientKey, id) {
+  for (let i = 0, len = clients.length; i < len; ++i) {
+    const c = clients[i];
 
-    if(c.clientInfo === clientKey){
+    if (c.clientInfo === clientKey) {
       clients[i].clientId = id;
       break;
     }
   }
 }
 
-function deleteid(clientKey){                         // sera utile pour déconnecter les users
-  for( var i=0, len=clients.length; i<len; ++i ){
-    var c = clients[i];
+function deleteid(clientKey) { // sera utile pour déconnecter les users
+  for (let i = 0, len = clients.length; i < len; ++i) {
+    const c = clients[i];
 
-    if(c.clientInfo === clientKey){
-      clients.splice(i,1);
+    if (c.clientInfo === clientKey) {
+      clients.splice(i, 1);
       break;
     }
   }
@@ -73,9 +72,9 @@ app.get('/key', (req, res) => {
   res.send(clientKey);
 });
 
-app.get('/qr', (req,res) => {
-  res.sendFile(path.resolve(__dirname+'/qr.png'))
-})
+app.get('/qr', (req, res) => {
+  res.sendFile(path.resolve(`${__dirname}/qr.png`));
+});
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
@@ -87,20 +86,19 @@ app.use((req, res, next) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('Socket ' + socket.id +  ' connected');
-  for( var i=0, len=clients.length; i<len; ++i ) {
-    var c = clients[i];
-    console.log(clients[i].clientId + ' ' + clients[i].clientKey);
+  console.log(`Socket ${socket.id} connected`);
+  for (let i = 0, len = clients.length; i < len; ++i) {
+    const c = clients[i];
+    console.log(`${clients[i].clientId} ${clients[i].clientKey}`);
   }
 
-  socket.on('storeClientInfo', function (data) {
-
-    for( var i=0, len=clients.length; i<len; ++i ){
-      var c = clients[i];
-      //console.log(data.clientKey);
-      if(c.clientKey === data.clientKey){
+  socket.on('storeClientInfo', (data) => {
+    for (let i = 0, len = clients.length; i < len; ++i) {
+      const c = clients[i];
+      // console.log(data.clientKey);
+      if (c.clientKey === data.clientKey) {
         clients[i].clientId = socket.id;
-        console.log(clients[i].clientId + ' ' + clients[i].clientKey);
+        console.log(`${clients[i].clientId} ${clients[i].clientKey}`);
         break;
       }
     }
@@ -130,14 +128,13 @@ io.on('connection', (socket) => {
     io.to(displayId).emit('posting', content);
   });
 
-  socket.on('disconnect', function (data) {
+  socket.on('disconnect', (data) => {
+    for (let i = 0, len = clients.length; i < len; ++i) {
+      const c = clients[i];
 
-    for( var i=0, len=clients.length; i<len; ++i ){
-      var c = clients[i];
-
-      if(c.clientKey === data.clientKey){
+      if (c.clientKey === data.clientKey) {
         clients[i].clientId = null;
-        //console.log(clients[i].clientId + ' ' + clients[i].clientKey);
+        // console.log(clients[i].clientId + ' ' + clients[i].clientKey);
         break;
       }
     }

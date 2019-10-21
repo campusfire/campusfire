@@ -4,11 +4,6 @@ import io from 'socket.io-client';
 import logo from '../Assets/logo.svg';
 import '../App.css';
 
-function checkKey(key) {
-
-  return true;
-}
-
 class Mobile extends Component {
   constructor() {
     super();
@@ -16,6 +11,7 @@ class Mobile extends Component {
       socket: null,
       distance: 0,
       type: false,
+      keyChecked: false,
     };
 
     this.handleMove = this.handleMove.bind(this);
@@ -23,15 +19,17 @@ class Mobile extends Component {
     this.handleEnd = this.handleEnd.bind(this);
     this.handlePost = this.handlePost.bind(this);
     this.handleEnterKey = this.handleEnterKey.bind(this);
+    this.checkKey = this.checkKey.bind(this);
   }
 
   componentDidMount() {
     const { match } = this.props;
     const { params: { key } } = match;
     if (match) {
-      checkKey(key);
+      this.checkKey(key);
       const socket = io();
-      socket.emit('storeClientInfo', {clientKey : key, clientId: this.state.socket});
+      console.log(socket);
+      socket.emit('storeClientInfo', { clientKey: key });
       socket.emit('cursor');
       socket.on('start_posting', () => {
         this.setState({
@@ -85,27 +83,38 @@ class Mobile extends Component {
     if (event.keyCode === 13) { this.handlePost(event); }
   }
 
+  checkKey(key) {
+    this.setState({
+      keyChecked: true,
+    });
+  }
+
   render() {
-    const { type } = this.state;
+    const { type, keyChecked } = this.state;
     return (
-      <div className="Display" onClick={this.handleClick}>
-        <header>
-          <img src={logo} className="Display-logo" alt="logo" />
-        </header>
-        <div style={{ display: type ? 'block' : 'none' }}>
-          <input id="input" onKeyUp={this.handleEnterKey} />
-          <button onClick={this.handlePost}>Poster</button>
-        </div>
-        <ReactNipple
-          option={{ mode: 'dynamic' }}
-          style={{
-            flex: '1 1 auto',
-            position: 'relative',
-          }}
-          onMove={this.handleMove}
-          onClick={this.handleEnd}
-        />
-      </div>
+      keyChecked
+        ? (
+          <div className="Display" onClick={this.handleClick}>
+            <header>
+              <img src={logo} className="Display-logo" alt="logo" />
+            </header>
+            <div style={{ display: type ? 'block' : 'none' }}>
+              <input id="input" onKeyUp={this.handleEnterKey} />
+              <button type="button" onClick={this.handlePost}>Poster</button>
+            </div>
+            <ReactNipple
+              option={{ mode: 'dynamic' }}
+              style={{
+                flex: '1 1 auto',
+                position: 'relative',
+              }}
+              onMove={this.handleMove}
+              onClick={this.handleEnd}
+            />
+          </div>
+        ) : (
+          <div className="Display" />
+        )
     );
   }
 }

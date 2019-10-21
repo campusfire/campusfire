@@ -1,16 +1,15 @@
-import React from 'react';
+import React, { Component } from 'react';
 import io from 'socket.io-client';
 import logo from '../Assets/cfwhite.png';
 import '../App.css';
 import PostIt from './PostIt';
 import Pointer from './Pointer';
 
-class Display extends React.Component {
+class Display extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      socket: null,
       texts: [],
       cursor: { x: 0, y: 0 },
       keyChecked: false,
@@ -53,7 +52,7 @@ class Display extends React.Component {
       cursor: {
         x: state.cursor.x + dx,
         y: state.cursor.y + dy,
-      }
+      },
     }));
   }
 
@@ -87,9 +86,8 @@ class Display extends React.Component {
             </header>
             {postits}
             <Pointer id="pointer" color="red" x={x} y={y} />
-
             <footer>
-                <img src="/qr" alt="" className="qr" />
+              <img src="/qr" alt="" className="qr" />
             </footer>
           </div>
         ) : (
