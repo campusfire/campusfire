@@ -63,16 +63,17 @@ app.get('/display/:key', (req, res) => {
 });
 
 app.get('/mobile/:key', (req, res) => {
+  var userAuthorized = false;
   for (var i = 0, len=clients.length; i<len; ++i) {
     if (req.params.key === clients[i].clientKey) {
-      var txt = 'ok';
-      if (clients.length < 4){
+      userAuthorized = true;
+      if (clients.length < 4 && clients[i].clientId === null){
       clientKey = makeid(8);
       }
       break;
     }
   }
-  if (txt === 'ok') {
+  if (userAuthorized) {
     res.send('ok');
   }
   else { res.send('ko'); }

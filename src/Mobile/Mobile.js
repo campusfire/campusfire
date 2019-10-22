@@ -13,6 +13,7 @@ class Mobile extends Component {
       socket: null,
       distance: 0,
       type: false,
+      keyChecked: false
     };
 
     this.handleMove = this.handleMove.bind(this);
@@ -29,8 +30,8 @@ class Mobile extends Component {
         .then((resp) => {
           resp.text()
               .then((txt) => {
-                let init = txt === 'ok';
-                if (match && init) {
+                this.state.keyChecked = txt === 'ok';
+                if (match && this.state.keyChecked) {
                   const socket = io();
                   socket.emit('storeClientInfo', {clientKey : key, clientId: this.state.socket});
                   socket.emit('cursor');
@@ -92,7 +93,7 @@ class Mobile extends Component {
 
   render() {
     const { type } = this.state;
-    if (this.state.socket != null) {
+    if (this.state.keyChecked) {
       return (
           <div className="Mobile" onClick={this.handleClick}>
             <header>
