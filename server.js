@@ -79,7 +79,6 @@ app.get('/mobile/:key', (req, res) => {
   else { res.send('ko'); }
 });
 
-
 app.get('/key', (req, res) => {
   res.send(clientKey);
 });
