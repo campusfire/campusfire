@@ -66,7 +66,7 @@ app.get('/mobile/:key', (req, res) => {
   for (var i = 0, len=clients.length; i<len; ++i) {
     if (req.params.key === clients[i].clientKey) {
       var txt = 'ok';
-      if (clients.length < 4){
+      if (clients.length < 4 && clients[i].clientId === null){
       clientKey = makeid(8);
       }
       break;
