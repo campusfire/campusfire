@@ -1,10 +1,12 @@
 const express = require('express');
+const path = require('path');
+require('dotenv').config();
 
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const qr = require('qrcode');
-const path = require('path');
+const { url } = require('./config');
 
 let displayId;
 let cursorId;
@@ -16,7 +18,7 @@ function genQr(str) {
   qr.toFile('qr.png', str);
 }
 
-function makeid(length) {
+function makeId(length) {
   let result = '';
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const charactersLength = characters.length;
@@ -25,7 +27,7 @@ function makeid(length) {
   }
   const clientInfo = { clientKey: result, clientId: null };
   clients.push(clientInfo);
-  genQr(`http://node.coriandre.ovh1.ec-m.fr/m/${result}`);
+  genQr(`${url}/m/${result}`);
   return result;
 }
 
@@ -51,7 +53,7 @@ function deleteid(clientKey) { // sera utile pour déconnecter les users
   }
 }
 
-const clientKey = makeid(8); // last client key
+const clientKey = makeId(8); // last client key
 
 app.get('/ping', (req, res) => res.send('pong'));
 
@@ -140,4 +142,4 @@ io.on('connection', (socket) => {
   });
 });
 
-http.listen(process.env.PORT || 8080);
+http.listen(process.env.PORT ? process.env[process.env.PORT] : 8080);
