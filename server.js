@@ -25,7 +25,7 @@ function makeid(length) {
   }
   const clientInfo = { clientKey: result, clientId: null };
   clients.push(clientInfo);
-  genQr(`http://172.18.34.19:3000/m/${result}`);
+  genQr(`http://node.coriandre.ovh1.ec-m.fr/m/${result}`);
   return result;
 }
 
@@ -113,7 +113,6 @@ io.on('connection', (socket) => {
 
   socket.on('move', (data) => {
     io.to(displayId).emit('data', data);
-    console.log('move');
   });
 
   socket.on('click', () => {
