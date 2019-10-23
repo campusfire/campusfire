@@ -23,9 +23,9 @@ function makeid(length) {
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
-  clientInfo = { clientKey: result, clientId: null };
+  const clientInfo = { clientKey: result, clientId: null };
   clients.push(clientInfo);
-  genQr(`http://node.coriandre.ovh1.ec-m.fr/m/${result}`);
+  genQr(`http://172.18.34.19:3000/m/${result}`);
   return result;
 }
 
@@ -51,7 +51,7 @@ function deleteid(clientKey) { // sera utile pour déconnecter les users
   }
 }
 
-let clientKey = makeid(8); // last client key
+const clientKey = makeid(8); // last client key
 
 app.get('/ping', (req, res) => res.send('pong'));
 
@@ -62,17 +62,7 @@ app.get('/display/:key', (req, res) => {
 });
 
 app.get('/mobile/:key', (req, res) => {
-  let userAuthorized = false;
-  for (let i = 0, len = clients.length; i < len; ++i) {
-    if (req.params.key === clients[i].clientKey) {
-      userAuthorized = true;
-      if (clients.length < 4 && clients[i].clientId === null) {
-        clientKey = makeid(8);
-      }
-      break;
-    }
-  }
-  if (userAuthorized) {
+  if (req.params.key === clientKey) {
     res.send('ok');
   } else { res.send('ko'); }
 });
@@ -123,6 +113,7 @@ io.on('connection', (socket) => {
 
   socket.on('move', (data) => {
     io.to(displayId).emit('data', data);
+    console.log('move');
   });
 
   socket.on('click', () => {

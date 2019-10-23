@@ -35,6 +35,10 @@ class Mobile extends Component {
         this.setState({
           type: true,
         });
+        document.getElementById('input').focus();
+      });
+      this.setState({
+        socket,
       });
     }
   }
@@ -117,7 +121,7 @@ class Mobile extends Component {
                 position: 'relative',
               }}
               onMove={this.handleMove}
-              onClick={this.handleEnd}
+              onEnd={this.handleEnd}
             />
           </div>
         ) : (
