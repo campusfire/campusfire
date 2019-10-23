@@ -1,26 +1,15 @@
-import React from 'react';
+import React, { Component } from 'react';
 import io from 'socket.io-client';
 import logo from '../Assets/cfwhite.png';
 import '../App.css';
 import PostIt from './PostIt';
 import Pointer from './Pointer';
 
-function makeid(length) {
-  let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
-class Display extends React.Component {
+class Display extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      socket: null,
       texts: [],
       cursor: { x: 0, y: 0 },
       keyChecked: false,
@@ -63,7 +52,7 @@ class Display extends React.Component {
       cursor: {
         x: state.cursor.x + dx,
         y: state.cursor.y + dy,
-      }
+      },
     }));
   }
 
@@ -86,20 +75,19 @@ class Display extends React.Component {
 
   render() {
     const { texts, cursor: { x, y }, keyChecked } = this.state;
-    const postits = texts.map((text) => <PostIt key = {text} id={text} text={text} />);
+    const postits = texts.map((text, index) => <PostIt id={`postit n ${index}`} text={text} />);
     return (
       keyChecked
         ? (
           <div className="Display">
             <header>
               <img src={logo} className="Display-logo" alt="logo" />
-              <div id="post" className="post" >Poster</div>
+              <div id="post" className="post">Poster</div>
             </header>
             {postits}
             <Pointer id="pointer" color="red" x={x} y={y} />
-
             <footer>
-                <img src="/qr" alt="" className="qr" />
+              <img src="/qr" alt="" className="qr" />
             </footer>
           </div>
         ) : (

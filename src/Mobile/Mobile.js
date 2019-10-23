@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import ReactNipple from 'react-nipple';
 import io from 'socket.io-client';
 import logo from '../Assets/logo.svg';
-import hax from '../Assets/hax.jpg';
-import kek from '../Assets/kek.mp3';
 import '../App.css';
 
 class Mobile extends Component {
@@ -13,7 +11,7 @@ class Mobile extends Component {
       socket: null,
       distance: 0,
       type: false,
-      keyChecked: false
+      keyChecked: false,
     };
 
     this.handleMove = this.handleMove.bind(this);
@@ -21,33 +19,24 @@ class Mobile extends Component {
     this.handleEnd = this.handleEnd.bind(this);
     this.handlePost = this.handlePost.bind(this);
     this.handleEnterKey = this.handleEnterKey.bind(this);
+    this.checkKey = this.checkKey.bind(this);
   }
 
   componentDidMount() {
     const { match } = this.props;
     const { params: { key } } = match;
-    fetch(`/mobile/${key}`)
-        .then((resp) => {
-          resp.text()
-              .then((txt) => {
-                this.state.keyChecked = txt === 'ok';
-                if (match && this.state.keyChecked) {
-                  const socket = io();
-                  socket.emit('storeClientInfo', {clientKey : key, clientId: this.state.socket});
-                  socket.emit('cursor');
-                  socket.on('start_posting', () => {
-                    this.setState({
-                      type: true,
-                    });
-                    document.getElementById('input').focus();
-                  });
-                  this.setState({
-                    socket,
-                  });
-                  console.log(this.state.socket);
-                }
-              });
+    if (match) {
+      this.checkKey(key);
+      const socket = io();
+      console.log(socket);
+      socket.emit('storeClientInfo', { clientKey: key });
+      socket.emit('cursor');
+      socket.on('start_posting', () => {
+        this.setState({
+          type: true,
         });
+      });
+    }
   }
 
 
@@ -91,41 +80,50 @@ class Mobile extends Component {
     if (event.keyCode === 13) { this.handlePost(event); }
   }
 
+  checkKey(key) {
+    fetch(`/mobile/${key}`)
+      .then((resp) => {
+        resp.text()
+          .then((txt) => {
+            if (txt === 'ok') {
+              this.setState({ keyChecked: true });
+            } else {
+              this.setState({ keyChecked: false });
+            }
+          })
+          .catch(() => {
+            this.setState({ keyChecked: false });
+          });
+      });
+  }
+
   render() {
-    const { type } = this.state;
-    if (this.state.keyChecked) {
-      return (
-          <div className="Mobile" onClick={this.handleClick}>
+    const { type, keyChecked } = this.state;
+    return (
+      keyChecked
+        ? (
+          <div className="Display" onClick={this.handleClick}>
             <header>
-              <img src={logo} className="Display-logo" alt="logo"/>
+              <img src={logo} className="Display-logo" alt="logo" />
             </header>
-            <div style={{display: type ? 'block' : 'none'}}>
-              <input id="input" onKeyUp={this.handleEnterKey}/>
-              <button onClick={this.handlePost}>Poster</button>
+            <div style={{ display: type ? 'block' : 'none' }}>
+              <input id="input" onKeyUp={this.handleEnterKey} />
+              <button type="button" onClick={this.handlePost}>Poster</button>
             </div>
             <ReactNipple
-                option={{mode: 'dynamic'}}
-                style={{
-                  flex: '1 1 auto',
-                  position: 'relative',
-                }}
-                onMove={this.handleMove}
-                onClick={this.handleEnd}
+              option={{ mode: 'dynamic' }}
+              style={{
+                flex: '1 1 auto',
+                position: 'relative',
+              }}
+              onMove={this.handleMove}
+              onClick={this.handleEnd}
             />
           </div>
-      );
-    }
-    else{
-      return(
-          <div className="MobileError">
-            <img src={hax} className = "hax"/>
-            <audio autoPlay>
-              <source src={kek} type="audio/mp3"/>
-
-            </audio>
-          </div>
-      )
-    }
+        ) : (
+          <div className="Display" />
+        )
+    );
   }
 }
 
