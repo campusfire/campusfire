@@ -84,9 +84,20 @@ class Mobile extends Component {
   }
 
   checkKey(key) {
-    this.setState({
-      keyChecked: true,
-    });
+    fetch(`/mobile/${key}`)
+      .then((resp) => {
+        resp.text()
+          .then((txt) => {
+            if (txt === 'ok') {
+              this.setState({ keyChecked: true });
+            } else {
+              this.setState({ keyChecked: false });
+            }
+          })
+          .catch(() => {
+            this.setState({ keyChecked: false });
+          });
+      });
   }
 
   render() {
