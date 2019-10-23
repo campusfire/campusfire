@@ -25,7 +25,7 @@ function makeid(length) {
   }
   clientInfo = { clientKey: result, clientId: null };
   clients.push(clientInfo);
-  genQr(`http://node.coriandre.ovh1.ec-m.fr:3000/m/${result}`);
+  genQr(`http://172.18.34.19:3000/m/${result}`);
   return result;
 }
 
