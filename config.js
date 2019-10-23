@@ -14,7 +14,7 @@ if (process.env.ENV !== 'PROD') {
     });
   });
   url = `http://${ip}:3000`;
-} else url = `http://node.${process.env.PORT.toLowerCase()}.ovh1.ec-m.fr/d/fire`;
+} else url = `http://node.${process.env.PORT.toLowerCase()}.ovh1.ec-m.fr`;
 console.log(url);
 
 exports.url = url;
