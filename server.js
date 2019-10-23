@@ -25,7 +25,7 @@ function makeid(length) {
   }
   clientInfo = { clientKey: result, clientId: null };
   clients.push(clientInfo);
-  genQr(`http://node.coriandre.ovh1.ec-m.fr:3000/m/${result}`);
+  genQr(`http://node.coriandre.ovh1.ec-m.fr/m/${result}`);
   return result;
 }
 
@@ -62,20 +62,19 @@ app.get('/display/:key', (req, res) => {
 });
 
 app.get('/mobile/:key', (req, res) => {
-  var userAuthorized = false;
-  for (var i = 0, len=clients.length; i<len; ++i) {
+  let userAuthorized = false;
+  for (let i = 0, len = clients.length; i < len; ++i) {
     if (req.params.key === clients[i].clientKey) {
       userAuthorized = true;
-      if (clients.length < 4 && clients[i].clientId === null){
-      clientKey = makeid(8);
+      if (clients.length < 4 && clients[i].clientId === null) {
+        clientKey = makeid(8);
       }
       break;
     }
   }
   if (userAuthorized) {
     res.send('ok');
-  }
-  else { res.send('ko'); }
+  } else { res.send('ko'); }
 });
 
 app.get('/key', (req, res) => {
