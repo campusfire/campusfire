@@ -33,7 +33,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "dev": "nodemon server.js",
-    "prod": "nodemon server.js ENV=PROD",
+    "prod": "ENV=PROD node server.js",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
