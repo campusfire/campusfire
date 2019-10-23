@@ -22,7 +22,7 @@ function makeId(length) {
   let result = '';
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
+  for (let i = 0; i < length; i += 1) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   const clientInfo = { clientKey: result, clientId: null };
@@ -32,7 +32,7 @@ function makeId(length) {
 }
 
 function updatesocket(clientKey, id) {
-  for (let i = 0, len = clients.length; i < len; ++i) {
+  for (let i = 0, len = clients.length; i < len; i += 1) {
     const c = clients[i];
 
     if (c.clientInfo === clientKey) {
@@ -43,7 +43,7 @@ function updatesocket(clientKey, id) {
 }
 
 function deleteid(clientKey) { // sera utile pour déconnecter les users
-  for (let i = 0, len = clients.length; i < len; ++i) {
+  for (let i = 0, len = clients.length; i < len; i += 1) {
     const c = clients[i];
 
     if (c.clientInfo === clientKey) {
@@ -88,13 +88,13 @@ app.use((req, res, next) => {
 
 io.on('connection', (socket) => {
   console.log(`Socket ${socket.id} connected`);
-  for (let i = 0, len = clients.length; i < len; ++i) {
+  for (let i = 0, len = clients.length; i < len; i += 1) {
     const c = clients[i];
     console.log(`${clients[i].clientId} ${clients[i].clientKey}`);
   }
 
   socket.on('storeClientInfo', (data) => {
-    for (let i = 0, len = clients.length; i < len; ++i) {
+    for (let i = 0, len = clients.length; i < len; i += 1) {
       const c = clients[i];
       // console.log(data.clientKey);
       if (c.clientKey === data.clientKey) {
@@ -130,7 +130,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', (data) => {
-    for (let i = 0, len = clients.length; i < len; ++i) {
+    for (let i = 0, len = clients.length; i < len; i += 1) {
       const c = clients[i];
 
       if (c.clientKey === data.clientKey) {
