@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "proxy": "http://localhost:8080",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "dev": "nodemon server.js",
+    "prod": "ENV=PROD node server.js",
+    "eject": "react-scripts eject"
+  },
   "dependencies": {
     "body-parser": "latest",
     "express": "^4.17.1",
@@ -27,14 +35,6 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.15.0",
     "nodemon": "^1.19.2"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "dev": "nodemon server.js",
-    "prod": "ENV=PROD node server.js",
-    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"

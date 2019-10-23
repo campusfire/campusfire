@@ -141,5 +141,5 @@ io.on('connection', (socket) => {
     }
   });
 });
-
+console.log(process.env[process.env.PORT]);
 http.listen(process.env.PORT ? process.env[process.env.PORT] : 8080);
