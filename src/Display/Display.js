@@ -13,6 +13,7 @@ class Display extends Component {
       texts: [],
       cursor: { x: 0, y: 0 },
       keyChecked: false,
+      qr_path : '/qr',
     };
   }
 
@@ -26,6 +27,14 @@ class Display extends Component {
         this.moveCursor(data);
       }
     });
+
+    socket.on('reload_qr', () => {
+      const {qr_path} = this.state + '?' + Date.now();
+      this.setState(
+          qr_path,
+      )
+    });
+
     socket.on('posting', (content) => {
       const { texts } = this.state;
       texts.push(content);

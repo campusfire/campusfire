@@ -12,7 +12,6 @@ class Mobile extends Component {
       distance: 0,
       type: false,
       keyChecked: false,
-      qr_path : '/qr',
     };
 
     this.handleMove = this.handleMove.bind(this);
@@ -30,7 +29,6 @@ class Mobile extends Component {
       this.checkKey(key);
       const socket = io();
       console.log(socket);
-      socket.emit('storeClientInfo', { clientKey: key });
       socket.emit('cursor');
       socket.on('start_posting', () => {
         this.setState({
@@ -38,17 +36,10 @@ class Mobile extends Component {
         });
         document.getElementById('input').focus();
       });
-
-      socket.on('reload_qr'){
-        const {qr_path} = this.state + '?' + Date.now();
-        this.setState(
-            qr_path,
-        )
-
-      }
       this.setState({
         socket,
       });
+      socket.emit('storeClientInfo', { clientKey: key});
     }
   }
 

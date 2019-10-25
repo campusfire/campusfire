@@ -35,7 +35,7 @@ function updatesocket(clientKey, id) {
   for (let i = 0, len = clients.length; i < len; i += 1) {
     const c = clients[i];
 
-    if (c.clientInfo === clientKey) {
+    if (c.clientKey === clientKey) {
       clients[i].clientId = id;
       break;
     }
@@ -53,7 +53,7 @@ function deleteid(clientKey) { // sera utile pour déconnecter les users
   }
 }
 
-const clientKey = makeId(8); // last client key
+let clientKey = makeId(8); // last client key
 
 app.get('/ping', (req, res) => res.send('pong'));
 
@@ -64,9 +64,21 @@ app.get('/display/:key', (req, res) => {
 });
 
 app.get('/mobile/:key', (req, res) => {
-  if (req.params.key === clientKey) {
+  var userAuthorized = false;
+  for (var i = 0, len=clients.length; i<len; ++i) {
+    if (req.params.key === clients[i].clientKey) {
+      userAuthorized = true;
+      if (clients.length < 4 && clients[i].clientId === null){
+        clientKey = makeid(8);
+        io.to(displayId).emit('reload_qr');
+      }
+      break;
+    }
+  }
+  if (userAuthorized) {
     res.send('ok');
-  } else { res.send('ko'); }
+  }
+  else { res.send('ko'); }
 });
 
 app.get('/key', (req, res) => {
@@ -107,10 +119,12 @@ io.on('connection', (socket) => {
 
   socket.on('display', () => {
     displayId = socket.id;
+    console.log('Borne id: ' + displayId);
   });
 
   socket.on('cursor', () => {
     cursorId = socket.id;
+    console.log('Mobile id:' + cursorId);
   });
 
   socket.on('move', (data) => {
