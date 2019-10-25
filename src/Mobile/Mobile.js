@@ -29,7 +29,6 @@ class Mobile extends Component {
       this.checkKey(key);
       const socket = io();
       console.log(socket);
-      socket.emit('cursor');
       socket.on('start_posting', () => {
         this.setState({
           type: true,
@@ -40,6 +39,7 @@ class Mobile extends Component {
         socket,
       });
       socket.emit('storeClientInfo', { clientKey: key});
+      socket.emit('cursor');
     }
   }
 
@@ -47,7 +47,7 @@ class Mobile extends Component {
   handleMove(_, data) {
     const { socket } = this.state;
     if (socket) {
-      socket.emit('move', [data.angle.radian, data.distance]);
+      socket.emit('move', [data.angle.radian, data.distance, socket.id]);
     }
     this.setState({
       distance: data.distance,
@@ -57,7 +57,7 @@ class Mobile extends Component {
   handleClick() {
     const { socket, distance } = this.state;
     if (socket && distance === 0) {
-      socket.emit('click');
+      socket.emit('click', socket.id);
     }
   }
 

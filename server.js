@@ -31,7 +31,7 @@ function makeId(length) {
   return result;
 }
 
-function updatesocket(clientKey, id) {
+function updateSocket(clientKey, id) {
   for (let i = 0, len = clients.length; i < len; i += 1) {
     const c = clients[i];
 
@@ -42,7 +42,18 @@ function updatesocket(clientKey, id) {
   }
 }
 
-function deleteid(clientKey) { // sera utile pour déconnecter les users
+function findKey(id){
+  for (let i = 0, len = clients.length; i < len; i += 1) {
+    const c = clients[i];
+
+    if (c.clientId === id) {
+      return c.clientKey;
+    }
+  }
+    return null;
+}
+
+function deleteId(clientKey) { // sera utile pour déconnecter les users
   for (let i = 0, len = clients.length; i < len; i += 1) {
     const c = clients[i];
 
@@ -102,7 +113,7 @@ io.on('connection', (socket) => {
   console.log(`Socket ${socket.id} connected`);
   for (let i = 0, len = clients.length; i < len; i += 1) {
     const c = clients[i];
-    console.log(`${clients[i].clientId} ${clients[i].clientKey}`);
+    console.log(`Client ID: ${clients[i].clientId} Client key:${clients[i].clientKey}`);
   }
 
   socket.on('storeClientInfo', (data) => {
@@ -125,18 +136,21 @@ io.on('connection', (socket) => {
   socket.on('cursor', () => {
     cursorId = socket.id;
     console.log('Mobile id:' + cursorId);
+    var cursorKey = findKey(cursorId);
+    io.to(displayId).emit('displayCursor', cursorKey);
   });
 
   socket.on('move', (data) => {
-    io.to(displayId).emit('data', data);
+    var key = findKey(data[2]);
+    io.to(displayId).emit('data', [data[0],data[1],key]);
   });
 
-  socket.on('click', () => {
-    io.to(displayId).emit('remote_click');
+  socket.on('click', (data) => {
+    io.to(displayId).emit('remote_click', {clientKey : findKey(data), clientId: data});
   });
 
-  socket.on('start_posting', () => {
-    io.to(cursorId).emit('start_posting');
+  socket.on('start_posting', (data) => {
+    io.to(data).emit('start_posting');
   });
 
   socket.on('posting', (content) => {

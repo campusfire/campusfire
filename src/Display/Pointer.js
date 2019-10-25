@@ -1,10 +1,10 @@
 import React from 'react';
 
 function Pointer(props) {
-  const { color, x, y } = props;
+  const { color, x, y, id } = props;
   return (
     <div
-      className="pointer"
+      className="pointer" id={id}
       style={{
         backgroundColor: color,
         position: 'absolute',
