@@ -69,7 +69,7 @@ app.get('/mobile/:key', (req, res) => {
     if (req.params.key === clients[i].clientKey) {
       userAuthorized = true;
       if (clients.length < 4 && clients[i].clientId === null){
-        clientKey = makeid(8);
+        clientKey = makeId(8);
         io.to(displayId).emit('reload_qr');
       }
       break;

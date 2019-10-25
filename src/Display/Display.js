@@ -29,10 +29,12 @@ class Display extends Component {
     });
 
     socket.on('reload_qr', () => {
-      const {qr_path} = this.state + '?' + Date.now();
-      this.setState(
-          qr_path,
-      )
+      let {qr_path} = this.state;
+      qr_path += '?' + Date.now();
+      this.setState({
+            qr_path,
+          }
+      );
     });
 
     socket.on('posting', (content) => {
@@ -83,7 +85,7 @@ class Display extends Component {
   }
 
   render() {
-    const { texts, cursor: { x, y }, keyChecked } = this.state;
+    const { texts, cursor: { x, y }, keyChecked, qr_path } = this.state;
     const postits = texts.map((text, index) => <PostIt id={`postit n ${index}`} text={text} />);
     return (
       keyChecked
@@ -96,7 +98,7 @@ class Display extends Component {
             {postits}
             <Pointer id="pointer" color="red" x={x} y={y} />
             <footer>
-              <img src="/qr" alt="" className="qr" />
+              <img src={qr_path} alt="" className="qr" />
             </footer>
           </div>
         ) : (
