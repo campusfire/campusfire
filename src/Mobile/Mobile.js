@@ -12,6 +12,7 @@ class Mobile extends Component {
       distance: 0,
       type: false,
       keyChecked: false,
+      qr_path : '/qr',
     };
 
     this.handleMove = this.handleMove.bind(this);
@@ -37,6 +38,14 @@ class Mobile extends Component {
         });
         document.getElementById('input').focus();
       });
+
+      socket.on('reload_qr'){
+        const {qr_path} = this.state + '?' + Date.now();
+        this.setState(
+            qr_path,
+        )
+
+      }
       this.setState({
         socket,
       });
