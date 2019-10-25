@@ -5,7 +5,10 @@ import '../App.css';
 import PostIt from './PostIt';
 import Pointer from './Pointer';
 
+
+
 class Display extends Component {
+
   constructor(props) {
     super(props);
 
