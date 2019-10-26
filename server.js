@@ -57,7 +57,7 @@ function deleteId(clientKey) { // sera utile pour déconnecter les users
   for (let i = 0, len = clients.length; i < len; i += 1) {
     const c = clients[i];
 
-    if (c.clientInfo === clientKey) {
+    if (c.clientKey === clientKey) {
       clients.splice(i, 1);
       break;
     }
@@ -157,16 +157,11 @@ io.on('connection', (socket) => {
     io.to(displayId).emit('posting', content);
   });
 
-  socket.on('disconnect', (data) => {
-    for (let i = 0, len = clients.length; i < len; i += 1) {
-      const c = clients[i];
-
-      if (c.clientKey === data.clientKey) {
-        clients[i].clientId = null;
-        // console.log(clients[i].clientId + ' ' + clients[i].clientKey);
-        break;
-      }
-    }
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+    key = findKey(socket.id);
+    io.to(displayId).emit('disconnect_user', key);
+    deleteId(key);
   });
 });
 console.log(process.env[process.env.PORT]);

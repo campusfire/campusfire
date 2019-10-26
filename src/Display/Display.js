@@ -35,9 +35,18 @@ class Display extends Component {
 
     socket.on('displayCursor', (key) => {
       let {cursor} = this.state;
-      cursor[key] = {x:0, y:0};
-      this.setState({
-        cursor,});
+      if (key != null) {
+        cursor[key] = {x: 0, y: 0};
+        this.setState({
+          cursor,
+        });
+      }
+    });
+
+    socket.on('disconnect_user', (key) => {
+      const { cursor } = this.state;
+      delete cursor[key];
+      this.setState({cursor});
     });
 
     socket.on('reload_qr', () => {
