@@ -1,7 +1,6 @@
 ## Campus Fire
 
 Pour lancer faire `npm start` pour lancer le front, puis `node server.js` pour lancer le back. 
-Installer nodemon avec la commande `npm install -g nodemon` et `nodemon run dev` pour lancer le back avec nodemon.
 
 ---
 
