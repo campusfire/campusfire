@@ -8,7 +8,8 @@ import {toast, ToastContainer} from "react-toastify";
 import { css } from 'glamor';
 
 toast.configure();
-const notify = () => toast("Someone just joined!");
+const notify_in = () => toast("Someone just joined!");
+const notify_out = () => toast("Someone logged out!");
 
 class Display extends Component {
 
@@ -24,61 +25,66 @@ class Display extends Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { match: { params: { key } } } = this.props;
-    this.checkKey(key);
-    const socket = io();
-    socket.emit('display');
+    await this.checkKey(key);
+    if (this.state.keyChecked) {
+      const socket = io();
+      socket.emit('display');
 
-    socket.on('data', (data) => {
-      if (data.length === 3) {
-        this.moveCursor(data);
-      }
-    });
-
-    socket.on('displayCursor', (key) => {
-      let {cursor} = this.state;
-      if (key != null) {
-        cursor[key] = {x: 0, y: 0};
-        this.setState({
-          cursor,
-        });
-      notify();
-      }
-    });
-
-    socket.on('disconnect_user', (key) => {
-      const { cursor } = this.state;
-      delete cursor[key];
-      this.setState({cursor});
-    });
-
-    socket.on('reload_qr', () => {
-      let {qr_path} = this.state;
-      qr_path += '?' + Date.now();
-      this.setState({
-            qr_path,
-          }
-      );
-    });
-
-    socket.on('posting', (content) => {
-      const { texts } = this.state;
-      texts.push(content);
-      this.setState({
-        texts,
+      socket.on('data', (data) => {
+        if (data.length === 3) {
+          this.moveCursor(data);
+        }
       });
-    });
 
-    socket.on('remote_click', (data) => {
-      const { x,y } = this.state.cursor[data.clientKey];
-      const {
-        left, right, top, bottom,
-      } = document.getElementById('post').getBoundingClientRect();
-      if (x > left && x < right && y > top && y < bottom) {
-        socket.emit('start_posting', data.clientId);
-      }
-    });
+
+      socket.on('displayCursor', (key) => {
+        let {cursor} = this.state;
+        if (key != null) {
+          cursor[key] = {x: 0, y: 0};
+          this.setState({
+            cursor,
+          });
+          notify_in();
+        }
+        console.log(cursor);
+      });
+
+      socket.on('disconnect_user', (key) => {
+        const {cursor} = this.state;
+        delete cursor[key];
+        this.setState({cursor});
+        notify_out();
+      });
+
+      socket.on('reload_qr', () => {
+        let {qr_path} = this.state;
+        qr_path += '?' + Date.now();
+        this.setState({
+              qr_path,
+            }
+        );
+      });
+
+      socket.on('posting', (content) => {
+        const {texts} = this.state;
+        texts.push(content);
+        this.setState({
+          texts,
+        });
+      });
+
+      socket.on('remote_click', (data) => {
+        const {x, y} = this.state.cursor[data.clientKey];
+        const {
+          left, right, top, bottom,
+        } = document.getElementById('post').getBoundingClientRect();
+        if (x > left && x < right && y > top && y < bottom) {
+          socket.emit('start_posting', data.clientId);
+        }
+      });
+    }
   }
 
   moveCursor(data) {
@@ -99,20 +105,23 @@ class Display extends Component {
   }
 
   checkKey(key) {
-    fetch(`/display/${key}`)
-      .then((resp) => {
-        resp.text()
-          .then((txt) => {
-            if (txt === 'ok') {
-              this.setState({ keyChecked: true });
-            } else {
-              this.setState({ keyChecked: false });
-            }
-          })
-          .catch(() => {
-            this.setState({ keyChecked: false });
+    return new Promise((resolve) => {
+      fetch(`/display/${key}`)
+          .then((resp) => {
+            resp.text()
+                .then((txt) => {
+                  if (txt === 'ok') {
+                    this.setState({keyChecked: true});
+                  } else {
+                    this.setState({keyChecked: false});
+                  }
+                  resolve(key);
+                })
+                .catch(() => {
+                  this.setState({keyChecked: false});
+                });
           });
-      });
+    });
   }
 
   render() {
