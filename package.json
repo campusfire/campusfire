@@ -15,6 +15,7 @@
     "body-parser": "latest",
     "dotenv": "latest",
     "express": "^4.17.1",
+    "glamor": "^2.20.40",
     "peer": "^0.2.10",
     "peerjs": "^1.1.0",
     "peerjs-server": "^0.2.9",

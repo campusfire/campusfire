@@ -4,8 +4,11 @@ import logo from '../Assets/cfwhite.png';
 import '../App.css';
 import PostIt from './PostIt';
 import Pointer from './Pointer';
+import {toast, ToastContainer} from "react-toastify";
+import { css } from 'glamor';
 
-
+toast.configure();
+const notify = () => toast("Someone just joined!");
 
 class Display extends Component {
 
@@ -40,6 +43,7 @@ class Display extends Component {
         this.setState({
           cursor,
         });
+      notify();
       }
     });
 
@@ -127,6 +131,11 @@ class Display extends Component {
             </header>
             {postits}
             {cursors}
+            <ToastContainer className='toast-container'
+                            toastClassName="dark-toast"
+                            progressClassName={css({
+                              height: "2px"
+                            })}/>
             <footer>
               <img src={qr_path} alt="" className="qr" />
             </footer>

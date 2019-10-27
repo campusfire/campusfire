@@ -77,7 +77,7 @@ app.get('/display/:key', (req, res) => {
 app.get('/mobile/:key', (req, res) => {
   var userAuthorized = false;
   for (var i = 0, len=clients.length; i<len; ++i) {
-    if (req.params.key === clients[i].clientKey) {
+    if (req.params.key === clients[i].clientKey && clients[i].clientId === null) {
       userAuthorized = true;
       if (clients.length < 4 && clients[i].clientId === null){
         clientKey = makeId(8);
@@ -104,7 +104,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-
 app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
@@ -113,8 +112,11 @@ io.on('connection', (socket) => {
   console.log(`Socket ${socket.id} connected`);
   for (let i = 0, len = clients.length; i < len; i += 1) {
     const c = clients[i];
-    console.log(`Client ID: ${clients[i].clientId} Client key:${clients[i].clientKey}`);
+    //console.log(`Client ID: ${clients[i].clientId} Client key:${clients[i].clientKey}`);
+    console.log(c.clientKey);
   }
+  //console.log(clients);
+
 
   socket.on('storeClientInfo', (data) => {
     for (let i = 0, len = clients.length; i < len; i += 1) {
@@ -122,7 +124,8 @@ io.on('connection', (socket) => {
       // console.log(data.clientKey);
       if (c.clientKey === data.clientKey) {
         clients[i].clientId = socket.id;
-        console.log(`${clients[i].clientId} ${clients[i].clientKey}`);
+        //console.log(`${clients[i].clientId} ${clients[i].clientKey}`);
+        console.log(clients);
         break;
       }
     }
@@ -133,20 +136,18 @@ io.on('connection', (socket) => {
     console.log('Borne id: ' + displayId);
   });
 
-  socket.on('cursor', () => {
+  socket.on('cursor', (data) => {
     cursorId = socket.id;
-    console.log('Mobile id:' + cursorId);
-    var cursorKey = findKey(cursorId);
-    io.to(displayId).emit('displayCursor', cursorKey);
+    //console.log('Mobile id:' + cursorId);
+    io.to(displayId).emit('displayCursor', data.clientKey);
   });
 
   socket.on('move', (data) => {
-    var key = findKey(data[2]);
-    io.to(displayId).emit('data', [data[0],data[1],key]);
+    io.to(displayId).emit('data', data);
   });
 
   socket.on('click', (data) => {
-    io.to(displayId).emit('remote_click', {clientKey : findKey(data), clientId: data});
+    io.to(displayId).emit('remote_click', data);
   });
 
   socket.on('start_posting', (data) => {
