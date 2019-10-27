@@ -101,7 +101,7 @@ class Mobile extends Component {
                    } else {
                      this.setState({keyChecked: false});
                    }
-                   resolve(key);
+                   resolve(true);
                  })
                  .catch(() => {
                    this.setState({keyChecked: false});
