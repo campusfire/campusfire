@@ -9,7 +9,6 @@ const qr = require('qrcode');
 const { url } = require('./config');
 
 let displayId;
-let cursorId;
 const clients = [];
 
 app.use(express.static(path.join(__dirname, 'build')));
@@ -137,7 +136,6 @@ io.on('connection', (socket) => {
   });
 
   socket.on('cursor', (data) => {
-    cursorId = socket.id;
     //console.log('Mobile id:' + cursorId);
     io.to(displayId).emit('displayCursor', data.clientKey);
   });
