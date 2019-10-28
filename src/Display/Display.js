@@ -94,13 +94,32 @@ class Display extends Component {
     const dx = displacement * Math.cos(data[0]);
     const dy = -displacement * Math.sin(data[0]);
     let {cursor} = this.state;
+    let{x,y} = cursor[key];
+
     if (key !== null) {
-      cursor[key].x += dx;
-      cursor[key].y += dy;
+      x += dx;
+      y += dy;
     }
+    const {
+      left, right, top, bottom,
+    } = document.getElementById('root').getBoundingClientRect();
+    if (x<left){
+      x = x-dx;
+    }
+    if (x>right){
+     x = x+dx;
+    }
+    if (y<top){
+      y = y-dy;
+    }
+    if (y>bottom){
+      y = y+dy;
+    }
+    cursor[key].x = x;
+    cursor[key].y = y;
     this.setState({
-      cursor,
-      }
+          cursor,
+        }
     );
   }
 
