@@ -34,12 +34,14 @@ class Mobile extends Component {
      if (this.state.keyChecked) {
        const socket = io();
        console.log(socket);
+
        socket.on('start_posting', () => {
          this.setState({
            type: true,
          });
          document.getElementById('input').focus();
        });
+
        this.setState({
          socket,
        });

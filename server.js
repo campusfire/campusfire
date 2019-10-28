@@ -159,9 +159,15 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('User disconnected');
     key = findKey(socket.id);
-    io.to(displayId).emit('disconnect_user', key);
     deleteId(key);
+    io.to(displayId).emit('disconnect_user', key);
+    if (clients.length === 3 && clients[clients.length-1].clientId !== null){
+      clientKey = makeId(8);
+      io.to(displayId).emit('reload_qr');
+    }
+    console.log(clients);
   });
 });
+
 console.log(process.env[process.env.PORT]);
 http.listen(process.env.PORT ? process.env[process.env.PORT] : 8080);

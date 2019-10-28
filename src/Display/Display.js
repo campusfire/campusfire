@@ -21,7 +21,7 @@ class Display extends Component {
       cursor: {},
       keyChecked: false,
       qr_path : '/qr',
-      color: ['red', 'yellow', 'purple', 'pink'],
+      color: {'red':false, 'yellow':false, 'purple':false, 'pink':false},
     };
   }
 
@@ -38,11 +38,10 @@ class Display extends Component {
         }
       });
 
-
       socket.on('displayCursor', (key) => {
         let {cursor} = this.state;
         if (key != null) {
-          cursor[key] = {x: 0, y: 0};
+          cursor[key] = {x: 0, y: 0, color: this.pickColor()};
           this.setState({
             cursor,
           });
@@ -53,9 +52,12 @@ class Display extends Component {
 
       socket.on('disconnect_user', (key) => {
         const {cursor} = this.state;
-        delete cursor[key];
-        this.setState({cursor});
-        notify_out();
+        if (cursor[key]) {
+          this.state.color[cursor[key].color] = false;
+          delete cursor[key];
+          this.setState({cursor});
+          notify_out();
+        }
       });
 
       socket.on('reload_qr', () => {
@@ -94,7 +96,7 @@ class Display extends Component {
     const dx = displacement * Math.cos(data[0]);
     const dy = -displacement * Math.sin(data[0]);
     let {cursor} = this.state;
-    let{x,y} = cursor[key];
+    let {x,y} = cursor[key];
 
     if (key !== null) {
       x += dx;
@@ -103,17 +105,11 @@ class Display extends Component {
     const {
       left, right, top, bottom,
     } = document.getElementById('root').getBoundingClientRect();
-    if (x<left){
-      x = x-dx;
+    if (x<left || x>right){
+      x -= dx;
     }
-    if (x>right){
-     x = x+dx;
-    }
-    if (y<top){
-      y = y-dy;
-    }
-    if (y>bottom){
-      y = y+dy;
+    if (y<top || y>bottom){
+      y -= dy;
     }
     cursor[key].x = x;
     cursor[key].y = y;
@@ -121,6 +117,17 @@ class Display extends Component {
           cursor,
         }
     );
+  }
+
+  pickColor(){  // définir une couleur pour l'utilisateur qui dure jusqu'à ce qu'il se déconnecte
+    const color = Object.entries(this.state.color); // [['red',false],...,['purple',false]]
+    for (let i=0, len = color.length; i<len; ++i){
+      if (color[i][1] === false){
+        this.state.color[color[i][0]] = true;
+        return color[i][0];
+      }
+    }
+    return 'red'; // par défaut
   }
 
   checkKey(key) {
@@ -147,7 +154,7 @@ class Display extends Component {
     const { texts, cursor, color, keyChecked, qr_path } = this.state;
     //console.log(Object.entries(cursor));
     const postits = texts.map((text, index) => <PostIt id={`postit n ${index}`} text={text} />);
-    const cursors = Object.entries(cursor).map(([key, object],index,cursor) => <Pointer key = {key} id={key} color={color[index]} x={object.x} y={object.y} />);
+    const cursors = Object.entries(cursor).map(([key, object],index,cursor) => <Pointer key = {key} id={key} color={object.color} x={object.x} y={object.y} />);
     //console.log(cursors);
     return (
       keyChecked
