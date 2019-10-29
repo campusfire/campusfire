@@ -169,25 +169,23 @@ class Display extends Component {
         .then(res => console.log(res));
   })};
 
-  checkKey(key) {
-    return new Promise((resolve) => {
-      fetch(`/display/${key}`)
+checkKey(key) {
+     return fetch(`/display/${key}`)
           .then((resp) => {
-            resp.text()
+            return resp.text()
                 .then((txt) => {
                   if (txt === 'ok') {
                     this.setState({keyChecked: true});
                   } else {
                     this.setState({keyChecked: false});
                   }
-                  resolve(true);
                 })
-                .catch(() => {
+                .catch((error) => {
                   this.setState({keyChecked: false});
+                  return Promise.reject(Error(error.message))
                 });
           });
-    });
-  }
+      }
 
   render() {
     const { texts, cursor, keyChecked, qr_path } = this.state;
