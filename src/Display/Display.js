@@ -22,7 +22,16 @@ class Display extends Component {
   async componentDidMount() {
     const { match: { params: { key } } } = this.props;
     await this.checkKey(key);
+    console.log(this.state.keyChecked);
     if (this.state.keyChecked) {
+      //load from back
+      let {texts} = this.state;
+      const postits = await this.getText();
+      console.log(postits);
+      postits.text.forEach(({id, content}) => {texts.push(content)});
+      this.setState({texts});
+
+      //socket
       const socket = io();
       socket.emit('display');
 
@@ -61,9 +70,10 @@ class Display extends Component {
         );
       });
 
-      socket.on('posting', (content) => {
+      socket.on('posting', async (content) => {
         const {texts} = this.state;
-        texts.push(content);
+        texts.push(content);   //   front
+        await this.postText(content); //  back
         this.setState({
           texts,
         });
@@ -122,6 +132,36 @@ class Display extends Component {
     return 'red'; // par défaut
   }
 
+  getText(){
+    return new Promise((resolve,reject) => {
+      fetch('/postit.json', {
+        method: 'GET',
+        headers:{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }).then((data) =>data.json())
+          .then((object) => {
+            resolve(object);
+          })
+          .catch((err) =>  reject(err));
+    })
+  }
+
+  postText(content) {
+    return new Promise((resolve,reject) => {fetch('/postit.json', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({id:this.state.texts.length, content: content})
+      }).then(res => {
+        resolve(res);
+      })
+        .then(res => console.log(res));
+  })};
+
   checkKey(key) {
       return fetch(`/display/${key}`)
           .then((resp) => {
@@ -140,7 +180,7 @@ class Display extends Component {
     }
 
   render() {
-    const { texts, cursor, color, keyChecked, qr_path } = this.state;
+    const { texts, cursor, keyChecked, qr_path } = this.state;
     //console.log(Object.entries(cursor));
     const postits = texts.map((text, index) => <PostIt id={`postit n ${index}`} text={text} />);
     const cursors = Object.entries(cursor).map(([key, object],index,cursor) => <Pointer key = {key} id={key} color={object.color} x={object.x} y={object.y} />);
