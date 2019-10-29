@@ -33,7 +33,6 @@ class Display extends Component {
       //load from back
       let {texts} = this.state;
       const postits = await this.getText();
-      console.log(postits);
       postits.text.forEach(({id, content}) => {texts.push(content)});
       this.setState({texts});
 

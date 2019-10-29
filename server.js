@@ -93,12 +93,9 @@ app.post('/postit.json', (req, res) => {
       console.log(err);
       res.send(err);
     } else {
-      let obj = JSON.parse(data); //now it an object
-      console.log(req.body);
-      obj.text.push(req.body); //add some data
-      console.log(obj);
-      let json = JSON.stringify(obj); //convert it back to json
-      console.log(json);
+      let obj = JSON.parse(data);
+      obj.text.push(req.body);
+      let json = JSON.stringify(obj);
       fs.writeFile(path.resolve(`${__dirname}/src/Display/postit.json`), json, 'utf8', (err) => {if (err) {res.send("Error!");} else{res.send("Post-it added!")}}); // write it back
     }});
 });
