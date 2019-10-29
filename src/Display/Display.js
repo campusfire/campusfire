@@ -140,8 +140,7 @@ class Display extends Component {
   }
 
   getText(){
-    return new Promise((resolve,reject) => {
-      fetch('/postit.json', {
+    return fetch('/postit.json', {
         method: 'GET',
         headers:{
           'Accept': 'application/json',
@@ -149,14 +148,13 @@ class Display extends Component {
         }
       }).then((data) =>data.json())
           .then((object) => {
-            resolve(object);
+            return object;
           })
-          .catch((err) =>  reject(err));
-    })
+          .catch((err) =>  Promise.reject(err));
   }
 
   postText(content) {
-    return new Promise((resolve,reject) => {fetch('/postit.json', {
+    return fetch('/postit.json', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -164,10 +162,10 @@ class Display extends Component {
         },
         body: JSON.stringify({id:this.state.texts.length, content: content})
       }).then(res => {
-        resolve(res);
+        return res;
       })
         .then(res => console.log(res));
-  })};
+  };
 
 checkKey(key) {
      return fetch(`/display/${key}`)
