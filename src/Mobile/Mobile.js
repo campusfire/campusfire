@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactNipple from 'react-nipple';
 import io from 'socket.io-client';
-import logo from '../Assets/logo.svg';
+import logo from '../Assets/logomobile.png';
 import '../App.css';
 
 class Mobile extends Component {
@@ -114,9 +114,9 @@ class Mobile extends Component {
     return (
       keyChecked
         ? (
-          <div className="Display" onClick={this.handleClick}>
+          <div className="Mobile" onClick={this.handleClick}>
             <header>
-              <img src={logo} className="Display-logo" alt="logo" />
+              <img src={logo} className="Mobile-logo" alt="logo" />
             </header>
             <div style={{ display: type ? 'block' : 'none' }}>
               <input id="input" onKeyUp={this.handleEnterKey} />
