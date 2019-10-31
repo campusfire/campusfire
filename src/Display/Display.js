@@ -22,6 +22,7 @@ class Display extends Component {
       keyChecked: false,
       qr_path : '/qr',
       color: {'red':false, 'yellow':false, 'purple':false, 'pink':false},
+      socket: null
     };
   }
 
@@ -38,15 +39,30 @@ class Display extends Component {
 
       //socket
       const socket = io();
+      this.socket = socket;
+
       socket.emit('display');
 
-      socket.on('data', (data) => {
+      socket.on('client_list', (clients) => {      //refresh cursors on page reloads
+        console.log('ok');
+        let {cursor} = this.state;
+        clients.forEach((client) => {
+          if (client.clientId) {
+            cursor[client.clientKey] = {x: 0, y: 0, color: this.pickColor()};
+          }
+        });
+        this.setState({
+          cursor,
+        });
+      });
+
+      socket.on('data', (data) => {   //  to move cursor
         if (data.length === 3) {
           this.moveCursor(data);
         }
       });
 
-      socket.on('displayCursor', (key) => {
+      socket.on('displayCursor', (key) => {   //  to display cursor on user connection
         let {cursor} = this.state;
         if (key != null) {
           cursor[key] = {x: 0, y: 0, color: this.pickColor()};
@@ -58,7 +74,7 @@ class Display extends Component {
         console.log(cursor);
       });
 
-      socket.on('disconnect_user', (key) => {
+      socket.on('disconnect_user', (key) => {   //  removes cursor when user disconnects
         const {cursor} = this.state;
         if (cursor[key]) {
           this.state.color[cursor[key].color] = false;
@@ -68,7 +84,7 @@ class Display extends Component {
         }
       });
 
-      socket.on('reload_qr', () => {
+      socket.on('reload_qr', () => {    //  reload qr on user connection
         let {qr_path} = this.state;
         qr_path += '?' + Date.now();
         this.setState({

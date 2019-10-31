@@ -11,7 +11,7 @@ const qr = require('qrcode');
 const { url } = require('./config');
 
 let displayId;
-const clients = [];
+let clients = [];
 
 app.use(express.static(path.join(__dirname, 'build')));
 app.use(bodyParser.json());
@@ -141,6 +141,7 @@ io.on('connection', (socket) => {
 
   socket.on('display', () => {
     displayId = socket.id;
+    io.to(displayId).emit('client_list', clients);
     console.log('Borne id: ' + displayId);
   });
 
@@ -175,6 +176,13 @@ io.on('connection', (socket) => {
       io.to(displayId).emit('reload_qr');
     }
     console.log(clients);
+
+    socket.on('disconnect_everyone', () => {
+      clients = [];
+      clientKey = makeId(8);
+      console.log(clientKey);
+      console.log("kek");
+    })
   });
 });
 
