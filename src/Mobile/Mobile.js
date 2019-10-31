@@ -5,8 +5,8 @@ import logo from '../Assets/logomobile.png';
 import '../App.css';
 
 class Mobile extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       socket: null,
       distance: 0,
@@ -50,7 +50,6 @@ class Mobile extends Component {
      }
     }
   }
-
 
   handleMove(_, data) {
     const { socket, key } = this.state;
