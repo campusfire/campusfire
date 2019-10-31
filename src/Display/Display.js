@@ -38,7 +38,6 @@ class Display extends Component {
       socket.emit('display');
 
       socket.on('client_list', (clients) => {      //refresh cursors on page reloads
-        console.log('ok');
         let {cursor} = this.state;
         clients.forEach((client) => {
           if (client.clientId) {
