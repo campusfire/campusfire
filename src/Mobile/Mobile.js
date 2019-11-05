@@ -92,21 +92,21 @@ class Mobile extends Component {
   }
 
  checkKey(key) {
-       return fetch(`/mobile/${key}`)
-           .then((resp) => {
+     return fetch(`/mobile/${key}`)
+         .then((resp) => {
              return resp.text()
                  .then((txt) => {
-                   if (txt === 'ok') {
-                     this.setState({keyChecked: true});
-                   } else {
-                     this.setState({keyChecked: false});
-                   }
+                     if (txt === 'ok') {
+                         this.setState({keyChecked: true});
+                     } else {
+                         this.setState({keyChecked: false});
+                     }
                  })
                  .catch(() => {
-                   this.setState({keyChecked: false});
+                     this.setState({keyChecked: false});
                  });
-           });
-        }
+         });
+ }
 
   render() {
     const { type, keyChecked } = this.state;
