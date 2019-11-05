@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import ReactNipple from 'react-nipple';
 import io from 'socket.io-client';
-import logo from '../Assets/logo.svg';
+import logo from '../Assets/logomobile.png';
 import '../App.css';
 
 class Mobile extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       socket: null,
       distance: 0,
@@ -51,7 +51,6 @@ class Mobile extends Component {
     }
   }
 
-
   handleMove(_, data) {
     const { socket, key } = this.state;
     if (socket) {
@@ -93,30 +92,30 @@ class Mobile extends Component {
   }
 
  checkKey(key) {
-       return fetch(`/mobile/${key}`)
-           .then((resp) => {
+     return fetch(`/mobile/${key}`)
+         .then((resp) => {
              return resp.text()
                  .then((txt) => {
-                   if (txt === 'ok') {
-                     this.setState({keyChecked: true});
-                   } else {
-                     this.setState({keyChecked: false});
-                   }
+                     if (txt === 'ok') {
+                         this.setState({keyChecked: true});
+                     } else {
+                         this.setState({keyChecked: false});
+                     }
                  })
                  .catch(() => {
-                   this.setState({keyChecked: false});
+                     this.setState({keyChecked: false});
                  });
-           });
-        }
+         });
+ }
 
   render() {
     const { type, keyChecked } = this.state;
     return (
       keyChecked
         ? (
-          <div className="Display" onClick={this.handleClick}>
+          <div className="Mobile" onClick={this.handleClick}>
             <header>
-              <img src={logo} className="Display-logo" alt="logo" />
+              <img src={logo} className="Mobile-logo" alt="logo" />
             </header>
             <div style={{ display: type ? 'block' : 'none' }}>
               <input id="input" onKeyUp={this.handleEnterKey} />

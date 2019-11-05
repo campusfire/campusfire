@@ -5,13 +5,16 @@ require('dotenv').config();
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+const fs = require('fs');
+const bodyParser = require('body-parser');
 const qr = require('qrcode');
 const { url } = require('./config');
 
 let displayId;
-const clients = [];
+let clients = [];
 
 app.use(express.static(path.join(__dirname, 'build')));
+app.use(bodyParser.json());
 
 function genQr(str) {
   qr.toFile('qr.png', str);
@@ -28,17 +31,6 @@ function makeId(length) {
   clients.push(clientInfo);
   genQr(`${url}/m/${result}`);
   return result;
-}
-
-function updateSocket(clientKey, id) {
-  for (let i = 0, len = clients.length; i < len; i += 1) {
-    const c = clients[i];
-
-    if (c.clientKey === clientKey) {
-      clients[i].clientId = id;
-      break;
-    }
-  }
 }
 
 function findKey(id){
@@ -91,6 +83,23 @@ app.get('/mobile/:key', (req, res) => {
   else { res.send('ko'); }
 });
 
+app.get('/postit.json', (req, res) => {
+  res.sendFile(path.resolve(`${__dirname}/src/Display/postit.json`))
+});
+
+app.post('/postit.json', (req, res) => {
+  fs.readFile(path.resolve(`${__dirname}/src/Display/postit.json`), 'utf8', function readFileCallback(err, data){
+    if (err){
+      console.log(err);
+      res.send(err);
+    } else {
+      let obj = JSON.parse(data);
+      obj.text.push(req.body);
+      let json = JSON.stringify(obj);
+      fs.writeFile(path.resolve(`${__dirname}/src/Display/postit.json`), json, 'utf8', (err) => {if (err) {res.send("Error!");} else{res.send("Post-it added!")}}); // write it back
+    }});
+});
+
 app.get('/key', (req, res) => {
   res.send(clientKey);
 });
@@ -132,6 +141,7 @@ io.on('connection', (socket) => {
 
   socket.on('display', () => {
     displayId = socket.id;
+    io.to(displayId).emit('client_list', clients);
     console.log('Borne id: ' + displayId);
   });
 
@@ -166,6 +176,7 @@ io.on('connection', (socket) => {
       io.to(displayId).emit('reload_qr');
     }
     console.log(clients);
+
   });
 });
 

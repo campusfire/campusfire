@@ -16,23 +16,46 @@ class Display extends Component {
       keyChecked: false,
       qr_path : '/qr',
       color: {'red':false, 'yellow':false, 'purple':false, 'pink':false},
+      socket: null
     };
   }
 
   async componentDidMount() {
     const { match: { params: { key } } } = this.props;
     await this.checkKey(key);
+    console.log(this.state.keyChecked);
     if (this.state.keyChecked) {
+      //load from back
+      let {texts} = this.state;
+      const postits = await this.getText();
+      postits.text.forEach(({id, content}) => {texts.push(content)});
+      this.setState({texts});
+
+      //socket
       const socket = io();
+      this.socket = socket;
+
       socket.emit('display');
 
-      socket.on('data', (data) => {
+      socket.on('client_list', (clients) => {      //refresh cursors on page reloads
+        let {cursor} = this.state;
+        clients.forEach((client) => {
+          if (client.clientId) {
+            cursor[client.clientKey] = {x: 0, y: 0, color: this.pickColor()};
+          }
+        });
+        this.setState({
+          cursor,
+        });
+      });
+
+      socket.on('data', (data) => {   //  to move cursor
         if (data.length === 3) {
           this.moveCursor(data);
         }
       });
 
-      socket.on('displayCursor', (key) => {
+      socket.on('displayCursor', (key) => {   //  to display cursor on user connection
         let {cursor} = this.state;
         if (key != null) {
           cursor[key] = {x: 0, y: 0, color: this.pickColor()};
@@ -43,7 +66,7 @@ class Display extends Component {
         console.log(cursor);
       });
 
-      socket.on('disconnect_user', (key) => {
+      socket.on('disconnect_user', (key) => {   //  removes cursor when user disconnects
         const {cursor} = this.state;
         if (cursor[key]) {
           this.state.color[cursor[key].color] = false;
@@ -52,7 +75,7 @@ class Display extends Component {
         }
       });
 
-      socket.on('reload_qr', () => {
+      socket.on('reload_qr', () => {    //  reload qr on user connection
         let {qr_path} = this.state;
         qr_path += '?' + Date.now();
         this.setState({
@@ -61,9 +84,10 @@ class Display extends Component {
         );
       });
 
-      socket.on('posting', (content) => {
+      socket.on('posting', async (content) => {
         const {texts} = this.state;
-        texts.push(content);
+        texts.push(content);   //   front
+        await this.postText(content); //  back
         this.setState({
           texts,
         });
@@ -122,25 +146,56 @@ class Display extends Component {
     return 'red'; // par défaut
   }
 
-  checkKey(key) {
-      return fetch(`/display/${key}`)
-          .then((resp) => {
-            return resp.text()
-                .then((txt) => {
-                  if (txt === 'ok') {
-                    this.setState({keyChecked: true});
-                  } else {
-                    this.setState({keyChecked: false});
-                  }
-                })
-                .catch(() => {
-                  this.setState({keyChecked: false});
-                });
-          });
-    }
+  getText(){
+    return fetch('/postit.json', {
+        method: 'GET',
+        headers:{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }).then((data) =>data.json())
+          .then((object) => {
+            return object;
+          })
+          .catch((err) =>  Promise.reject(err));
+  }
+
+  postText(content) {
+    return fetch('/postit.json', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({id:this.state.texts.length, content: content})
+      }).then(res => {
+        return res;
+      })
+        .then(res => console.log(res));
+  };
+
+
+checkKey(key) {
+  return fetch(`/display/${key}`)
+
+      .then((resp) => {
+        return resp.text()
+            .then((txt) => {
+              if (txt === 'ok') {
+                this.setState({keyChecked: true});
+              } else {
+                this.setState({keyChecked: false});
+              }
+            })
+            .catch((error) => {
+              this.setState({keyChecked: false});
+              return Promise.reject(Error(error.message))
+            });
+      });
+}
 
   render() {
-    const { texts, cursor, color, keyChecked, qr_path } = this.state;
+    const { texts, cursor, keyChecked, qr_path } = this.state;
     //console.log(Object.entries(cursor));
     const postits = texts.map((text, index) => <PostIt id={`postit n ${index}`} text={text} />);
     const cursors = Object.entries(cursor).map(([key, object],index,cursor) => <Pointer key = {key} id={key} color={object.color} x={object.x} y={object.y} />);
