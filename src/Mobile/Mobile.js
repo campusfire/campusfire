@@ -11,6 +11,7 @@ class Mobile extends Component {
       socket: null,
       distance: 0,
       type: false,
+      key: null,
       keyChecked: false,
     };
 
@@ -22,32 +23,39 @@ class Mobile extends Component {
     this.checkKey = this.checkKey.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { match } = this.props;
     const { params: { key } } = match;
     if (match) {
-      this.checkKey(key);
-      const socket = io();
-      console.log(socket);
-      socket.on('start_posting', () => {
-        this.setState({
-          type: true,
-        });
-        document.getElementById('input').focus();
-      });
-      this.setState({
-        socket,
-      });
-      socket.emit('storeClientInfo', { clientKey: key});
-      socket.emit('cursor');
+      this.state.key = key;
+      console.log(key);
+     await this.checkKey(key);
+     console.log(this.state.keyChecked);
+     if (this.state.keyChecked) {
+       const socket = io();
+       console.log(socket);
+
+       socket.on('start_posting', () => {
+         this.setState({
+           type: true,
+         });
+         document.getElementById('input').focus();
+       });
+
+       this.setState({
+         socket,
+       });
+       socket.emit('storeClientInfo', {clientKey: key});
+       socket.emit('cursor', {clientKey: key});
+     }
     }
   }
 
 
   handleMove(_, data) {
-    const { socket } = this.state;
+    const { socket, key } = this.state;
     if (socket) {
-      socket.emit('move', [data.angle.radian, data.distance, socket.id]);
+      socket.emit('move', [data.angle.radian, data.distance, key]);
     }
     this.setState({
       distance: data.distance,
@@ -55,9 +63,9 @@ class Mobile extends Component {
   }
 
   handleClick() {
-    const { socket, distance } = this.state;
+    const { socket, distance, key } = this.state;
     if (socket && distance === 0) {
-      socket.emit('click', socket.id);
+      socket.emit('click', {clientKey: key, clientId: socket.id });
     }
   }
 
@@ -84,22 +92,22 @@ class Mobile extends Component {
     if (event.keyCode === 13) { this.handlePost(event); }
   }
 
-  checkKey(key) {
-    fetch(`/mobile/${key}`)
-      .then((resp) => {
-        resp.text()
-          .then((txt) => {
-            if (txt === 'ok') {
-              this.setState({ keyChecked: true });
-            } else {
-              this.setState({ keyChecked: false });
-            }
-          })
-          .catch(() => {
-            this.setState({ keyChecked: false });
-          });
-      });
-  }
+ checkKey(key) {
+       return fetch(`/mobile/${key}`)
+           .then((resp) => {
+             return resp.text()
+                 .then((txt) => {
+                   if (txt === 'ok') {
+                     this.setState({keyChecked: true});
+                   } else {
+                     this.setState({keyChecked: false});
+                   }
+                 })
+                 .catch(() => {
+                   this.setState({keyChecked: false});
+                 });
+           });
+        }
 
   render() {
     const { type, keyChecked } = this.state;
