@@ -3,7 +3,6 @@ import './App.css';
 
 import { Switch, Route } from 'react-router-dom';
 import Display from './Display/Display';
-
 import Mobile from './Mobile/Mobile';
 
 
@@ -23,6 +22,7 @@ class App extends React.Component {
           <Mobile />
         </Route>
       </Switch>
+
     );
   }
 }

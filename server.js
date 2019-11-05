@@ -31,29 +31,40 @@ function makeId(length) {
   return result;
 }
 
-function updatesocket(clientKey, id) {
+function updateSocket(clientKey, id) {
   for (let i = 0, len = clients.length; i < len; i += 1) {
     const c = clients[i];
 
-    if (c.clientInfo === clientKey) {
+    if (c.clientKey === clientKey) {
       clients[i].clientId = id;
       break;
     }
   }
 }
 
-function deleteid(clientKey) { // sera utile pour déconnecter les users
+function findKey(id){
   for (let i = 0, len = clients.length; i < len; i += 1) {
     const c = clients[i];
 
-    if (c.clientInfo === clientKey) {
+    if (c.clientId === id) {
+      return c.clientKey;
+    }
+  }
+    return null;
+}
+
+function deleteId(clientKey) { // sera utile pour déconnecter les users
+  for (let i = 0, len = clients.length; i < len; i += 1) {
+    const c = clients[i];
+
+    if (c.clientKey === clientKey) {
       clients.splice(i, 1);
       break;
     }
   }
 }
 
-const clientKey = makeId(8); // last client key
+let clientKey = makeId(8); // last client key
 
 app.get('/ping', (req, res) => res.send('pong'));
 
@@ -64,9 +75,21 @@ app.get('/display/:key', (req, res) => {
 });
 
 app.get('/mobile/:key', (req, res) => {
-  if (req.params.key === clientKey) {
+  var userAuthorized = false;
+  for (var i = 0, len=clients.length; i<len; ++i) {
+    if (req.params.key === clients[i].clientKey) {
+      userAuthorized = true;
+      if (clients.length < 4 && clients[i].clientId === null){
+        clientKey = makeId(8);
+        io.to(displayId).emit('reload_qr');
+      }
+      break;
+    }
+  }
+  if (userAuthorized) {
     res.send('ok');
-  } else { res.send('ko'); }
+  }
+  else { res.send('ko'); }
 });
 
 app.get('/key', (req, res) => {
@@ -90,7 +113,7 @@ io.on('connection', (socket) => {
   console.log(`Socket ${socket.id} connected`);
   for (let i = 0, len = clients.length; i < len; i += 1) {
     const c = clients[i];
-    console.log(`${clients[i].clientId} ${clients[i].clientKey}`);
+    console.log(`Client ID: ${clients[i].clientId} Client key:${clients[i].clientKey}`);
   }
 
   socket.on('storeClientInfo', (data) => {
@@ -107,38 +130,38 @@ io.on('connection', (socket) => {
 
   socket.on('display', () => {
     displayId = socket.id;
+    console.log('Borne id: ' + displayId);
   });
 
   socket.on('cursor', () => {
     cursorId = socket.id;
+    console.log('Mobile id:' + cursorId);
+    var cursorKey = findKey(cursorId);
+    io.to(displayId).emit('displayCursor', cursorKey);
   });
 
   socket.on('move', (data) => {
-    io.to(displayId).emit('data', data);
+    var key = findKey(data[2]);
+    io.to(displayId).emit('data', [data[0],data[1],key]);
   });
 
-  socket.on('click', () => {
-    io.to(displayId).emit('remote_click');
+  socket.on('click', (data) => {
+    io.to(displayId).emit('remote_click', {clientKey : findKey(data), clientId: data});
   });
 
-  socket.on('start_posting', () => {
-    io.to(cursorId).emit('start_posting');
+  socket.on('start_posting', (data) => {
+    io.to(data).emit('start_posting');
   });
 
   socket.on('posting', (content) => {
     io.to(displayId).emit('posting', content);
   });
 
-  socket.on('disconnect', (data) => {
-    for (let i = 0, len = clients.length; i < len; i += 1) {
-      const c = clients[i];
-
-      if (c.clientKey === data.clientKey) {
-        clients[i].clientId = null;
-        // console.log(clients[i].clientId + ' ' + clients[i].clientKey);
-        break;
-      }
-    }
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+    key = findKey(socket.id);
+    io.to(displayId).emit('disconnect_user', key);
+    deleteId(key);
   });
 });
 console.log(process.env[process.env.PORT]);

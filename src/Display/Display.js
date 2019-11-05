@@ -5,14 +5,19 @@ import '../App.css';
 import PostIt from './PostIt';
 import Pointer from './Pointer';
 
+
+
 class Display extends Component {
+
   constructor(props) {
     super(props);
 
     this.state = {
       texts: [],
-      cursor: { x: 0, y: 0 },
+      cursor: {},
       keyChecked: false,
+      qr_path : '/qr',
+      color: ['red', 'yellow', 'purple', 'pink'],
     };
   }
 
@@ -21,11 +26,38 @@ class Display extends Component {
     this.checkKey(key);
     const socket = io();
     socket.emit('display');
+
     socket.on('data', (data) => {
-      if (data.length === 2) {
+      if (data.length === 3) {
         this.moveCursor(data);
       }
     });
+
+    socket.on('displayCursor', (key) => {
+      let {cursor} = this.state;
+      if (key != null) {
+        cursor[key] = {x: 0, y: 0};
+        this.setState({
+          cursor,
+        });
+      }
+    });
+
+    socket.on('disconnect_user', (key) => {
+      const { cursor } = this.state;
+      delete cursor[key];
+      this.setState({cursor});
+    });
+
+    socket.on('reload_qr', () => {
+      let {qr_path} = this.state;
+      qr_path += '?' + Date.now();
+      this.setState({
+            qr_path,
+          }
+      );
+    });
+
     socket.on('posting', (content) => {
       const { texts } = this.state;
       texts.push(content);
@@ -33,27 +65,33 @@ class Display extends Component {
         texts,
       });
     });
-    socket.on('remote_click', () => {
-      const { cursor: { x, y } } = this.state;
+
+    socket.on('remote_click', (data) => {
+      const { x,y } = this.state.cursor[data.clientKey];
       const {
         left, right, top, bottom,
       } = document.getElementById('post').getBoundingClientRect();
       if (x > left && x < right && y > top && y < bottom) {
-        socket.emit('start_posting');
+        socket.emit('start_posting', data.clientId);
       }
     });
   }
 
   moveCursor(data) {
     const displacement = data[1] * 0.2;
+    const key = data[2];
+    console.log(key);
     const dx = displacement * Math.cos(data[0]);
     const dy = -displacement * Math.sin(data[0]);
-    this.setState((state) => ({
-      cursor: {
-        x: state.cursor.x + dx,
-        y: state.cursor.y + dy,
-      },
-    }));
+    let {cursor} = this.state;
+    if (key !== null) {
+      cursor[key].x += dx;
+      cursor[key].y += dy;
+    }
+    this.setState({
+      cursor,
+      }
+    );
   }
 
   checkKey(key) {
@@ -74,8 +112,11 @@ class Display extends Component {
   }
 
   render() {
-    const { texts, cursor: { x, y }, keyChecked } = this.state;
+    const { texts, cursor, color, keyChecked, qr_path } = this.state;
+    //console.log(Object.entries(cursor));
     const postits = texts.map((text, index) => <PostIt id={`postit n ${index}`} text={text} />);
+    const cursors = Object.entries(cursor).map(([key, object],index,cursor) => <Pointer key = {key} id={key} color={color[index]} x={object.x} y={object.y} />);
+    //console.log(cursors);
     return (
       keyChecked
         ? (
@@ -85,9 +126,9 @@ class Display extends Component {
               <div id="post" className="post">Poster</div>
             </header>
             {postits}
-            <Pointer id="pointer" color="red" x={x} y={y} />
+            {cursors}
             <footer>
-              <img src="/qr" alt="" className="qr" />
+              <img src={qr_path} alt="" className="qr" />
             </footer>
           </div>
         ) : (
