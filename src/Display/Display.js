@@ -4,12 +4,6 @@ import logo from '../Assets/cfwhite.png';
 import '../App.css';
 import PostIt from './PostIt';
 import Pointer from './Pointer';
-import {toast, ToastContainer} from "react-toastify";
-import { css } from 'glamor';
-
-toast.configure();
-const notify_in = () => toast("Someone just joined!");
-const notify_out = () => toast("Someone logged out!");
 
 class Display extends Component {
 
@@ -45,7 +39,6 @@ class Display extends Component {
           this.setState({
             cursor,
           });
-          notify_in();
         }
         console.log(cursor);
       });
@@ -56,7 +49,6 @@ class Display extends Component {
           this.state.color[cursor[key].color] = false;
           delete cursor[key];
           this.setState({cursor});
-          notify_out();
         }
       });
 
