@@ -177,12 +177,6 @@ io.on('connection', (socket) => {
     }
     console.log(clients);
 
-    socket.on('disconnect_everyone', () => {
-      clients = [];
-      clientKey = makeId(8);
-      console.log(clientKey);
-      console.log("kek");
-    })
   });
 });
 
