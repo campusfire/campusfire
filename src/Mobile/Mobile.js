@@ -26,29 +26,32 @@ class Mobile extends Component {
   async componentDidMount() {
     const { match } = this.props;
     const { params: { key } } = match;
-    if (match) {
-      this.state.key = key;
-      console.log(key);
-     await this.checkKey(key);
-     console.log(this.state.keyChecked);
-     if (this.state.keyChecked) {
-       const socket = io();
-       console.log(socket);
+    await this.checkKey(key);
+    const { keyChecked } = this.state;
+    console.log(keyChecked);
+    // if (match) {
+    console.log(key);
+    if (keyChecked) {
+      this.setState({
+        key,
+      });
+      const socket = io();
+      console.log(socket);
 
-       socket.on('start_posting', () => {
-         this.setState({
-           type: true,
-         });
-         document.getElementById('input').focus();
-       });
+      socket.on('start_posting', () => {
+        this.setState({
+          type: true,
+        });
+        document.getElementById('input').focus();
+      });
 
-       this.setState({
-         socket,
-       });
-       socket.emit('storeClientInfo', {clientKey: key});
-       socket.emit('cursor', {clientKey: key});
-     }
+      this.setState({
+        socket,
+      });
+      socket.emit('storeClientInfo', { clientKey: key });
+      socket.emit('cursor', { clientKey: key });
     }
+    // }
   }
 
   handleMove(_, data) {
@@ -64,7 +67,7 @@ class Mobile extends Component {
   handleClick() {
     const { socket, distance, key } = this.state;
     if (socket && distance === 0) {
-      socket.emit('click', {clientKey: key, clientId: socket.id });
+      socket.emit('click', { clientKey: key, clientId: socket.id });
     }
   }
 
@@ -91,22 +94,20 @@ class Mobile extends Component {
     if (event.keyCode === 13) { this.handlePost(event); }
   }
 
- checkKey(key) {
-     return fetch(`/mobile/${key}`)
-         .then((resp) => {
-             return resp.text()
-                 .then((txt) => {
-                     if (txt === 'ok') {
-                         this.setState({keyChecked: true});
-                     } else {
-                         this.setState({keyChecked: false});
-                     }
-                 })
-                 .catch(() => {
-                     this.setState({keyChecked: false});
-                 });
-         });
- }
+  checkKey(key) {
+    return fetch(`/mobile/${key}`)
+      .then((resp) => resp.text()
+        .then((txt) => {
+          if (txt === 'ok') {
+            this.setState({ keyChecked: true });
+          } else {
+            this.setState({ keyChecked: false });
+          }
+        })
+        .catch(() => {
+          this.setState({ keyChecked: false });
+        }));
+  }
 
   render() {
     const { type, keyChecked } = this.state;

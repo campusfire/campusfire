@@ -11,7 +11,7 @@ const qr = require('qrcode');
 const { url } = require('./config');
 
 let displayId;
-let clients = [];
+const clients = [];
 
 app.use(express.static(path.join(__dirname, 'build')));
 app.use(bodyParser.json());
@@ -33,7 +33,7 @@ function makeId(length) {
   return result;
 }
 
-function findKey(id){
+function findKey(id) {
   for (let i = 0, len = clients.length; i < len; i += 1) {
     const c = clients[i];
 
@@ -41,7 +41,7 @@ function findKey(id){
       return c.clientKey;
     }
   }
-    return null;
+  return null;
 }
 
 function deleteId(clientKey) { // sera utile pour déconnecter les users
@@ -66,11 +66,11 @@ app.get('/display/:key', (req, res) => {
 });
 
 app.get('/mobile/:key', (req, res) => {
-  var userAuthorized = false;
-  for (var i = 0, len=clients.length; i<len; ++i) {
+  let userAuthorized = false;
+  for (let i = 0, len = clients.length; i < len; ++i) {
     if (req.params.key === clients[i].clientKey && clients[i].clientId === null) {
       userAuthorized = true;
-      if (clients.length < 4 && clients[i].clientId === null){
+      if (clients.length < 4 && clients[i].clientId === null) {
         clientKey = makeId(8);
         io.to(displayId).emit('reload_qr');
       }
@@ -79,25 +79,30 @@ app.get('/mobile/:key', (req, res) => {
   }
   if (userAuthorized) {
     res.send('ok');
-  }
-  else { res.send('ko'); }
+  } else { res.send('ko'); }
 });
 
 app.get('/postit.json', (req, res) => {
-  res.sendFile(path.resolve(`${__dirname}/src/Display/postit.json`))
+  res.sendFile(path.resolve(`${__dirname}/src/Display/postit.json`));
 });
 
 app.post('/postit.json', (req, res) => {
-  fs.readFile(path.resolve(`${__dirname}/src/Display/postit.json`), 'utf8', function readFileCallback(err, data){
-    if (err){
+  fs.readFile(path.resolve(`${__dirname}/src/Display/postit.json`), 'utf8', (err, data) => {
+    if (err) {
       console.log(err);
       res.send(err);
     } else {
-      let obj = JSON.parse(data);
+      const obj = JSON.parse(data);
       obj.text.push(req.body);
-      let json = JSON.stringify(obj);
-      fs.writeFile(path.resolve(`${__dirname}/src/Display/postit.json`), json, 'utf8', (err) => {if (err) {res.send("Error!");} else{res.send("Post-it added!")}}); // write it back
-    }});
+      const json = JSON.stringify(obj);
+      fs.writeFile(
+        path.resolve(`${__dirname}/src/Display/postit.json`),
+        json,
+        'utf8',
+        (error) => { if (error) { res.send('Error!'); } else { res.send('Post-it added!'); } },
+      ); // write it back
+    }
+  });
 });
 
 app.get('/key', (req, res) => {
@@ -112,7 +117,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-app.use((req, res, next) => {
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
@@ -120,10 +125,10 @@ io.on('connection', (socket) => {
   console.log(`Socket ${socket.id} connected`);
   for (let i = 0, len = clients.length; i < len; i += 1) {
     const c = clients[i];
-    //console.log(`Client ID: ${clients[i].clientId} Client key:${clients[i].clientKey}`);
+    // console.log(`Client ID: ${clients[i].clientId} Client key:${clients[i].clientKey}`);
     console.log(c.clientKey);
   }
-  //console.log(clients);
+  // console.log(clients);
 
 
   socket.on('storeClientInfo', (data) => {
@@ -132,7 +137,7 @@ io.on('connection', (socket) => {
       // console.log(data.clientKey);
       if (c.clientKey === data.clientKey) {
         clients[i].clientId = socket.id;
-        //console.log(`${clients[i].clientId} ${clients[i].clientKey}`);
+        // console.log(`${clients[i].clientId} ${clients[i].clientKey}`);
         console.log(clients);
         break;
       }
@@ -142,11 +147,11 @@ io.on('connection', (socket) => {
   socket.on('display', () => {
     displayId = socket.id;
     io.to(displayId).emit('client_list', clients);
-    console.log('Borne id: ' + displayId);
+    console.log(`Borne id: ${displayId}`);
   });
 
   socket.on('cursor', (data) => {
-    //console.log('Mobile id:' + cursorId);
+    // console.log('Mobile id:' + cursorId);
     io.to(displayId).emit('displayCursor', data.clientKey);
   });
 
@@ -168,15 +173,14 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('User disconnected');
-    key = findKey(socket.id);
+    const key = findKey(socket.id);
     deleteId(key);
     io.to(displayId).emit('disconnect_user', key);
-    if (clients.length === 3 && clients[clients.length-1].clientId !== null){
+    if (clients.length === 3 && clients[clients.length - 1].clientId !== null) {
       clientKey = makeId(8);
       io.to(displayId).emit('reload_qr');
     }
     console.log(clients);
-
   });
 });
 
