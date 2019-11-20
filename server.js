@@ -144,6 +144,10 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('debug', (log) => {
+    console.log('DEBUG: ', log);
+  });
+
   socket.on('display', () => {
     displayId = socket.id;
     io.to(displayId).emit('client_list', clients);
@@ -155,7 +159,7 @@ io.on('connection', (socket) => {
     io.to(displayId).emit('displayCursor', data.clientKey);
   });
 
-  socket.on('move', (data) => {
+  socket.on('touchMove', (data) => {
     io.to(displayId).emit('data', data);
   });
 

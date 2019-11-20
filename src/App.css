@@ -42,6 +42,7 @@
   text-align: center;
   display: flex;
   flex-flow: column;
+  /*overscroll-behavior: none;*/
 }
 
 .Mobile-logo{

@@ -61,9 +61,7 @@ class Display extends Component {
       });
 
       socket.on('data', (data) => { //  to move cursor
-        if (data.length === 3) {
-          this.moveCursor(data);
-        }
+        this.moveCursor(data);
       });
 
       socket.on('displayCursor', (senderKey) => { //  to display cursor on user connection
@@ -128,10 +126,8 @@ class Display extends Component {
   }
 
   moveCursor(data) {
-    const displacement = data[1] * 0.2;
-    const key = data[2];
-    const dx = displacement * Math.cos(data[0]);
-    const dy = -displacement * Math.sin(data[0]);
+    const { dx, dy, key } = data;
+    console.log(dx, dy);
     const { cursor } = this.state;
     let { x, y } = cursor[key];
 

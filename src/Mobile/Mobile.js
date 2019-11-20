@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactNipple from 'react-nipple';
 import io from 'socket.io-client';
 import logo from '../Assets/logomobile.png';
 import '../App.css';
@@ -9,18 +8,18 @@ class Mobile extends Component {
     super(props);
     this.state = {
       socket: null,
-      distance: 0,
+      x: null,
+      y: null,
       type: false,
       key: null,
       keyChecked: false,
     };
 
-    this.handleMove = this.handleMove.bind(this);
     this.handleClick = this.handleClick.bind(this);
-    this.handleEnd = this.handleEnd.bind(this);
     this.handlePost = this.handlePost.bind(this);
     this.handleEnterKey = this.handleEnterKey.bind(this);
     this.checkKey = this.checkKey.bind(this);
+    this.handleTouchMove = this.handleTouchMove.bind(this);
   }
 
   async componentDidMount() {
@@ -54,27 +53,26 @@ class Mobile extends Component {
     // }
   }
 
-  handleMove(_, data) {
-    const { socket, key } = this.state;
-    if (socket) {
-      socket.emit('move', [data.angle.radian, data.distance, key]);
+  handleTouchMove(event) {
+    event.preventDefault();
+    const {
+      socket, key, x, y,
+    } = this.state;
+    // socket.emit('debug', event);
+    if (socket && x !== null && y !== null) {
+      socket.emit('touchMove', { dx: event.touches[0].clientX - x, dy: event.touches[0].clientY - y, key });
     }
     this.setState({
-      distance: data.distance,
+      x: event.touches[0].clientX,
+      y: event.touches[0].clientY,
     });
   }
 
   handleClick() {
-    const { socket, distance, key } = this.state;
-    if (socket && distance === 0) {
+    const { socket, key } = this.state;
+    if (socket) {
       socket.emit('click', { clientKey: key, clientId: socket.id });
     }
-  }
-
-  handleEnd() {
-    this.setState({
-      distance: 0,
-    });
   }
 
   handlePost(event) {
@@ -114,7 +112,7 @@ class Mobile extends Component {
     return (
       keyChecked
         ? (
-          <div className="Mobile" onClick={this.handleClick}>
+          <div className="Mobile" onClick={this.handleClick} onTouchMove={this.handleTouchMove}>
             <header>
               <img src={logo} className="Mobile-logo" alt="logo" />
             </header>
@@ -122,15 +120,6 @@ class Mobile extends Component {
               <input id="input" onKeyUp={this.handleEnterKey} />
               <button type="button" onClick={this.handlePost}>Poster</button>
             </div>
-            <ReactNipple
-              option={{ mode: 'dynamic' }}
-              style={{
-                flex: '1 1 auto',
-                position: 'relative',
-              }}
-              onMove={this.handleMove}
-              onEnd={this.handleEnd}
-            />
           </div>
         ) : (
           <div className="Display" />
