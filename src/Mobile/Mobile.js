@@ -13,11 +13,16 @@ class Mobile extends Component {
       type: false,
       key: null,
       keyChecked: false,
+      longPressTimer: null,
+      mode: 'dynamic',
     };
+    this.longPressed = false;
+    this.radialOption = '';
 
     this.handleMove = this.handleMove.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-    this.handleEnd = this.handleEnd.bind(this);
+    this.handleTouchStart = this.handleTouchStart.bind(this);
+    this.handleTouchEnd = this.handleTouchEnd.bind(this);
+    this.handleMoveEnd = this.handleMoveEnd.bind(this);
     this.handlePost = this.handlePost.bind(this);
     this.handleEnterKey = this.handleEnterKey.bind(this);
     this.checkKey = this.checkKey.bind(this);
@@ -28,15 +33,15 @@ class Mobile extends Component {
     const { params: { key } } = match;
     await this.checkKey(key);
     const { keyChecked } = this.state;
-    console.log(keyChecked);
+    // console.log(keyChecked);
     // if (match) {
-    console.log(key);
+    // console.log(key);
     if (keyChecked) {
       this.setState({
         key,
       });
       const socket = io();
-      console.log(socket);
+      // console.log(socket);
 
       socket.on('start_posting', () => {
         this.setState({
@@ -55,26 +60,88 @@ class Mobile extends Component {
   }
 
   handleMove(_, data) {
-    const { socket, key } = this.state;
+    const { socket, key, mode } = this.state;
     if (socket) {
-      socket.emit('move', [data.angle.radian, data.distance, key]);
+      if (mode === 'dynamic') {
+        socket.emit('move', [data.angle.radian, data.distance, key]);
+      } else if (!this.longPressed) {
+        this.handleAngleChange(data.angle.degree);
+      }
     }
     this.setState({
       distance: data.distance,
     });
   }
 
-  handleClick() {
-    const { socket, distance, key } = this.state;
-    if (socket && distance === 0) {
-      socket.emit('click', { clientKey: key, clientId: socket.id });
-    }
-  }
-
-  handleEnd() {
+  handleMoveEnd() {
     this.setState({
       distance: 0,
     });
+  }
+
+  handleAngleChange(angle) {
+    const { socket, key } = this.state;
+    let element = '';
+    switch (true) {
+      case angle >= 0 && angle < 90:
+        element = 'pieSliceImage';
+        break;
+      case angle >= 90 && angle < 180:
+        element = 'pieSliceVideo';
+        break;
+      case angle >= 180 && angle < 270:
+        element = 'pieSliceOther';
+        break;
+      case angle >= 270 && angle < 360:
+        element = 'pieSliceText';
+        break;
+      default:
+        break;
+    }
+    if (this.radialOption !== element) {
+      socket.emit('dir', [element, key]);
+      this.radialOption = element;
+    }
+  }
+
+  handleTouchStart(e) {
+    const { socket } = this.state;
+    socket.emit('debug', 'touch start');
+    this.setState({
+      longPressTimer: setTimeout(() => this.handleLongPress(e), 1300),
+    });
+  }
+
+  handleLongPress(e) {
+    const { socket, key, distance, longPressTimer } = this.state;
+    if (distance <= 10) {
+      socket.emit('debug', 'long press');
+      e.preventDefault();
+      clearTimeout(longPressTimer);
+      this.setState({ mode: 'static' });
+      this.longPressed = true;
+      window.navigator.vibrate(200);
+      socket.emit('longPress', { clientKey: key, clientId: socket.id });
+    }
+  }
+
+  handleTouchEnd() {
+    const { socket, distance, key, longPressTimer, mode } = this.state;
+    socket.emit('debug', `touch end, longPressed: ${this.longPressed}`);
+    if (socket) {
+      if (mode === 'dynamic' && distance === 0) {
+        socket.emit('click', { clientKey: key, clientId: socket.id });
+      } else if (mode === 'static' && !this.longPressed) {
+        if (distance === 0) {
+          socket.emit('debug', `closeRadial, distance: ${distance}`);
+          socket.emit('closeRadial', { clientKey: key, clientId: socket.id });
+        } else {
+          socket.emit('selectedPostType', { clientKey: key, clientId: socket.id });
+        }
+      }
+    }
+    if (this.longPressed) this.longPressed = false;
+    clearTimeout(longPressTimer);
   }
 
   handlePost(event) {
@@ -110,11 +177,11 @@ class Mobile extends Component {
   }
 
   render() {
-    const { type, keyChecked } = this.state;
+    const { type, keyChecked, mode } = this.state;
     return (
       keyChecked
         ? (
-          <div className="Mobile" onClick={this.handleClick}>
+          <div className="Mobile" onTouchStart={this.handleTouchStart} onTouchEnd={this.handleTouchEnd}>
             <header>
               <img src={logo} className="Mobile-logo" alt="logo" />
             </header>
@@ -123,13 +190,13 @@ class Mobile extends Component {
               <button type="button" onClick={this.handlePost}>Poster</button>
             </div>
             <ReactNipple
-              option={{ mode: 'dynamic' }}
+              option={{ mode, threshold: 10 }}
               style={{
                 flex: '1 1 auto',
                 position: 'relative',
               }}
               onMove={this.handleMove}
-              onEnd={this.handleEnd}
+              onEnd={this.handleMoveEnd}
             />
           </div>
         ) : (

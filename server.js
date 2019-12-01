@@ -156,11 +156,27 @@ io.on('connection', (socket) => {
   });
 
   socket.on('move', (data) => {
-    io.to(displayId).emit('data', data);
+    io.to(displayId).emit('move', data);
+  });
+
+  socket.on('dir', (data) => {
+    io.to(displayId).emit('dir', data);
   });
 
   socket.on('click', (data) => {
     io.to(displayId).emit('remote_click', data);
+  });
+
+  socket.on('longPress', (data) => {
+    io.to(displayId).emit('remote_long_press', data);
+  });
+
+  socket.on('closeRadial', (content) => {
+    io.to(displayId).emit('closeRadial', content);
+  });
+
+  socket.on('selectedPostType', (content) => {
+    io.to(displayId).emit('selectedPostType', content);
   });
 
   socket.on('start_posting', (data) => {
@@ -181,6 +197,10 @@ io.on('connection', (socket) => {
       io.to(displayId).emit('reload_qr');
     }
     console.log(clients);
+  });
+
+  socket.on('debug', (content) => {
+    console.log('debug', content);
   });
 });
 
