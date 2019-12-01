@@ -13,6 +13,7 @@ class Mobile extends Component {
       type: false,
       key: null,
       keyChecked: false,
+      backgroundColor: 'inherit'
       timer: null,
       radian: 0,
     };
@@ -45,6 +46,13 @@ class Mobile extends Component {
           type: true,
         });
         document.getElementById('input').focus();
+      });
+
+      socket.on('set_color', (data) => {
+        this.setState({
+            backgroundColor: data
+        });
+        console.log(data);
       });
 
       this.setState({
@@ -130,7 +138,7 @@ class Mobile extends Component {
     return (
       keyChecked
         ? (
-          <div className="Mobile" onClick={this.handleClick}>
+          <div className="Mobile" onClick={this.handleClick} style={{ backgroundColor: this.state.backgroundColor }}>
             <header>
               <img src={logo} className="Mobile-logo" alt="logo" />
             </header>

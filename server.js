@@ -150,6 +150,15 @@ io.on('connection', (socket) => {
     console.log(`Borne id: ${displayId}`);
   });
 
+  socket.on('set_color', (data) => {
+    for (let i = 0, len = clients.length; i < len; i += 1) {
+      if (clients[i].clientKey == data.client){
+        io.to(clients[i].clientId).emit('set_color', data.color);
+      }
+    }
+    console.log(data);
+  });
+
   socket.on('cursor', (data) => {
     // console.log('Mobile id:' + cursorId);
     io.to(displayId).emit('displayCursor', data.clientKey);
