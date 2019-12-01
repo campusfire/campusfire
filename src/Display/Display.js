@@ -4,6 +4,7 @@ import logo from '../Assets/cfwhite.png';
 import '../App.css';
 import PostIt from './PostIt';
 import Pointer from './Pointer';
+import Container from "./Container";
 
 const getText = async () => fetch('/postit.json', {
   method: 'GET',
@@ -20,7 +21,7 @@ class Display extends Component {
     super(props);
 
     this.state = {
-      texts: [],
+      containers: [],
       cursor: {},
       keyChecked: false,
       qrPath: '/qr',
@@ -37,10 +38,10 @@ class Display extends Component {
     const { keyChecked, color } = this.state;
     if (keyChecked) {
       // load from back
-      const { texts } = this.state;
+      const { containers } = this.state;
       const postits = await getText();
-      postits.text.forEach(({ content }) => { texts.push(content); });
-      this.setState({ texts });
+      postits.text.forEach(({ content }) => { containers.push(content); });
+      this.setState({ containers });
 
       // socket
       const socket = io();
@@ -95,10 +96,10 @@ class Display extends Component {
       });
 
       socket.on('posting', async (content) => {
-        texts.push(content); //   front
+        containers.push(content); //   front
         await this.postText(content); //  back
         this.setState({
-          texts,
+          containers,
         });
       });
 
@@ -156,14 +157,14 @@ class Display extends Component {
   }
 
   postText(content) {
-    const { texts } = this.state;
+    const { containers } = this.state;
     return fetch('/postit.json', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: texts.length, content }),
+      body: JSON.stringify({ id: containers.length, content }),
     });
   }
 
@@ -187,10 +188,10 @@ class Display extends Component {
 
   render() {
     const {
-      texts, cursor, keyChecked, qrPath,
+      containers, cursor, keyChecked, qrPath,
     } = this.state;
     // console.log(Object.entries(cursor));
-    const postits = texts.map((text, index) => <PostIt id={`postit n ${index}`} text={text} />);
+    const _containers= containers.map((content, index) => (<Container id={`postit n ${index}`} content={content} x={Math.random()*90+'%'} y={Math.random()*75+'%'} />));
     const cursors = Object.entries(cursor).map(
       ([key, object]) => (
         <Pointer
@@ -209,10 +210,12 @@ class Display extends Component {
           <div className="Display">
             <header>
               <img src={logo} className="Display-logo" alt="logo" />
-              <div id="post" className="post">Poster</div>
             </header>
-            {postits}
+            <div id="post" className="post">Poster</div>
             {cursors}
+            <div className="containers">
+            {_containers}
+            </div>
             <footer>
               <img src={qrPath} alt="" className="qr" />
             </footer>
