@@ -171,6 +171,10 @@ io.on('connection', (socket) => {
     io.to(displayId).emit('posting', content);
   });
 
+  socket.on('longPressed', () => {
+    io.to(displayId).emit('longPressed');
+  })
+
   socket.on('disconnect', () => {
     console.log('User disconnected');
     const key = findKey(socket.id);

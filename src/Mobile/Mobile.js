@@ -61,17 +61,28 @@ class Mobile extends Component {
     this.setState({
       radian,
       distance,
-    })
+    });
   }
 
-  handleStart(_, data) {
+  handleStart() {
     const { socket, key } = this.state;
+    const startTime = Date.now();
+    let move = false;
+    let long = false;
     const timer = setInterval(() => {
       const { distance, radian } = this.state;
-      if (socket) {
-        socket.emit('move', [radian, distance, key]);
+      if (distance > 10 && !long) {
+        move = true;
       }
-    }, 16)
+      if (socket) {
+        if (move) {
+          socket.emit('move', [radian, distance, key]);
+        } else if (!move && !long && (Date.now() - startTime > 1000)) {
+          long = true;
+          socket.emit('longPressed');
+        }
+      }
+    }, 16);
     this.setState({
       timer,
     });

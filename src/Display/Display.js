@@ -112,6 +112,10 @@ class Display extends Component {
           socket.emit('start_posting', data.clientId);
         }
       });
+
+      socket.on('longPressed', () => {
+        console.log('long press');
+      });
     }
   }
 
