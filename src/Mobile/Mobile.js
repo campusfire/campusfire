@@ -13,8 +13,11 @@ class Mobile extends Component {
       type: false,
       key: null,
       keyChecked: false,
+      timer: null,
+      radian: 0,
     };
 
+    this.handleStart = this.handleStart.bind(this);
     this.handleMove = this.handleMove.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handleEnd = this.handleEnd.bind(this);
@@ -29,7 +32,6 @@ class Mobile extends Component {
     await this.checkKey(key);
     const { keyChecked } = this.state;
     console.log(keyChecked);
-    // if (match) {
     console.log(key);
     if (keyChecked) {
       this.setState({
@@ -55,12 +57,23 @@ class Mobile extends Component {
   }
 
   handleMove(_, data) {
-    const { socket, key } = this.state;
-    if (socket) {
-      socket.emit('move', [data.angle.radian, data.distance, key]);
-    }
+    const { distance, angle: { radian } } = data;
     this.setState({
-      distance: data.distance,
+      radian,
+      distance,
+    })
+  }
+
+  handleStart(_, data) {
+    const { socket, key } = this.state;
+    const timer = setInterval(() => {
+      const { distance, radian } = this.state;
+      if (socket) {
+        socket.emit('move', [radian, distance, key]);
+      }
+    }, 16)
+    this.setState({
+      timer,
     });
   }
 
@@ -72,8 +85,11 @@ class Mobile extends Component {
   }
 
   handleEnd() {
+    const { timer } = this.state;
+    clearInterval(timer);
     this.setState({
       distance: 0,
+      timer,
     });
   }
 
@@ -128,6 +144,7 @@ class Mobile extends Component {
                 flex: '1 1 auto',
                 position: 'relative',
               }}
+              onStart={this.handleStart}
               onMove={this.handleMove}
               onEnd={this.handleEnd}
             />
