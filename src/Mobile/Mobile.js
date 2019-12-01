@@ -13,7 +13,7 @@ class Mobile extends Component {
       type: false,
       key: null,
       keyChecked: false,
-      backgroundColor: 'inherit'
+      backgroundColor: 'inherit',
       timer: null,
       radian: 0,
     };
