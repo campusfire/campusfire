@@ -2,20 +2,19 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 
-const router = express.Router();
+const app = express.Router();
 
-
-router.get('/display/:key', (req, res) => {
+app.get('/display/:key', (req, res) => {
   if (req.params.key === 'fire') {
     res.send('ok');
   } else { res.send('ko'); }
 });
 
-router.get('/postit.json', (req, res) => {
+app.get('/postit.json', (req, res) => {
   res.sendFile(path.resolve(`${__dirname}/../postit.json`));
 });
 
-router.post('/postit.json', (req, res) => {
+app.post('/postit.json', (req, res) => {
   fs.readFile(path.resolve(`${__dirname}/../postit.json`), 'utf8', (err, data) => {
     if (err) {
       console.log(err);
@@ -34,4 +33,8 @@ router.post('/postit.json', (req, res) => {
   });
 });
 
-module.exports = router;
+app.get('/qr', (req, res) => {
+  res.sendFile(path.resolve(`${__dirname}/../qr.png`));
+});
+
+module.exports = app;
