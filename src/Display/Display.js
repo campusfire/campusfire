@@ -134,7 +134,7 @@ class Display extends Component {
       });
 
       socket.on('closeRadial', (data) => {
-        console.log('cancel radial');
+        console.log('remote close radial');
         if (data.clientKey != null) {
           this.closeRadial(data.clientKey);
         }
@@ -208,7 +208,6 @@ class Display extends Component {
     document.querySelectorAll(`#radial_${data[1]} > div:not(.${data[0]})`).forEach((el) => {
       el.style.backgroundColor = 'grey';
     });
-    // this.closeRadial(data[1]);
   }
 
   postText(content) {
