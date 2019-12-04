@@ -36,14 +36,11 @@ class Mobile extends Component {
     const { params: { key } } = match;
     await this.checkKey(key);
     const { keyChecked } = this.state;
-    console.log(keyChecked);
-    console.log(key);
     if (keyChecked) {
       this.setState({
         key,
       });
       const socket = io();
-      console.log(socket);
 
       socket.on('start_posting', () => {
         this.setState({
@@ -54,25 +51,24 @@ class Mobile extends Component {
 
       socket.on('set_color', (data) => {
         this.setState({
-            backgroundColor: data
+          backgroundColor: data,
         });
-        console.log(data);
       });
 
       this.setState({
         socket,
       });
-      socket.emit('storeClientInfo', { clientKey: key });
+      socket.emit('store_client_info', { clientKey: key });
       socket.emit('cursor', { clientKey: key });
     }
   }
 
   handleMove(_, data) {
-    const { distance, angle: { radian, degree }, mode } = data;
+    const { distance, angle: { radian, degree } } = data;
     this.setState({
       radian,
       distance,
-      degree
+      degree,
     });
   }
 
@@ -107,7 +103,8 @@ class Mobile extends Component {
   }
 
   handleTouchStart(e) {
-    const { socket, key } = this.state;
+    const { socket, key, mode } = this.state;
+    socket.emit('debug', 'touch start');
     const timer = setInterval(() => {
       const { distance, radian, degree } = this.state;
       if (socket) {
@@ -117,15 +114,18 @@ class Mobile extends Component {
           this.handleRadialOptionChange(degree);
         }
       }
-    }, 16)
+    }, 16);
+    const longPressTimer = setTimeout(() => this.handleLongPress(e), 1300);
     this.setState({
       timer,
-      longPressTimer: setTimeout(() => this.handleLongPress(e), 1300),
+      longPressTimer,
     });
   }
 
   handleLongPress(e) {
-    const { socket, key, distance, longPressTimer } = this.state;
+    const {
+      socket, key, distance, longPressTimer,
+    } = this.state;
     if (distance <= this.threshold) {
       socket.emit('debug', 'long press');
       e.preventDefault();
@@ -133,24 +133,26 @@ class Mobile extends Component {
       this.setState({ mode: 'static' });
       this.longPressed = true;
       window.navigator.vibrate(200);
-      socket.emit('longPress', { clientKey: key, clientId: socket.id });
+      socket.emit('long_press', { clientKey: key, clientId: socket.id });
     }
   }
 
   handleTouchEnd() {
-    const { socket, distance, key, longPressTimer, mode, timer } = this.state;
+    const {
+      socket, distance, key, longPressTimer, mode, timer,
+    } = this.state;
     clearInterval(timer);
-    socket.emit('debug', `touch end, longPressed: ${this.longPressed}`);
+    socket.emit('debug', 'touch end');
     if (socket) {
       if (mode === 'dynamic' && distance === 0) {
         socket.emit('click', { clientKey: key, clientId: socket.id });
       } else if (mode === 'static' && !this.longPressed) {
         if (distance === 0) {
           socket.emit('debug', 'close radial');
-          socket.emit('closeRadial', { clientKey: key, clientId: socket.id });
+          socket.emit('close_radial', { clientKey: key, clientId: socket.id });
           this.setState({ mode: 'dynamic' });
         } else {
-          socket.emit('selectedPostType', { clientKey: key, clientId: socket.id });
+          socket.emit('selected_post_type', { clientKey: key, clientId: socket.id });
           this.setState({ mode: 'dynamic' });
         }
       }
@@ -198,11 +200,11 @@ class Mobile extends Component {
   }
 
   render() {
-    const { type, keyChecked, mode } = this.state;
+    const { type, keyChecked, mode, backgroundColor } = this.state;
     return (
       keyChecked
         ? (
-          <div className="Mobile" onTouchStart={this.handleTouchStart} onTouchEnd={this.handleTouchEnd} style={{ backgroundColor: this.state.backgroundColor }}>
+          <div className="Mobile" onTouchStart={this.handleTouchStart} onTouchEnd={this.handleTouchEnd} style={{ backgroundColor }}>
             <header>
               <img src={logo} className="Mobile-logo" alt="logo" />
             </header>

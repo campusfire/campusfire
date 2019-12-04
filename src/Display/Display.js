@@ -25,17 +25,17 @@ class Display extends Component {
       cursors: {},
       keyChecked: false,
       qrPath: '/qr',
-      color: {
+      colors: {
         red: false, yellow: false, purple: false, pink: false,
       },
-      socket: null,
+      // socket: null,
     };
   }
 
   async componentDidMount() {
     const { match: { params: { key } } } = this.props;
     await this.checkKey(key);
-    const { keyChecked, color } = this.state;
+    const { keyChecked, colors } = this.state;
     if (keyChecked) {
       // load from back
       const { texts } = this.state;
@@ -53,8 +53,9 @@ class Display extends Component {
         const { cursors } = this.state;
         clients.forEach((client) => {
           if (client.clientId) {
+            const color = this.pickColor();
             cursors[client.clientKey] = {
-              x: 0, y: 0, color: this.pickColor(), showRadial: false,
+              x: 0, y: 0, color, showRadial: false,
             };
           }
         });
@@ -75,10 +76,10 @@ class Display extends Component {
         }
       });
 
-      socket.on('displayCursor', (senderKey) => { //  to display cursor on user connection
+      socket.on('display_cursor', (senderKey) => { //  to display cursor on user connection
         const { cursors } = this.state;
         if (senderKey != null) {
-          let color = this.pickColor();
+          const color = this.pickColor();
           cursors[senderKey] = {
             x: 0, y: 0, color, showRadial: false,
           };
@@ -87,14 +88,14 @@ class Display extends Component {
           });
 
           // Envoi de la couleur au mobile pour set le background
-          socket.emit('set_color', { client: senderKey, color: color });
+          socket.emit('set_color', { client: senderKey, colors: color });
         }
       });
 
       socket.on('disconnect_user', (senderKey) => { //  removes cursor when user disconnects
         const { cursors } = this.state;
         if (cursors[senderKey]) {
-          color[cursors[senderKey].color] = false;
+          colors[cursors[senderKey].color] = false;
           delete cursors[senderKey];
           this.setState({ cursors });
         }
@@ -137,14 +138,14 @@ class Display extends Component {
         }
       });
 
-      socket.on('closeRadial', (data) => {
+      socket.on('remote_close_adial', (data) => {
         console.log('remote close radial');
         if (data.clientKey != null) {
           this.closeRadial(data.clientKey);
         }
       });
 
-      socket.on('selectedPostType', (data) => {
+      socket.on('remote_selected_post_type', (data) => {
         const { cursors } = this.state;
         if (data.clientKey != null) {
           socket.emit('start_posting', data.clientId);
@@ -167,12 +168,12 @@ class Display extends Component {
   }
 
   pickColor() { // définir une couleur pour l'utilisateur qui dure jusqu'à ce qu'il se déconnecte
-    const { color } = this.state;
-    const colors = Object.entries(color); // [['red',false],...,['purple',false]]
+    const { colors } = this.state;
+    const colorsEntries = Object.entries(colors); // [['red',false],...,['purple',false]]
     for (let i = 0, len = colors.length; i < len; i += 1) {
-      if (colors[i][1] === false) {
-        color[colors[i][0]] = true;
-        return colors[i][0];
+      if (colorsEntries[i][1] === false) {
+        colors[colorsEntries[i][0]] = true;
+        return colorsEntries[i][0];
       }
     }
     return 'red'; // par défaut
@@ -206,8 +207,8 @@ class Display extends Component {
     });
   }
 
+  // TODO: lint
   selectDir(data) {
-    console.log('select dir');
     document.querySelector(`#radial_${data[1]} > .${data[0]}`).style.backgroundColor = 'white';
     document.querySelectorAll(`#radial_${data[1]} > div:not(.${data[0]})`).forEach((el) => {
       el.style.backgroundColor = 'grey';

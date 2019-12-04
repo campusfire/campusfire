@@ -36,7 +36,7 @@ module.exports = function (app, io) {
     // console.log(app.locals.clients);
 
 
-    socket.on('storeClientInfo', (data) => {
+    socket.on('store_client_info', (data) => {
       for (let i = 0, len = app.locals.clients.length; i < len; i += 1) {
         const c = app.locals.clients[i];
         // console.log(data.clientKey);
@@ -66,15 +66,33 @@ module.exports = function (app, io) {
 
     socket.on('cursor', (data) => {
       // console.log('Mobile id:' + cursorId);
-      io.to(app.locals.displayId).emit('displayCursor', data.clientKey);
+      io.to(app.locals.displayId).emit('display_cursor', data.clientKey);
     });
 
     socket.on('move', (data) => {
-      io.to(app.locals.displayId).emit('data', data);
+      console.log('debug', 'moving');
+      io.to(app.locals.displayId).emit('move', data);
+    });
+
+    socket.on('dir', (data) => {
+      console.log('debug', 'changing direction');
+      io.to(app.locals.displayId).emit('dir', data);
     });
 
     socket.on('click', (data) => {
       io.to(app.locals.displayId).emit('remote_click', data);
+    });
+
+    socket.on('long_press', (data) => {
+      io.to(app.locals.displayId).emit('remote_long_press', data);
+    });
+
+    socket.on('close_radial', (data) => {
+      io.to(app.locals.displayId).emit('remote_close_radial', data);
+    });
+
+    socket.on('selected_post_type', (data) => {
+      io.to(app.locals.displayId).emit('remote_selected_post_type', data);
     });
 
     socket.on('start_posting', (data) => {
@@ -97,6 +115,11 @@ module.exports = function (app, io) {
         io.to(app.locals.displayId).emit('reload_qr');
       }
       console.log(app.locals.clients);
+    });
+
+    // DEVELOPMENT ONLY!
+    socket.on('debug', (content) => {
+      console.log('debug', content);
     });
   });
 };
