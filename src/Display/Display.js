@@ -78,12 +78,16 @@ class Display extends Component {
       socket.on('displayCursor', (senderKey) => { //  to display cursor on user connection
         const { cursors } = this.state;
         if (senderKey != null) {
+          let color = this.pickColor();
           cursors[senderKey] = {
-            x: 0, y: 0, color: this.pickColor(), showRadial: false,
+            x: 0, y: 0, color, showRadial: false,
           };
           this.setState({
             cursors,
           });
+
+          // Envoi de la couleur au mobile pour set le background
+          socket.emit('set_color', { client: senderKey, color: color });
         }
       });
 

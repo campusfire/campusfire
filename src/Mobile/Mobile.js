@@ -13,6 +13,9 @@ class Mobile extends Component {
       type: false,
       key: null,
       keyChecked: false,
+      backgroundColor: 'inherit',
+      timer: null,
+      radian: 0,
       longPressTimer: null,
       mode: 'dynamic',
     };
@@ -33,15 +36,14 @@ class Mobile extends Component {
     const { params: { key } } = match;
     await this.checkKey(key);
     const { keyChecked } = this.state;
-    // console.log(keyChecked);
-    // if (match) {
-    // console.log(key);
+    console.log(keyChecked);
+    console.log(key);
     if (keyChecked) {
       this.setState({
         key,
       });
       const socket = io();
-      // console.log(socket);
+      console.log(socket);
 
       socket.on('start_posting', () => {
         this.setState({
@@ -50,27 +52,28 @@ class Mobile extends Component {
         document.getElementById('input').focus();
       });
 
+      socket.on('set_color', (data) => {
+        this.setState({
+            backgroundColor: data
+        });
+        console.log(data);
+      });
+
       this.setState({
         socket,
       });
       socket.emit('storeClientInfo', { clientKey: key });
       socket.emit('cursor', { clientKey: key });
     }
-    // }
   }
 
   handleMove(_, data) {
-    const { socket, key, mode } = this.state;
+    const { distance, angle: { radian, degree }, mode } = data;
     this.setState({
-      distance: data.distance,
+      radian,
+      distance,
+      degree
     });
-    if (socket) {
-      if (mode === 'dynamic') {
-        socket.emit('move', [data.angle.radian, data.distance, key]);
-      } else if (!this.longPressed) {
-        this.handleRadialOptionChange(data.angle.degree);
-      }
-    }
   }
 
   handleRadialOptionChange(angle) {
@@ -104,9 +107,19 @@ class Mobile extends Component {
   }
 
   handleTouchStart(e) {
-    const { socket } = this.state;
-    socket.emit('debug', 'touch start');
+    const { socket, key } = this.state;
+    const timer = setInterval(() => {
+      const { distance, radian, degree } = this.state;
+      if (socket) {
+        if (mode === 'dynamic') {
+          socket.emit('move', [radian, distance, key]);
+        } else if (!this.longPressed) {
+          this.handleRadialOptionChange(degree);
+        }
+      }
+    }, 16)
     this.setState({
+      timer,
       longPressTimer: setTimeout(() => this.handleLongPress(e), 1300),
     });
   }
@@ -125,7 +138,8 @@ class Mobile extends Component {
   }
 
   handleTouchEnd() {
-    const { socket, distance, key, longPressTimer, mode } = this.state;
+    const { socket, distance, key, longPressTimer, mode, timer } = this.state;
+    clearInterval(timer);
     socket.emit('debug', `touch end, longPressed: ${this.longPressed}`);
     if (socket) {
       if (mode === 'dynamic' && distance === 0) {
@@ -143,6 +157,7 @@ class Mobile extends Component {
     }
     this.setState({
       distance: 0,
+      timer,
     });
     if (this.longPressed) {
       this.longPressed = false;
@@ -187,7 +202,7 @@ class Mobile extends Component {
     return (
       keyChecked
         ? (
-          <div className="Mobile" onTouchStart={this.handleTouchStart} onTouchEnd={this.handleTouchEnd}>
+          <div className="Mobile" onTouchStart={this.handleTouchStart} onTouchEnd={this.handleTouchEnd} style={{ backgroundColor: this.state.backgroundColor }}>
             <header>
               <img src={logo} className="Mobile-logo" alt="logo" />
             </header>
