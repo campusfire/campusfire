@@ -16,12 +16,16 @@ class Mobile extends Component {
       backgroundColor: 'inherit',
       timer: null,
       radian: 0,
+      longPressTimer: null,
+      mode: 'dynamic',
     };
+    this.longPressed = false;
+    this.radialOption = '';
+    this.threshold = 10;
 
-    this.handleStart = this.handleStart.bind(this);
     this.handleMove = this.handleMove.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-    this.handleEnd = this.handleEnd.bind(this);
+    this.handleTouchStart = this.handleTouchStart.bind(this);
+    this.handleTouchEnd = this.handleTouchEnd.bind(this);
     this.handlePost = this.handlePost.bind(this);
     this.handleEnterKey = this.handleEnterKey.bind(this);
     this.checkKey = this.checkKey.bind(this);
@@ -32,14 +36,11 @@ class Mobile extends Component {
     const { params: { key } } = match;
     await this.checkKey(key);
     const { keyChecked } = this.state;
-    console.log(keyChecked);
-    console.log(key);
     if (keyChecked) {
       this.setState({
         key,
       });
       const socket = io();
-      console.log(socket);
 
       socket.on('start_posting', () => {
         this.setState({
@@ -50,55 +51,119 @@ class Mobile extends Component {
 
       socket.on('set_color', (data) => {
         this.setState({
-            backgroundColor: data
+          backgroundColor: data,
         });
-        console.log(data);
       });
 
       this.setState({
         socket,
       });
-      socket.emit('storeClientInfo', { clientKey: key });
+      socket.emit('store_client_info', { clientKey: key });
       socket.emit('cursor', { clientKey: key });
     }
-    // }
   }
 
   handleMove(_, data) {
-    const { distance, angle: { radian } } = data;
+    const { distance, angle: { radian, degree } } = data;
     this.setState({
       radian,
       distance,
-    })
-  }
-
-  handleStart(_, data) {
-    const { socket, key } = this.state;
-    const timer = setInterval(() => {
-      const { distance, radian } = this.state;
-      if (socket) {
-        socket.emit('move', [radian, distance, key]);
-      }
-    }, 16)
-    this.setState({
-      timer,
+      degree,
     });
   }
 
-  handleClick() {
-    const { socket, distance, key } = this.state;
-    if (socket && distance === 0) {
-      socket.emit('click', { clientKey: key, clientId: socket.id });
+  handleRadialOptionChange(angle) {
+    const { socket, key, distance } = this.state;
+    let element = '';
+    if (distance > this.threshold) {
+      switch (true) {
+        case angle >= 0 && angle < 90:
+          element = 'pieSliceImage';
+          break;
+        case angle >= 90 && angle < 180:
+          element = 'pieSliceText';
+          break;
+        case angle >= 180 && angle < 270:
+          element = 'pieSliceVideo';
+          break;
+        case angle >= 270 && angle < 360:
+          element = 'pieSliceOther';
+          break;
+        default:
+          element = 'innerCircle';
+          break;
+      }
+    } else {
+      element = 'innerCircle';
+    }
+    if (this.radialOption !== element) {
+      socket.emit('dir', [element, key]);
+      this.radialOption = element;
     }
   }
 
-  handleEnd() {
-    const { timer } = this.state;
+  handleTouchStart(e) {
+    const { socket, key } = this.state;
+    socket.emit('debug', 'touch start');
+    const timer = setInterval(() => {
+      const { distance, radian, degree } = this.state;
+      if (socket) {
+        if (!this.longPressed) {
+          socket.emit('move', [radian, distance, key]);
+        } else {
+          this.handleRadialOptionChange(degree);
+        }
+      }
+    }, 16);
+    const longPressTimer = setTimeout(() => this.handleLongPress(e), 1300);
+    this.setState({
+      timer,
+      longPressTimer,
+    });
+  }
+
+  handleLongPress(e) {
+    const {
+      socket, key, distance, longPressTimer,
+    } = this.state;
+    if (distance <= this.threshold) {
+      socket.emit('debug', 'long press');
+      e.preventDefault();
+      clearTimeout(longPressTimer);
+      this.setState({ mode: 'static' });
+      this.longPressed = true;
+      window.navigator.vibrate(200);
+      socket.emit('long_press', { clientKey: key, clientId: socket.id });
+    }
+  }
+
+  handleTouchEnd() {
+    const {
+      socket, distance, key, longPressTimer, mode, timer,
+    } = this.state;
     clearInterval(timer);
+    socket.emit('debug', 'touch end');
+    if (socket) {
+      if (!this.longPressed && distance === 0) {
+        socket.emit('click', { clientKey: key, clientId: socket.id });
+      } else if (this.longPressed) {
+        if (distance <= this.threshold) {
+          socket.emit('debug', 'close radial');
+          socket.emit('close_radial', { clientKey: key, clientId: socket.id });
+        } else {
+          socket.emit('selected_post_type', { clientKey: key, clientId: socket.id });
+        }
+        this.setState({ mode: 'dynamic' });
+      }
+    }
     this.setState({
       distance: 0,
       timer,
     });
+    if (this.longPressed) {
+      this.longPressed = false;
+    }
+    clearTimeout(longPressTimer);
   }
 
   handlePost(event) {
@@ -134,11 +199,11 @@ class Mobile extends Component {
   }
 
   render() {
-    const { type, keyChecked } = this.state;
+    const { type, keyChecked, mode, backgroundColor } = this.state;
     return (
       keyChecked
         ? (
-          <div className="Mobile" onClick={this.handleClick} style={{ backgroundColor: this.state.backgroundColor }}>
+          <div className="Mobile" onTouchStart={this.handleTouchStart} onTouchEnd={this.handleTouchEnd} style={{ backgroundColor }}>
             <header>
               <img src={logo} className="Mobile-logo" alt="logo" />
             </header>
@@ -147,14 +212,12 @@ class Mobile extends Component {
               <button type="button" onClick={this.handlePost}>Poster</button>
             </div>
             <ReactNipple
-              option={{ mode: 'dynamic' }}
+              option={{ mode, threshold: this.threshold }}
               style={{
                 flex: '1 1 auto',
                 position: 'relative',
               }}
-              onStart={this.handleStart}
               onMove={this.handleMove}
-              onEnd={this.handleEnd}
             />
           </div>
         ) : (

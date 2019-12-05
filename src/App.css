@@ -101,3 +101,55 @@
   bottom: 0px;
   right: 0px;
 }
+
+
+/* Radial Menu */
+
+.pieWrap {
+  position:absolute;
+  width:210px;
+  height:210px;
+}
+
+.pieSlice {
+  display: inline-block;
+  height: 100px;
+  width: 100px;
+  background-color: grey;
+  background-repeat:no-repeat;
+  background-size: 40%;
+  background-position: center;
+  margin: 2.5px;
+  float: left;
+}
+
+.innerCircle {
+  position: absolute;
+  height: 80px;
+  width: 80px;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  border: 5px solid white;
+}
+
+.pieSliceText {
+  border-radius: 100% 0 0 0;
+  background-image:url('Assets/text.png');
+}
+
+.pieSliceImage {
+  border-radius: 0 100% 0 0;
+  background-image:url('Assets/image.png');
+}
+
+.pieSliceVideo {
+  border-radius: 0 0 0 100%;
+  background-image:url('Assets/video.png');
+}
+
+.pieSliceOther {
+  border-radius: 0 0 100% 0;
+  /*background-image: url('');*/
+}

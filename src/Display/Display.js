@@ -4,6 +4,7 @@ import logo from '../Assets/cfwhite.png';
 import '../App.css';
 import PostIt from './PostIt';
 import Pointer from './Pointer';
+import Radial from './Radial';
 
 const getText = async () => fetch('/postit.json', {
   method: 'GET',
@@ -21,20 +22,20 @@ class Display extends Component {
 
     this.state = {
       texts: [],
-      cursor: {},
+      cursors: {},
       keyChecked: false,
       qrPath: '/qr',
-      color: {
+      colors: {
         red: false, yellow: false, purple: false, pink: false,
       },
-      socket: null,
+      // socket: null,
     };
   }
 
   async componentDidMount() {
     const { match: { params: { key } } } = this.props;
     await this.checkKey(key);
-    const { keyChecked, color } = this.state;
+    const { keyChecked, colors } = this.state;
     if (keyChecked) {
       // load from back
       const { texts } = this.state;
@@ -49,44 +50,54 @@ class Display extends Component {
       socket.emit('display');
 
       socket.on('client_list', (clients) => { // refresh cursors on page reloads
-        const { cursor } = this.state;
+        const { cursors } = this.state;
         clients.forEach((client) => {
           if (client.clientId) {
-            cursor[client.clientKey] = { x: 0, y: 0, color: this.pickColor() };
+            const color = this.pickColor();
+            cursors[client.clientKey] = {
+              x: 0, y: 0, color, showRadial: false,
+            };
           }
         });
         this.setState({
-          cursor,
+          cursors,
         });
       });
 
-      socket.on('data', (data) => { //  to move cursor
+      socket.on('move', (data) => { //  to move cursor
         if (data.length === 3) {
           this.moveCursor(data);
         }
       });
 
-      socket.on('displayCursor', (senderKey) => { //  to display cursor on user connection
-        const { cursor } = this.state;
+      socket.on('dir', (data) => { //  to move cursor
+        if (data.length === 2) {
+          this.selectDir(data);
+        }
+      });
+
+      socket.on('display_cursor', (senderKey) => { //  to display cursor on user connection
+        const { cursors } = this.state;
         if (senderKey != null) {
-          let color = this.pickColor();
-          cursor[senderKey] = { x: 0, y: 0, color: color };
+          const color = this.pickColor();
+          cursors[senderKey] = {
+            x: 0, y: 0, color, showRadial: false,
+          };
           this.setState({
-            cursor,
+            cursors,
           });
 
           // Envoi de la couleur au mobile pour set le background
-          socket.emit('set_color', { client: senderKey, color: color });
+          socket.emit('set_color', { client: senderKey, color });
         }
-        console.log(cursor);
       });
 
       socket.on('disconnect_user', (senderKey) => { //  removes cursor when user disconnects
-        const { cursor } = this.state;
-        if (cursor[senderKey]) {
-          color[cursor[senderKey].color] = false;
-          delete cursor[senderKey];
-          this.setState({ cursor });
+        const { cursors } = this.state;
+        if (cursors[senderKey]) {
+          colors[cursors[senderKey].color] = false;
+          delete cursors[senderKey];
+          this.setState({ cursors });
         }
       });
 
@@ -107,8 +118,8 @@ class Display extends Component {
       });
 
       socket.on('remote_click', (data) => {
-        const { cursor } = this.state;
-        const { x, y } = cursor[data.clientKey];
+        const { cursors } = this.state;
+        const { x, y } = cursors[data.clientKey];
         const {
           left, right, top, bottom,
         } = document.getElementById('post').getBoundingClientRect();
@@ -116,16 +127,53 @@ class Display extends Component {
           socket.emit('start_posting', data.clientId);
         }
       });
+
+      socket.on('remote_long_press', (data) => {
+        const { cursors } = this.state;
+        if (data.clientKey != null) {
+          cursors[data.clientKey].showRadial = true;
+          this.setState({
+            cursors,
+          });
+        }
+      });
+
+      socket.on('remote_close_radial', (data) => {
+        console.log('remote close radial');
+        if (data.clientKey != null) {
+          this.closeRadial(data.clientKey);
+        }
+      });
+
+      socket.on('remote_selected_post_type', (data) => {
+        const { cursors } = this.state;
+        if (data.clientKey != null) {
+          socket.emit('start_posting', data.clientId);
+          cursors[data.clientKey].showRadial = false;
+          this.setState({
+            cursors,
+          });
+        }
+      });
     }
   }
 
+  closeRadial(clientId) {
+    const { cursors } = this.state;
+    console.log('close radial', cursors[clientId]);
+    cursors[clientId].showRadial = false;
+    this.setState({
+      cursors,
+    });
+  }
+
   pickColor() { // définir une couleur pour l'utilisateur qui dure jusqu'à ce qu'il se déconnecte
-    const { color } = this.state;
-    const colors = Object.entries(color); // [['red',false],...,['purple',false]]
-    for (let i = 0, len = colors.length; i < len; ++i) {
-      if (colors[i][1] === false) {
-        color[colors[i][0]] = true;
-        return colors[i][0];
+    const { colors } = this.state;
+    const colorsEntries = Object.entries(colors); // [['red',false],...,['purple',false]]
+    for (let i = 0, len = colors.length; i < len; i += 1) {
+      if (colorsEntries[i][1] === false) {
+        colors[colorsEntries[i][0]] = true;
+        return colorsEntries[i][0];
       }
     }
     return 'red'; // par défaut
@@ -136,8 +184,8 @@ class Display extends Component {
     const key = data[2];
     const dx = displacement * Math.cos(data[0]);
     const dy = -displacement * Math.sin(data[0]);
-    const { cursor } = this.state;
-    let { x, y } = cursor[key];
+    const { cursors } = this.state;
+    let { x, y } = cursors[key];
 
     if (key !== null) {
       x += dx;
@@ -152,11 +200,22 @@ class Display extends Component {
     if (y < top || y > bottom) {
       y -= dy;
     }
-    cursor[key].x = x;
-    cursor[key].y = y;
+    cursors[key].x = x;
+    cursors[key].y = y;
     this.setState({
-      cursor,
+      cursors,
     });
+  }
+
+  // TODO: lint
+  selectDir(data) {
+    const menu = document.querySelector(`#radial_${data[1]}`);
+    if (menu !== null) {
+      menu.querySelector(`.${data[0]}`).style.backgroundColor = 'white';
+      menu.querySelectorAll(`div:not(.${data[0]})`).forEach((el) => {
+        el.style.backgroundColor = 'grey';
+      });
+    }
   }
 
   postText(content) {
@@ -191,11 +250,11 @@ class Display extends Component {
 
   render() {
     const {
-      texts, cursor, keyChecked, qrPath,
+      texts, cursors, keyChecked, qrPath,
     } = this.state;
-    // console.log(Object.entries(cursor));
-    const postits = texts.map((text, index) => <PostIt id={`postit n ${index}`} text={text} />);
-    const cursors = Object.entries(cursor).map(
+    const postitsToRender = texts.map((text, index) => <PostIt id={`postit n ${index}`} text={text} />);
+    const cursorsEntries = Object.entries(cursors);
+    const cursorsToRender = cursorsEntries.map(
       ([key, object]) => (
         <Pointer
           key={key}
@@ -206,7 +265,21 @@ class Display extends Component {
         />
       ),
     );
-    // console.log(cursors);
+    const radialsToRender = cursorsEntries.length ? cursorsEntries.reduce((result, cursor) => {
+      if (cursor[1].showRadial) {
+        result.push(
+          <Radial
+            socket={this.socket}
+            key={cursor[0]}
+            id={cursor[0]}
+            color={cursor[1].color}
+            x={cursor[1].x}
+            y={cursor[1].y}
+          />,
+        );
+      }
+      return result;
+    }, []) : '';
     return (
       keyChecked
         ? (
@@ -215,8 +288,9 @@ class Display extends Component {
               <img src={logo} className="Display-logo" alt="logo" />
               <div id="post" className="post">Poster</div>
             </header>
-            {postits}
-            {cursors}
+            {postitsToRender}
+            {cursorsToRender}
+            {radialsToRender}
             <footer>
               <img src={qrPath} alt="" className="qr" />
             </footer>
