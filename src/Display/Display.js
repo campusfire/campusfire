@@ -91,7 +91,7 @@ class Display extends Component {
           // Envoi de la couleur au mobile pour set le background
           socket.emit('set_color', { client: senderKey, color });
         }
-        console.log(cursor);
+        console.log(cursors);
       });
 
       socket.on('disconnect_user', (senderKey) => { //  removes cursor when user disconnects
@@ -254,12 +254,10 @@ class Display extends Component {
     const {
       containers, cursors, keyChecked, qrPath,
     } = this.state;
-    const containersoRender = texts.map((text, index) => <PostIt id={`postit n ${index}`} text={text} />);
+    const containersToRender = containers.map((content, index) => (<Container id={`postit n ${index}`} content={content} x={Math.random()*90+'%'} y={Math.random()*75+'%'} />));
     const cursorsEntries = Object.entries(cursors);
     const cursorsToRender = cursorsEntries.map(
     // console.log(Object.entries(cursor));
-    const _containers= containers.map((content, index) => (<Container id={`postit n ${index}`} content={content} x={Math.random()*90+'%'} y={Math.random()*75+'%'} />));
-    const cursors = Object.entries(cursor).map(
       ([key, object]) => (
         <Pointer
           key={key}
@@ -293,7 +291,9 @@ class Display extends Component {
               <img src={logo} className="Display-logo" alt="logo" />
               <div id="post" className="post">Poster</div>
             </header>
-            {postitsToRender}
+            <div className="containers">
+              {containersToRender}
+            </div>
             {cursorsToRender}
             {radialsToRender}
             <footer>
