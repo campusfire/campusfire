@@ -171,10 +171,11 @@ class Display extends Component {
 
   pickColor() { // définir une couleur pour l'utilisateur qui dure jusqu'à ce qu'il se déconnecte
     const { colors } = this.state;
-    const colorsEntries = Object.entries(colors); // [['red',false],...,['purple',false]]
-    for (let i = 0, len = colors.length; i < len; i += 1) {
+    const colorsEntries = Object.entries(colors);
+    for (let i = 0, len = colorsEntries.length; i < len; i += 1) {
       if (colorsEntries[i][1] === false) {
         colors[colorsEntries[i][0]] = true;
+        this.setState({ colors });
         return colorsEntries[i][0];
       }
     }
