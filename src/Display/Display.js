@@ -88,7 +88,7 @@ class Display extends Component {
           });
 
           // Envoi de la couleur au mobile pour set le background
-          socket.emit('set_color', { client: senderKey, colors: color });
+          socket.emit('set_color', { client: senderKey, color });
         }
       });
 
@@ -138,7 +138,7 @@ class Display extends Component {
         }
       });
 
-      socket.on('remote_close_adial', (data) => {
+      socket.on('remote_close_radial', (data) => {
         console.log('remote close radial');
         if (data.clientKey != null) {
           this.closeRadial(data.clientKey);
@@ -209,10 +209,13 @@ class Display extends Component {
 
   // TODO: lint
   selectDir(data) {
-    document.querySelector(`#radial_${data[1]} > .${data[0]}`).style.backgroundColor = 'white';
-    document.querySelectorAll(`#radial_${data[1]} > div:not(.${data[0]})`).forEach((el) => {
-      el.style.backgroundColor = 'grey';
-    });
+    const menu = document.querySelector(`#radial_${data[1]}`);
+    if (menu !== null) {
+      menu.querySelector(`.${data[0]}`).style.backgroundColor = 'white';
+      menu.querySelectorAll(`div:not(.${data[0]})`).forEach((el) => {
+        el.style.backgroundColor = 'grey';
+      });
+    }
   }
 
   postText(content) {

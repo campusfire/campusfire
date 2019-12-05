@@ -103,14 +103,14 @@ class Mobile extends Component {
   }
 
   handleTouchStart(e) {
-    const { socket, key, mode } = this.state;
+    const { socket, key } = this.state;
     socket.emit('debug', 'touch start');
     const timer = setInterval(() => {
       const { distance, radian, degree } = this.state;
       if (socket) {
-        if (mode === 'dynamic') {
+        if (!this.longPressed) {
           socket.emit('move', [radian, distance, key]);
-        } else if (!this.longPressed) {
+        } else {
           this.handleRadialOptionChange(degree);
         }
       }
@@ -144,17 +144,16 @@ class Mobile extends Component {
     clearInterval(timer);
     socket.emit('debug', 'touch end');
     if (socket) {
-      if (mode === 'dynamic' && distance === 0) {
+      if (!this.longPressed && distance === 0) {
         socket.emit('click', { clientKey: key, clientId: socket.id });
-      } else if (mode === 'static' && !this.longPressed) {
-        if (distance === 0) {
+      } else if (this.longPressed) {
+        if (distance <= this.threshold) {
           socket.emit('debug', 'close radial');
           socket.emit('close_radial', { clientKey: key, clientId: socket.id });
-          this.setState({ mode: 'dynamic' });
         } else {
           socket.emit('selected_post_type', { clientKey: key, clientId: socket.id });
-          this.setState({ mode: 'dynamic' });
         }
+        this.setState({ mode: 'dynamic' });
       }
     }
     this.setState({
