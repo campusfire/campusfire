@@ -5,6 +5,7 @@ import '../App.css';
 import PostIt from './PostIt';
 import Pointer from './Pointer';
 import Radial from './Radial';
+import Container from "./Container";
 
 const getText = async () => fetch('/postit.json', {
   method: 'GET',
@@ -21,14 +22,14 @@ class Display extends Component {
     super(props);
 
     this.state = {
-      texts: [],
+      containers: [],
       cursors: {},
       keyChecked: false,
       qrPath: '/qr',
       colors: {
         red: false, yellow: false, purple: false, pink: false,
       },
-      // socket: null,
+      //socket: null,
     };
   }
 
@@ -38,10 +39,10 @@ class Display extends Component {
     const { keyChecked, colors } = this.state;
     if (keyChecked) {
       // load from back
-      const { texts } = this.state;
+      const { containers } = this.state;
       const postits = await getText();
-      postits.text.forEach(({ content }) => { texts.push(content); });
-      this.setState({ texts });
+      postits.text.forEach(({ content }) => { containers.push(content); });
+      this.setState({ containers });
 
       // socket
       const socket = io();
@@ -90,6 +91,7 @@ class Display extends Component {
           // Envoi de la couleur au mobile pour set le background
           socket.emit('set_color', { client: senderKey, color });
         }
+        console.log(cursor);
       });
 
       socket.on('disconnect_user', (senderKey) => { //  removes cursor when user disconnects
@@ -110,10 +112,10 @@ class Display extends Component {
       });
 
       socket.on('posting', async (content) => {
-        texts.push(content); //   front
+        containers.push(content); //   front
         await this.postText(content); //  back
         this.setState({
-          texts,
+          containers,
         });
       });
 
@@ -219,14 +221,14 @@ class Display extends Component {
   }
 
   postText(content) {
-    const { texts } = this.state;
+    const { containers } = this.state;
     return fetch('/postit.json', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: texts.length, content }),
+      body: JSON.stringify({ id: containers.length, content }),
     });
   }
 
@@ -250,11 +252,14 @@ class Display extends Component {
 
   render() {
     const {
-      texts, cursors, keyChecked, qrPath,
+      containers, cursors, keyChecked, qrPath,
     } = this.state;
-    const postitsToRender = texts.map((text, index) => <PostIt id={`postit n ${index}`} text={text} />);
+    const containersoRender = texts.map((text, index) => <PostIt id={`postit n ${index}`} text={text} />);
     const cursorsEntries = Object.entries(cursors);
     const cursorsToRender = cursorsEntries.map(
+    // console.log(Object.entries(cursor));
+    const _containers= containers.map((content, index) => (<Container id={`postit n ${index}`} content={content} x={Math.random()*90+'%'} y={Math.random()*75+'%'} />));
+    const cursors = Object.entries(cursor).map(
       ([key, object]) => (
         <Pointer
           key={key}

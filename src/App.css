@@ -21,11 +21,19 @@
   color: #09d3ac;
 }
 
+.containers{
+  position: relative;
+  display: flex;
+  align-content: stretch;
+  flex: 1;
+}
+
 .Display{
   background-color: #012346;
   min-height: 100vh;
   color: white;
   text-align: center;
+  align-content: stretch;
   display: flex;
   flex-flow: column;
 }
@@ -48,28 +56,22 @@
   max-height: 16vh;
 }
 
-.hax{
-  display: flex;
-  height: 100%;
-  width: 100%;
-  background-size: cover;
-}
-
 .post{
   width: 125px;
   height: 75px;
   background-color: green;
+  display: flex;
 
 }
 .postit{
-  width: 195px;
-  height: 195px;
+  width: 130px;
+  height: 130px;
   background-color: #ffa;
   font-family: Pacifico, Arial, sans-serif;
   float:left;
   margin: 10px;
   padding: 10px;
-  font-size: 22pt;
+  font-size: 18pt;
   box-shadow: 2px 2px #00000022;
   color: black;
   text-align: left;
@@ -95,8 +97,8 @@
 }
 
 .qr{
-  width: 145px;
-  height: 145px;
+  width: 75px;
+  height: 75px;
   position: fixed;
   bottom: 0px;
   right: 0px;
