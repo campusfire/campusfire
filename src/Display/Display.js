@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import io from 'socket.io-client';
 import logo from '../Assets/cfwhite.png';
 import '../App.css';
-import PostIt from './PostIt';
 import Pointer from './Pointer';
 import Radial from './Radial';
-import Container from "./Container";
+import Container from './Container';
 
 const getText = async () => fetch('/postit.json', {
   method: 'GET',
@@ -14,7 +13,7 @@ const getText = async () => fetch('/postit.json', {
     'Content-Type': 'application/json',
   },
 }).then((data) => data.json())
-  .then((object) => object)
+  .then((postits) => postits)
   .catch((err) => Promise.reject(err));
 
 class Display extends Component {
@@ -29,7 +28,7 @@ class Display extends Component {
       colors: {
         red: false, yellow: false, purple: false, pink: false,
       },
-      //socket: null,
+      // socket: null,
     };
   }
 
@@ -41,7 +40,7 @@ class Display extends Component {
       // load from back
       const { containers } = this.state;
       const postits = await getText();
-      postits.text.forEach(({ content }) => { containers.push(content); });
+      postits.forEach((postit) => { containers.push(postit); });
       this.setState({ containers });
 
       // socket
@@ -65,19 +64,19 @@ class Display extends Component {
         });
       });
 
-      socket.on('move', (data) => { //  to move cursor
+      socket.on('move', (data) => { // to move cursor
         if (data.length === 3) {
           this.moveCursor(data);
         }
       });
 
-      socket.on('dir', (data) => { //  to move cursor
+      socket.on('dir', (data) => { // to move cursor
         if (data.length === 2) {
           this.selectDir(data);
         }
       });
 
-      socket.on('display_cursor', (senderKey) => { //  to display cursor on user connection
+      socket.on('display_cursor', (senderKey) => { // to display cursor on user connection
         const { cursors } = this.state;
         if (senderKey != null) {
           const color = this.pickColor();
@@ -94,7 +93,7 @@ class Display extends Component {
         console.log(cursors);
       });
 
-      socket.on('disconnect_user', (senderKey) => { //  removes cursor when user disconnects
+      socket.on('disconnect_user', (senderKey) => { // removes cursor when user disconnects
         const { cursors } = this.state;
         if (cursors[senderKey]) {
           colors[cursors[senderKey].color] = false;
@@ -103,7 +102,7 @@ class Display extends Component {
         }
       });
 
-      socket.on('reload_qr', () => { //  reload qr on user connection
+      socket.on('reload_qr', () => { // reload qr on user connection
         let { qrPath } = this.state;
         qrPath += `?${Date.now()}`;
         this.setState({
@@ -111,23 +110,27 @@ class Display extends Component {
         });
       });
 
-      socket.on('posting', async (content) => {
-        containers.push(content); //   front
-        await this.postText(content); //  back
+      socket.on('posting', async (data) => {
+        const { cursors } = this.state;
+        const { contentType, content } = data;
+        const cursor = cursors[data.clientKey];
+        const container = { contentType, content, x: cursor.x, y: cursor.y };
+        containers.push(container); // front
+        await this.postText(container); // back
         this.setState({
           containers,
         });
       });
 
       socket.on('remote_click', (data) => {
-        const { cursors } = this.state;
-        const { x, y } = cursors[data.clientKey];
-        const {
-          left, right, top, bottom,
-        } = document.getElementById('post').getBoundingClientRect();
-        if (x > left && x < right && y > top && y < bottom) {
-          socket.emit('start_posting', data.clientId);
-        }
+        // const { cursors } = this.state;
+        // const { x, y } = cursors[data.clientKey];
+        // const {
+        //   left, right, top, bottom,
+        // } = document.getElementById('post').getBoundingClientRect();
+        // if (x > left && x < right && y > top && y < bottom) {
+        //   socket.emit('start_posting', data.clientId);
+        // }
       });
 
       socket.on('remote_long_press', (data) => {
@@ -196,11 +199,11 @@ class Display extends Component {
     }
     const {
       left, right, top, bottom,
-    } = document.getElementById('root').getBoundingClientRect();
-    if (x < left || x > right) {
+    } = document.getElementById('containers').getBoundingClientRect();
+    if (x < 0 || x > right - left) {
       x -= dx;
     }
-    if (y < top || y > bottom) {
+    if (y < 0 || y > bottom - top) {
       y -= dy;
     }
     cursors[key].x = x;
@@ -221,7 +224,7 @@ class Display extends Component {
     }
   }
 
-  postText(content) {
+  postText(container) {
     const { containers } = this.state;
     return fetch('/postit.json', {
       method: 'POST',
@@ -229,7 +232,7 @@ class Display extends Component {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: containers.length, content }),
+      body: JSON.stringify({ id: containers.length, ...container }),
     });
   }
 
@@ -255,10 +258,9 @@ class Display extends Component {
     const {
       containers, cursors, keyChecked, qrPath,
     } = this.state;
-    const containersToRender = containers.map((content, index) => (<Container id={`postit n ${index}`} content={content} x={Math.random()*90+'%'} y={Math.random()*75+'%'} />));
+    const containersToRender = containers.map((container) => (<Container id={`postit_${container.id}`} contentType={container.contentType} content={container.content} x={container.x} y={container.y} />));
     const cursorsEntries = Object.entries(cursors);
     const cursorsToRender = cursorsEntries.map(
-    // console.log(Object.entries(cursor));
       ([key, object]) => (
         <Pointer
           key={key}
@@ -290,13 +292,12 @@ class Display extends Component {
           <div className="Display">
             <header>
               <img src={logo} className="Display-logo" alt="logo" />
-              <div id="post" className="post">Poster</div>
             </header>
-            <div className="containers">
+            <div id="containers">
               {containersToRender}
+              {cursorsToRender}
+              {radialsToRender}
             </div>
-            {cursorsToRender}
-            {radialsToRender}
             <footer>
               <img src={qrPath} alt="" className="qr" />
             </footer>

@@ -21,7 +21,7 @@ class Mobile extends Component {
     };
     this.longPressed = false;
     this.radialOption = '';
-    this.threshold = 10;
+    this.threshold = 15;
 
     this.handleMove = this.handleMove.bind(this);
     this.handleTouchStart = this.handleTouchStart.bind(this);
@@ -167,11 +167,11 @@ class Mobile extends Component {
   }
 
   handlePost(event) {
-    const { socket } = this.state;
+    const { socket, key } = this.state;
     event.stopPropagation();
     const input = document.getElementById('input');
     if (input.value !== '') {
-      socket.emit('posting', input.value);
+      socket.emit('posting', { contentType: 'text', content: input.value, clientKey: key });
     }
     input.value = '';
     this.setState({

@@ -21,7 +21,7 @@ app.post('/postit.json', (req, res) => {
       res.send(err);
     } else {
       const obj = JSON.parse(data);
-      obj.text.push(req.body);
+      obj.push(req.body);
       const json = JSON.stringify(obj);
       fs.writeFile(
         path.resolve(`${__dirname}/../postit.json`),

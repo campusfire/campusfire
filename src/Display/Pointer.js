@@ -10,7 +10,6 @@ function Pointer(props) {
       id={id}
       style={{
         backgroundColor: color,
-        position: 'absolute',
         left: `${x}px`,
         top: `${y}px`,
       }}

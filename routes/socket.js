@@ -99,8 +99,8 @@ module.exports = function (app, io) {
       io.to(data).emit('start_posting');
     });
 
-    socket.on('posting', (content) => {
-      io.to(app.locals.displayId).emit('posting', content);
+    socket.on('posting', (data) => {
+      io.to(app.locals.displayId).emit('posting', data);
     });
 
     socket.on('disconnect', () => {

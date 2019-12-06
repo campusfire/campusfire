@@ -21,14 +21,16 @@
   color: #09d3ac;
 }
 
-.containers{
+#containers {
   position: relative;
   display: flex;
   align-content: stretch;
   flex: 1;
+  margin: 0 160px 160px 0;
 }
 
 .Display{
+  overflow: hidden;
   background-color: #012346;
   min-height: 100vh;
   color: white;
@@ -56,14 +58,8 @@
   max-height: 16vh;
 }
 
-.post{
-  width: 125px;
-  height: 75px;
-  background-color: green;
-  display: flex;
-
-}
 .postit{
+  position: absolute;
   width: 130px;
   height: 130px;
   background-color: #ffa;
@@ -90,6 +86,7 @@
 }
 
 .pointer{
+  position: relative;
   height: 15px;
   width: 15px;
   border-radius: 8px;
@@ -97,8 +94,8 @@
 }
 
 .qr{
-  width: 75px;
-  height: 75px;
+  width: 100px;
+  height: 100px;
   position: fixed;
   bottom: 0px;
   right: 0px;
@@ -108,7 +105,7 @@
 /* Radial Menu */
 
 .pieWrap {
-  position:absolute;
+  position:relative;
   width:210px;
   height:210px;
 }
