@@ -26,7 +26,7 @@ class Display extends Component {
       keyChecked: false,
       qrPath: '/qr',
       colors: {
-        red: false, yellow: false, purple: false, pink: false,
+        maroon: false, yellow: false, purple: false, pink: false,
       },
       // socket: null,
     };

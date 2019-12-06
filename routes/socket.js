@@ -108,7 +108,7 @@ module.exports = function (app, io) {
       const key = findKey(socket.id);
       deleteId(key);
       io.to(app.locals.displayId).emit('disconnect_user', key);
-      if (app.locals.clients.length === 3
+      if (app.locals.clients.length === app.locals.maxClients - 1
         && app.locals.clients[app.locals.clients.length - 1].clientId !== null) {
         const clientKey = makeId(8);
         app.locals.clients.push({ clientKey, clientId: null });

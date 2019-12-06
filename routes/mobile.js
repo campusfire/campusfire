@@ -10,7 +10,7 @@ app.get('/mobile/:key', (req, res) => {
     if (req.params.key === req.app.locals.clients[i].clientKey
         && req.app.locals.clients[i].clientId === null) {
       userAuthorized = true;
-      if (req.app.locals.clients.length < 4 && req.app.locals.clients[i].clientId === null) {
+      if (req.app.locals.clients.length < req.app.locals.maxClients && req.app.locals.clients[i].clientId === null) {
         const clientKey = makeId(8);
         req.app.locals.clients.push({ clientKey, clientId: null });
         req.app.get('io').to(req.app.locals.displayId).emit('reload_qr');

@@ -10,6 +10,7 @@ const { makeId } = require('./routes/utils');
 
 app.locals.displayId = '';
 app.locals.clients = [];
+app.locals.maxClients = 99;
 app.set('io', io);
 
 app.use(express.static(path.join(__dirname, 'build')));

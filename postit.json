@@ -1,1 +1,1 @@
-{"text":[{"id":2,"content":"🐄"}]}
+[{ "id": 1, "content": "🐄", "contentType": "text", "x": 100, "y": 300 }, { "id": 2, "content": "test", "contentType": "text", "x": 500, "y": 10 }]
