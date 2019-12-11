@@ -132,7 +132,7 @@ class Mobile extends Component {
       clearTimeout(longPressTimer);
       this.setState({ mode: 'static' });
       this.longPressed = true;
-      window.navigator.vibrate(200);
+      //window.navigator.vibrate(200);
       socket.emit('long_press', { clientKey: key, clientId: socket.id });
     }
   }
