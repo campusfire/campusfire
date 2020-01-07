@@ -48,7 +48,6 @@ app.use(expressWinston.logger({
 mongoose.connect(process.env.MONGO, { useNewUrlParser: true });
 
 const db = mongoose.connection;
-logger.info(process.env.MONGO);
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
   logger.info('Connected to database');

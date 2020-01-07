@@ -1,13 +1,15 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const Display = require('../models/display');
 
 const app = express.Router();
 
 app.get('/display/:key', (req, res) => {
-  if (req.params.key === 'fire') {
-    res.send('ok');
-  } else { res.send('ko'); }
+  Display.find({token: req.params.key}, (err, display) => {
+    if (err) res.send('ko');
+    else res.send('ok');
+  });
 });
 
 app.get('/postit.json', (req, res) => {
