@@ -1,5 +1,8 @@
 const express = require('express');
 const path = require('path');
+
+const winston = require('winston');
+const expressWinston = require('express-winston');
 require('dotenv').config();
 
 const app = express();
@@ -15,6 +18,29 @@ app.set('io', io);
 
 app.use(express.static(path.join(__dirname, 'build')));
 app.use(bodyParser.json());
+
+const logger = winston.createLogger({
+  level: 'info',
+  transports: [
+    new winston.transports.Console(),
+  ],
+  format: winston.format.combine(
+    winston.format.json(),
+  ),
+});
+
+app.use(expressWinston.logger({
+  transports: [
+    new winston.transports.Console(),
+  ],
+  format: winston.format.combine(
+    winston.format.json(),
+  ),
+  meta: false,
+  msg: 'HTTP {{req.method}} {{req.url}}',
+  expressFormat: true,
+  colorize: false,
+}));
 
 const displayRoutes = require('./routes/display');
 const mobileRoutes = require('./routes/mobile');
@@ -40,5 +66,6 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-console.log(process.env[process.env.PORT]);
+
+logger.info(process.env[process.env.PORT]);
 http.listen(process.env.PORT ? process.env[process.env.PORT] : 8080);
