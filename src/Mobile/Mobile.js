@@ -114,7 +114,7 @@ class Mobile extends Component {
           this.handleRadialOptionChange(degree);
         }
       }
-    }, 16);
+    }, 50);
     const longPressTimer = setTimeout(() => this.handleLongPress(e), 1300);
     this.setState({
       timer,
@@ -139,7 +139,7 @@ class Mobile extends Component {
 
   handleTouchEnd() {
     const {
-      socket, distance, key, longPressTimer, mode, timer,
+      socket, distance, key, longPressTimer, timer,
     } = this.state;
     clearInterval(timer);
     socket.emit('debug', 'touch end');

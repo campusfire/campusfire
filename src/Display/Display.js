@@ -134,8 +134,9 @@ class Display extends Component {
       });
 
       socket.on('remote_long_press', (data) => {
-        const { cursors } = this.state;
+        const { cursors, containers: targets } = this.state;
         if (data.clientKey != null) {
+          
           cursors[data.clientKey].showRadial = true;
           this.setState({
             cursors,
@@ -186,7 +187,7 @@ class Display extends Component {
   }
 
   moveCursor(data) {
-    const displacement = data[1] * 0.2;
+    const displacement = data[1] * 0.3;
     const key = data[2];
     const dx = displacement * Math.cos(data[0]);
     const dy = -displacement * Math.sin(data[0]);
@@ -258,7 +259,15 @@ class Display extends Component {
     const {
       containers, cursors, keyChecked, qrPath,
     } = this.state;
-    const containersToRender = containers.map((container) => (<Container id={`postit_${container.id}`} contentType={container.contentType} content={container.content} x={container.x} y={container.y} />));
+    const containersToRender = containers.map((container) => (
+      <Container
+        id={`postit_${container.id}`}
+        contentType={container.contentType}
+        content={container.content}
+        x={container.x}
+        y={container.y}
+      />
+    ));
     const cursorsEntries = Object.entries(cursors);
     const cursorsToRender = cursorsEntries.map(
       ([key, object]) => (
