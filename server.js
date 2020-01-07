@@ -5,11 +5,14 @@ const winston = require('winston');
 const expressWinston = require('express-winston');
 require('dotenv').config();
 
+const mongoose = require('mongoose');
+
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const bodyParser = require('body-parser');
 const { makeId } = require('./routes/utils');
+
 
 app.locals.displayId = '';
 app.locals.clients = [];
@@ -41,6 +44,15 @@ app.use(expressWinston.logger({
   expressFormat: true,
   colorize: false,
 }));
+
+mongoose.connect(process.env.MONGO, { useNewUrlParser: true });
+
+const db = mongoose.connection;
+logger.info(process.env.MONGO);
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', () => {
+  logger.info('Connected to database');
+});
 
 const displayRoutes = require('./routes/display');
 const mobileRoutes = require('./routes/mobile');
