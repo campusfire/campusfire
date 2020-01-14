@@ -6,7 +6,7 @@ import Pointer from './Pointer';
 import Radial from './Radial';
 import Container from './Container';
 
-const getText = async () => fetch('/postit.json', {
+const getText = async (displayKey) => fetch(`/content/${displayKey}`, {
   method: 'GET',
   headers: {
     Accept: 'application/json',
@@ -39,7 +39,7 @@ class Display extends Component {
     if (keyChecked) {
       // load from back
       const { containers } = this.state;
-      const postits = await getText();
+      const postits = await getText(key);
       postits.forEach((postit) => { containers.push(postit); });
       this.setState({ containers });
 

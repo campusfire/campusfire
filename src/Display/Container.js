@@ -20,16 +20,16 @@ class Container extends Component {
     } = this.state;
     const { id } = this.props;
     switch (contentType) {
-      case 'text':
+      case 'TEXT':
         return (
           <PostIt id={id} text={content} x={x} y={y} />
         );
-      case 'image':
+      case 'IMAGE':
         return (
           <PostIt text={content} x={x} y={y} />
         );
 
-      case 'video':
+      case 'VIDEO':
         return (
           <PostIt text={content} x={x} y={y} />
         );
