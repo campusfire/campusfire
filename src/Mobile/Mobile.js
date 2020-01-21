@@ -49,6 +49,11 @@ class Mobile extends Component {
         document.getElementById('input').focus();
       });
 
+      socket.on('radial_open', () => {
+        this.setState({ mode: 'static' });
+        this.longPressed = true;
+      });
+
       socket.on('set_color', (data) => {
         this.setState({
           backgroundColor: data,
@@ -130,8 +135,6 @@ class Mobile extends Component {
       socket.emit('debug', 'long press');
       e.preventDefault();
       clearTimeout(longPressTimer);
-      this.setState({ mode: 'static' });
-      this.longPressed = true;
       //window.navigator.vibrate(200);
       socket.emit('long_press', { clientKey: key, clientId: socket.id });
     }

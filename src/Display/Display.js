@@ -55,7 +55,7 @@ class Display extends Component {
           if (client.clientId) {
             const color = this.pickColor();
             cursors[client.clientKey] = {
-              x: 0, y: 0, color, showRadial: false,
+              x: 0, y: 0, color, showRadial: false, draggedContainerId: null,
             };
           }
         });
@@ -65,7 +65,12 @@ class Display extends Component {
       });
 
       socket.on('move', (data) => { // to move cursor
+        const { cursors } = this.state;
         if (data.length === 3) {
+          if (cursors[data[2]].draggedContainerId) {
+            this.moveContainer(data);
+          }
+          console.log(cursors[data[2]].draggedContainerId);
           this.moveCursor(data);
         }
       });
@@ -81,7 +86,7 @@ class Display extends Component {
         if (senderKey != null) {
           const color = this.pickColor();
           cursors[senderKey] = {
-            x: 0, y: 0, color, showRadial: false,
+            x: 0, y: 0, color, showRadial: false, draggedContainerId: null,
           };
           this.setState({
             cursors,
@@ -135,9 +140,48 @@ class Display extends Component {
 
       socket.on('remote_long_press', (data) => {
         const { cursors, containers: targets } = this.state;
-        if (data.clientKey != null) {
-          
-          cursors[data.clientKey].showRadial = true;
+        if (data.clientKey != null && cursors[data.clientKey].draggedContainerId == null) {
+          const {
+            left: cursorLeft,
+            right: cursorRight,
+            top: cursorTop,
+            bottom: cursorBottom,
+          } = document.getElementById(data.clientKey).getBoundingClientRect();
+          const x = (cursorLeft + cursorRight) / 2;
+          const y = (cursorTop + cursorBottom) / 2;
+          const boundingBoxes = targets.map(
+            // (target) => ({
+            //   id: target.id,
+            //   ...document.getElementsByName('Container').getBoundingClientRect(),
+            // }),
+            (target) => {
+              const {
+                left, right, top, bottom,
+              } = document.getElementById(`postit_${target.id}`).getBoundingClientRect();
+              return {
+                id: target.id,
+                left,
+                right,
+                top,
+                bottom,
+              };
+            },
+          );
+          console.log(boundingBoxes);
+          console.log(x,y);
+          const draggedContainer = boundingBoxes.find((boundingBox) => {
+            const {
+              left, right, top, bottom,
+            } = boundingBox;
+            return (x > left && x < right && y > top && y < bottom);
+          });
+          if (draggedContainer) {
+            cursors[data.clientKey].draggedContainerId = draggedContainer.id;
+            console.log('on the container');
+          } else {
+            cursors[data.clientKey].showRadial = true;
+            socket.emit('radial_open', data.clientId);
+          }
           this.setState({
             cursors,
           });
@@ -211,6 +255,39 @@ class Display extends Component {
     cursors[key].y = y;
     this.setState({
       cursors,
+    });
+  }
+
+  moveContainer(data) {
+    console.log('---------------------moving container---------------------');
+    const displacement = data[1] * 0.3;
+    const key = data[2];
+    const dx = displacement * Math.cos(data[0]);
+    const dy = -displacement * Math.sin(data[0]);
+    const { cursors, containers } = this.state;
+    const containerIndex = containers.findIndex(
+      (container) => container.id === cursors[key].draggedContainerId,
+    );
+    let { x, y } = containers[containerIndex];
+
+    if (key !== null) {
+      x += dx;
+      y += dy;
+    }
+    const {
+      left, right, top, bottom,
+    } = document.getElementById('containers').getBoundingClientRect();
+    console.log(cursors[key].draggedContainerId);
+    if (x < 0 || x > right - left) {
+      x -= dx;
+    }
+    if (y < 0 || y > bottom - top) {
+      y -= dy;
+    }
+    containers[containerIndex].x = x;
+    containers[containerIndex].y = y;
+    this.setState({
+      containers,
     });
   }
 
