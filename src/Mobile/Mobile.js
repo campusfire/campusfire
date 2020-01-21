@@ -27,6 +27,7 @@ class Mobile extends Component {
     this.handleTouchStart = this.handleTouchStart.bind(this);
     this.handleTouchEnd = this.handleTouchEnd.bind(this);
     this.handlePost = this.handlePost.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
     this.handleEnterKey = this.handleEnterKey.bind(this);
     this.checkKey = this.checkKey.bind(this);
   }
@@ -54,7 +55,7 @@ class Mobile extends Component {
         this.longPressed = true;
       });
 
-      socket.on('moving_container', () => {
+      socket.on('dragging_container', () => {
         this.longPressed = true;
       });
 
@@ -139,7 +140,7 @@ class Mobile extends Component {
       socket.emit('debug', 'long press');
       e.preventDefault();
       clearTimeout(longPressTimer);
-      //window.navigator.vibrate(200);
+      // window.navigator.vibrate(200);
       socket.emit('long_press', { clientKey: key, clientId: socket.id });
     }
   }
@@ -186,6 +187,15 @@ class Mobile extends Component {
     });
   }
 
+  handleCancel(event) {
+    event.stopPropagation();
+    const input = document.getElementById('input');
+    input.value = '';
+    this.setState({
+      type: false,
+    });
+  }
+
   handleEnterKey(event) {
     if (event.keyCode === 13) { this.handlePost(event); }
   }
@@ -206,7 +216,9 @@ class Mobile extends Component {
   }
 
   render() {
-    const { type, keyChecked, mode, backgroundColor } = this.state;
+    const {
+      type, keyChecked, mode, backgroundColor,
+    } = this.state;
     return (
       keyChecked
         ? (
@@ -217,6 +229,7 @@ class Mobile extends Component {
             <div style={{ display: type ? 'block' : 'none' }}>
               <input id="input" onKeyUp={this.handleEnterKey} />
               <button type="button" onClick={this.handlePost}>Poster</button>
+              <button type="button" onClick={this.handleCancel}>X</button>
             </div>
             <ReactNipple
               option={{ mode, threshold: this.threshold }}

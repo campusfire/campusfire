@@ -2,7 +2,7 @@ import React from 'react';
 
 function PostIt(props) {
   const {
-    key, id, text, x, y,
+    key, id, text, x, y, z,
   } = props;
   return (
     <div
@@ -12,6 +12,7 @@ function PostIt(props) {
       style={{
         left: `${x}px`,
         top: `${y}px`,
+        zIndex: z,
       }}
     >
       {text}

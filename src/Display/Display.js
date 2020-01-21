@@ -16,6 +16,41 @@ const getText = async () => fetch('/postit.json', {
   .then((postits) => postits)
   .catch((err) => Promise.reject(err));
 
+function updateText(container) {
+  return fetch('/postit.json', {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify(container),
+  });
+}
+
+function updateAllTexts(containers) {
+  return fetch('/all/postit.json', {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify(containers),
+  });
+}
+
+function sortContainersZIndex(containers) {
+  containers.sort((a, b) => ((a.z || 0) - (b.z || 0)));
+  const sortedContainers = containers.map((container, index) => (
+    {
+      ...container,
+      z: index,
+    }
+  ));
+  updateAllTexts(sortedContainers);
+  console.log('sorted', sortedContainers);
+  return sortedContainers;
+}
+
 class Display extends Component {
   constructor(props) {
     super(props);
@@ -41,7 +76,8 @@ class Display extends Component {
       const { containers } = this.state;
       const postits = await getText();
       postits.forEach((postit) => { containers.push(postit); });
-      this.setState({ containers });
+      const sortedContainers = sortContainersZIndex(containers);
+      this.setState({ containers: sortedContainers });
 
       // socket
       const socket = io();
@@ -115,25 +151,39 @@ class Display extends Component {
       });
 
       socket.on('posting', async (data) => {
-        const { cursors } = this.state;
+        const { cursors, containers: newContainers } = this.state;
         const { contentType, content } = data;
         const cursor = cursors[data.clientKey];
-        const container = { contentType, content, x: cursor.x, y: cursor.y };
-        containers.push(container); // front
+        const container = {
+          id: (new Date()).valueOf(),
+          contentType,
+          content,
+          x: cursor.x,
+          y: cursor.y,
+          z: containers.length,
+        };
+        newContainers.push(container); // front
         await this.postText(container); // back
+        const sortedContainers = sortContainersZIndex(newContainers);
         this.setState({
-          containers,
+          containers: sortedContainers,
         });
       });
 
-      socket.on('remote_click', (data) => {
-        const { cursors } = this.state;
+      socket.on('remote_click', async (data) => {
+        const { cursors, containers: updatedContainers } = this.state;
         const { draggedContainerId } = cursors[data.clientKey];
         if (draggedContainerId !== null) {
+          const updatedContainer = updatedContainers.filter(
+            (container) => container.id === draggedContainerId,
+          )[0];
+          await updateText(updatedContainer);
           cursors[data.clientKey].draggedContainerId = null;
+          socket.emit('stop_dragging', data.clientId);
+          const sortedContainersZ = sortContainersZIndex(updatedContainers);
+          this.setState({ containers: sortedContainersZ, cursors });
         }
-        this.setState({ cursors });
-        console.log('click');
+        console.log('click', cursors[data.clientKey].x, cursors[data.clientKey].y);
       });
 
       socket.on('remote_long_press', (data) => {
@@ -173,8 +223,7 @@ class Display extends Component {
           });
           if (draggedContainer) {
             cursors[data.clientKey].draggedContainerId = draggedContainer.id;
-            socket.emit('moving_container', data.clientId);
-            console.log('moving container');
+            console.log('dragging container');
           } else {
             cursors[data.clientKey].showRadial = true;
             socket.emit('radial_open', data.clientId);
@@ -281,9 +330,17 @@ class Display extends Component {
     }
     containers[containerIndex].x = x;
     containers[containerIndex].y = y;
+    containers[containerIndex].z = containers.length;
     this.setState({
       containers,
     });
+    console.log(containers);
+    this.getState();
+  }
+
+  getState() {
+    const { containers } = this.state;
+    console.log('state', containers);
   }
 
   // TODO: lint
@@ -305,10 +362,9 @@ class Display extends Component {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: containers.length, ...container }),
+      body: JSON.stringify({ id: (new Date()).valueOf(), ...container }),
     });
   }
-
 
   async checkKey(key) {
     return fetch(`/display/${key}`)
@@ -338,6 +394,7 @@ class Display extends Component {
         content={container.content}
         x={container.x}
         y={container.y}
+        z={container.z || 0}
       />
     ));
     const cursorsEntries = Object.entries(cursors);
