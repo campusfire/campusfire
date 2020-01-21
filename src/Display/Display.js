@@ -70,7 +70,6 @@ class Display extends Component {
           if (cursors[data[2]].draggedContainerId) {
             this.moveContainer(data);
           }
-          console.log(cursors[data[2]].draggedContainerId);
           this.moveCursor(data);
         }
       });
@@ -128,14 +127,13 @@ class Display extends Component {
       });
 
       socket.on('remote_click', (data) => {
-        // const { cursors } = this.state;
-        // const { x, y } = cursors[data.clientKey];
-        // const {
-        //   left, right, top, bottom,
-        // } = document.getElementById('post').getBoundingClientRect();
-        // if (x > left && x < right && y > top && y < bottom) {
-        //   socket.emit('start_posting', data.clientId);
-        // }
+        const { cursors } = this.state;
+        const { draggedContainerId } = cursors[data.clientKey];
+        if (draggedContainerId !== null) {
+          cursors[data.clientKey].draggedContainerId = null;
+        }
+        this.setState({ cursors });
+        console.log('click');
       });
 
       socket.on('remote_long_press', (data) => {
@@ -167,8 +165,6 @@ class Display extends Component {
               };
             },
           );
-          console.log(boundingBoxes);
-          console.log(x,y);
           const draggedContainer = boundingBoxes.find((boundingBox) => {
             const {
               left, right, top, bottom,
@@ -177,7 +173,8 @@ class Display extends Component {
           });
           if (draggedContainer) {
             cursors[data.clientKey].draggedContainerId = draggedContainer.id;
-            console.log('on the container');
+            socket.emit('moving_container', data.clientId);
+            console.log('moving container');
           } else {
             cursors[data.clientKey].showRadial = true;
             socket.emit('radial_open', data.clientId);
@@ -259,7 +256,6 @@ class Display extends Component {
   }
 
   moveContainer(data) {
-    console.log('---------------------moving container---------------------');
     const displacement = data[1] * 0.3;
     const key = data[2];
     const dx = displacement * Math.cos(data[0]);
@@ -277,7 +273,6 @@ class Display extends Component {
     const {
       left, right, top, bottom,
     } = document.getElementById('containers').getBoundingClientRect();
-    console.log(cursors[key].draggedContainerId);
     if (x < 0 || x > right - left) {
       x -= dx;
     }

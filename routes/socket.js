@@ -99,6 +99,10 @@ module.exports = function (app, io) {
       io.to(data).emit('start_posting');
     });
 
+    socket.on('moving_container', (data) => {
+      io.to(data).emit('moving_container');
+    });
+
     socket.on('radial_open', (data) => {
       io.to(data).emit('radial_open');
     });

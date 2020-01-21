@@ -54,6 +54,10 @@ class Mobile extends Component {
         this.longPressed = true;
       });
 
+      socket.on('moving_container', () => {
+        this.longPressed = true;
+      });
+
       socket.on('set_color', (data) => {
         this.setState({
           backgroundColor: data,
@@ -120,7 +124,7 @@ class Mobile extends Component {
         }
       }
     }, 50);
-    const longPressTimer = setTimeout(() => this.handleLongPress(e), 1300);
+    const longPressTimer = setTimeout(() => this.handleLongPress(e), 500);
     this.setState({
       timer,
       longPressTimer,
