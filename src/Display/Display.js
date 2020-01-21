@@ -28,6 +28,7 @@ class Display extends Component {
       colors: {
         maroon: false, yellow: false, purple: false, pink: false,
       },
+      key: null,
       // socket: null,
     };
   }
@@ -41,7 +42,7 @@ class Display extends Component {
       const { containers } = this.state;
       const postits = await getText(key);
       postits.forEach((postit) => { containers.push(postit); });
-      this.setState({ containers });
+      this.setState({ containers, key });
 
       // socket
       const socket = io();
@@ -114,8 +115,11 @@ class Display extends Component {
         const { cursors } = this.state;
         const { contentType, content } = data;
         const cursor = cursors[data.clientKey];
-        const container = { contentType, content, x: cursor.x, y: cursor.y };
+        const container = {
+          contentType, content, x: cursor.x, y: cursor.y,
+        };
         containers.push(container); // front
+
         await this.postText(container); // back
         this.setState({
           containers,
@@ -225,8 +229,9 @@ class Display extends Component {
   }
 
   postText(container) {
-    const { containers } = this.state;
-    return fetch('/postit.json', {
+    const { containers, key } = this.state;
+    console.log(container);
+    return fetch(`/content/${key}`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -260,6 +265,7 @@ class Display extends Component {
     } = this.state;
     const containersToRender = containers.map((container) => (<Container id={`postit_${container.id}`} contentType={container.contentType} content={container.content} x={container.x} y={container.y} />));
     const cursorsEntries = Object.entries(cursors);
+    console.log(containersToRender);
     const cursorsToRender = cursorsEntries.map(
       ([key, object]) => (
         <Pointer

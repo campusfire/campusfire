@@ -38,6 +38,25 @@ app.get('/content/:key', (req, res) => {
   });
 });
 
+app.post('/content/:key', (req, res) => {
+  Display.findOne({ token: req.params.key }, (err, display) => {
+    if (err) res.send('fail');
+    else {
+      const newContent = new Content({
+        type: 'TEXT',
+        payload: req.body.content,
+        position: {
+          x: req.body.x,
+          y: req.body.y
+        },
+        display: display._id,
+      });
+      newContent.save();
+      res.send('ok');
+    }
+  });
+});
+
 app.get('/postit.json', (req, res) => {
   res.sendFile(path.resolve(`${__dirname}/../postit.json`));
 });

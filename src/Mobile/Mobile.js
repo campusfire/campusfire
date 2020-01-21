@@ -171,7 +171,7 @@ class Mobile extends Component {
     event.stopPropagation();
     const input = document.getElementById('input');
     if (input.value !== '') {
-      socket.emit('posting', { contentType: 'text', content: input.value, clientKey: key });
+      socket.emit('posting', { contentType: 'TEXT', content: input.value, clientKey: key });
     }
     input.value = '';
     this.setState({

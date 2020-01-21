@@ -70,12 +70,12 @@ module.exports = function (app, io) {
     });
 
     socket.on('move', (data) => {
-      console.log('debug', 'moving');
+      //console.log('debug', 'moving');
       io.to(app.locals.displayId).emit('move', data);
     });
 
     socket.on('dir', (data) => {
-      console.log('debug', 'changing direction');
+      //console.log('debug', 'changing direction');
       io.to(app.locals.displayId).emit('dir', data);
     });
 
@@ -100,6 +100,7 @@ module.exports = function (app, io) {
     });
 
     socket.on('posting', (data) => {
+      console.log('POSTING');
       io.to(app.locals.displayId).emit('posting', data);
     });
 
