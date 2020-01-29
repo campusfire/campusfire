@@ -1,13 +1,60 @@
+/* eslint-disable no-underscore-dangle */
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const Display = require('../models/display');
+const Content = require('../models/content');
 
 const app = express.Router();
 
 app.get('/display/:key', (req, res) => {
-  if (req.params.key === 'fire') {
-    res.send('ok');
-  } else { res.send('ko'); }
+  Display.findOne({ token: req.params.key }, (err, display) => {
+    if (err) res.send('ko');
+    else res.send('ok');
+  });
+});
+
+app.get('/content/:key', (req, res) => {
+  Display.findOne({ token: req.params.key }, (err, display) => {
+    if (err) res.send(JSON.stringify([]));
+    else {
+      Content.find({ display: display._id }, (err2, contents) => {
+        if (err2) res.send(JSON.stringify([]));
+        const retour = [];
+
+        for (let i = 0; i < contents.length; i += 1) {
+          retour.push({
+            id: contents[i]._id,
+            contentType: contents[i].type,
+            content: contents[i].payload,
+            x: contents[i].position.x,
+            y: contents[i].position.y,
+          });
+        }
+
+        res.send(JSON.stringify(retour));
+      });
+    }
+  });
+});
+
+app.post('/content/:key', (req, res) => {
+  Display.findOne({ token: req.params.key }, (err, display) => {
+    if (err) res.send('fail');
+    else {
+      const newContent = new Content({
+        type: 'TEXT',
+        payload: req.body.content,
+        position: {
+          x: req.body.x,
+          y: req.body.y
+        },
+        display: display._id,
+      });
+      newContent.save();
+      res.send('ok');
+    }
+  });
 });
 
 app.get('/postit.json', (req, res) => {
