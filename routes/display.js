@@ -80,6 +80,38 @@ app.post('/postit.json', (req, res) => {
   });
 });
 
+app.put('/postit.json', (req, res) => {
+  fs.readFile(path.resolve(`${__dirname}/../postit.json`), 'utf8', (err, data) => {
+    if (err) {
+      console.log(err);
+      res.send(err);
+    } else {
+      const obj = JSON.parse(data);
+      const newPostIt = req.body;
+      const newObj = obj.filter((postIt) => postIt.id !== newPostIt.id);
+      newObj.push(newPostIt);
+      const json = JSON.stringify(newObj);
+      fs.writeFile(
+        path.resolve(`${__dirname}/../postit.json`),
+        json,
+        'utf8',
+        (error) => { if (error) { res.send('Error!'); } else { res.send('Post-it updated!'); } },
+      );
+    }
+  });
+});
+
+app.put('/all/postit.json', (req, res) => {
+  console.log('AAAAAAAAAAAAAAAA');
+  const json = JSON.stringify(req.body);
+  fs.writeFile(
+    path.resolve(`${__dirname}/../postit.json`),
+    json,
+    'utf8',
+    (error) => { if (error) { res.send('Error!'); } else { res.send('Post-it updated!'); } },
+  );
+});
+
 app.get('/qr', (req, res) => {
   res.sendFile(path.resolve(`${__dirname}/../qr.png`));
 });
