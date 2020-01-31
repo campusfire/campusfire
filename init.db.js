@@ -19,7 +19,7 @@ db.once('open', async () => {
   const content1 = new Content({
     type: 'TEXT',
     payload: 'Coucou campus',
-    position: { x: 20, y: 20 },
+    position: { x: 20, y: 20, z: 1 },
     // eslint-disable-next-line no-underscore-dangle
     display: display._id,
   });

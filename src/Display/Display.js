@@ -17,7 +17,7 @@ const getText = async (displayKey) => fetch(`/content/${displayKey}`, {
   .catch((err) => Promise.reject(err));
 
 function updateText(container) {
-  return fetch('/postit.json', {
+  return fetch(`/content/${container.id}`, {
     method: 'PUT',
     headers: {
       Accept: 'application/json',
@@ -28,14 +28,15 @@ function updateText(container) {
 }
 
 function updateAllTexts(containers) {
-  return fetch('/all/postit.json', {
+  return 0;
+  /* fetch('/all/postit.json', {
     method: 'PUT',
     headers: {
       Accept: 'application/json',
       'Content-type': 'application/json',
     },
     body: JSON.stringify(containers),
-  });
+  }); */
 }
 
 function sortContainersZIndex(containers) {
@@ -335,13 +336,13 @@ class Display extends Component {
     this.setState({
       containers,
     });
-    console.log(containers);
+    // console.log(containers);
     this.getState();
   }
 
   getState() {
     const { containers } = this.state;
-    console.log('state', containers);
+    // console.log('state', containers);
   }
 
   // TODO: lint
@@ -400,7 +401,6 @@ class Display extends Component {
       />
     ));
     const cursorsEntries = Object.entries(cursors);
-    console.log(containersToRender);
     const cursorsToRender = cursorsEntries.map(
       ([key, object]) => (
         <Pointer

@@ -15,6 +15,7 @@ const contentSchema = mongoose.Schema({
   position: {
     x: Number,
     y: Number,
+    z: Number,
   },
   display: { type: mongoose.Schema.Types.ObjectId, ref: 'Display' },
 });

@@ -57,6 +57,19 @@ app.post('/content/:key', (req, res) => {
   });
 });
 
+app.put('/content/:key', (req, res) => {
+  Content.findOne({ _id: req.params.key }, (err, content) => {
+    if(err) res.send('fail')
+    else{
+      content.position.x = req.body.x;
+      content.position.y = req.body.y;
+      content.position.z = req.body.z;
+      content.save();
+      res.send('ok');
+    }
+  });
+})
+
 app.get('/postit.json', (req, res) => {
   res.sendFile(path.resolve(`${__dirname}/../postit.json`));
 });
