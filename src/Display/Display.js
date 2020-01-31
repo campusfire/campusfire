@@ -165,7 +165,7 @@ class Display extends Component {
           z: containers.length,
         };
         newContainers.push(container); // front
-        await this.postText(container); // back
+        await this.postContainer(container); // back
         const sortedContainers = sortContainersZIndex(newContainers);
         this.setState({
           containers: sortedContainers,
@@ -246,7 +246,6 @@ class Display extends Component {
       socket.on('remote_selected_post_type', (data) => {
         const { cursors } = this.state;
         if (data.clientKey != null) {
-          socket.emit('start_posting', data.clientId);
           cursors[data.clientKey].showRadial = false;
           this.setState({
             cursors,
@@ -349,14 +348,17 @@ class Display extends Component {
   selectDir(data) {
     const menu = document.querySelector(`#radial_${data[1]}`);
     if (menu !== null) {
-      menu.querySelector(`.${data[0]}`).style.backgroundColor = 'white';
-      menu.querySelectorAll(`div:not(.${data[0]})`).forEach((el) => {
+      const element = data[0];
+      const classToSelect = element === 'None' ? 'innerCircle' : `pieSlice${element}`;
+      this.postType = element;
+      menu.querySelector(`.${classToSelect}`).style.backgroundColor = 'white';
+      menu.querySelectorAll(`div:not(.${classToSelect})`).forEach((el) => {
         el.style.backgroundColor = 'grey';
       });
     }
   }
 
-  postText(container) {
+  postContainer(container) {
     const { containers, key } = this.state;
     console.log(container);
     return fetch(`/content/${key}`, {

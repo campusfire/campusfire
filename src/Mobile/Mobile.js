@@ -10,7 +10,6 @@ class Mobile extends Component {
     this.state = {
       socket: null,
       distance: 0,
-      type: false,
       key: null,
       keyChecked: false,
       backgroundColor: 'inherit',
@@ -18,7 +17,9 @@ class Mobile extends Component {
       radian: 0,
       longPressTimer: null,
       mode: 'dynamic',
+      input: false,
     };
+    this.postType = null;
     this.longPressed = false;
     this.radialOption = '';
     this.threshold = 15;
@@ -42,13 +43,6 @@ class Mobile extends Component {
         key,
       });
       const socket = io();
-
-      socket.on('start_posting', () => {
-        this.setState({
-          type: true,
-        });
-        document.getElementById('input').focus();
-      });
 
       socket.on('radial_open', () => {
         this.setState({ mode: 'static' });
@@ -84,28 +78,29 @@ class Mobile extends Component {
 
   handleRadialOptionChange(angle) {
     const { socket, key, distance } = this.state;
-    let element = '';
+    let element;
     if (distance > this.threshold) {
       switch (true) {
         case angle >= 0 && angle < 90:
-          element = 'pieSliceImage';
+          element = 'Image';
           break;
         case angle >= 90 && angle < 180:
-          element = 'pieSliceText';
+          element = 'Text';
           break;
         case angle >= 180 && angle < 270:
-          element = 'pieSliceVideo';
+          element = 'Video';
           break;
         case angle >= 270 && angle < 360:
-          element = 'pieSliceOther';
+          element = 'Other';
           break;
         default:
-          element = 'innerCircle';
+          element = 'None';
           break;
       }
     } else {
-      element = 'innerCircle';
+      element = 'None';
     }
+    this.postType = element;
     if (this.radialOption !== element) {
       socket.emit('dir', [element, key]);
       this.radialOption = element;
@@ -114,7 +109,7 @@ class Mobile extends Component {
 
   handleTouchStart(e) {
     const { socket, key } = this.state;
-    socket.emit('debug', 'touch start');
+    // socket.emit('debug', 'touch start');
     const timer = setInterval(() => {
       const { distance, radian, degree } = this.state;
       if (socket) {
@@ -137,7 +132,7 @@ class Mobile extends Component {
       socket, key, distance, longPressTimer,
     } = this.state;
     if (distance <= this.threshold) {
-      socket.emit('debug', 'long press');
+      // socket.emit('debug', 'long press');
       e.preventDefault();
       clearTimeout(longPressTimer);
       // window.navigator.vibrate(200);
@@ -150,15 +145,16 @@ class Mobile extends Component {
       socket, distance, key, longPressTimer, timer,
     } = this.state;
     clearInterval(timer);
-    socket.emit('debug', 'touch end');
+    // socket.emit('debug', 'touch end');
     if (socket) {
       if (!this.longPressed && distance === 0) {
         socket.emit('click', { clientKey: key, clientId: socket.id });
       } else if (this.longPressed) {
         if (distance <= this.threshold) {
-          socket.emit('debug', 'close radial');
+          // socket.emit('debug', 'close radial');
           socket.emit('close_radial', { clientKey: key, clientId: socket.id });
         } else {
+          this.setState({ input: true });
           socket.emit('selected_post_type', { clientKey: key, clientId: socket.id });
         }
         this.setState({ mode: 'dynamic' });
@@ -178,22 +174,33 @@ class Mobile extends Component {
     const { socket, key } = this.state;
     event.stopPropagation();
     const input = document.getElementById('input');
-    if (input.value !== '') {
-      socket.emit('posting', { contentType: 'TEXT', content: input.value, clientKey: key });
+    switch (this.postType) {
+      case 'Text':
+        if (input.value !== '') {
+          socket.emit('posting', { contentType: 'TEXT', content: input.value, clientKey: key });
+        }
+        input.value = '';
+        break;
+      case 'Image':
+        if (event.target.files.length) { // TODO: fix this (event.target.file = null)
+          socket.emit('posting', { contentType: 'IMAGE', content: event.target.files[0], clientKey: key });
+        } else {
+          socket.emit('debug', 'no file');
+        }
+        break;
+      default:
+        break;
     }
-    input.value = '';
-    this.setState({
-      type: false,
-    });
+    this.setState({ input: false });
+    this.postType = null;
   }
 
   handleCancel(event) {
     event.stopPropagation();
     const input = document.getElementById('input');
     input.value = '';
-    this.setState({
-      type: false,
-    });
+    this.setState({ input: false });
+    this.postType = null;
   }
 
   handleEnterKey(event) {
@@ -217,7 +224,7 @@ class Mobile extends Component {
 
   render() {
     const {
-      type, keyChecked, mode, backgroundColor,
+      keyChecked, mode, backgroundColor, input,
     } = this.state;
     return (
       keyChecked
@@ -226,8 +233,13 @@ class Mobile extends Component {
             <header>
               <img src={logo} className="Mobile-logo" alt="logo" />
             </header>
-            <div style={{ display: type ? 'block' : 'none' }}>
+            <div style={{ display: input && this.postType === 'Text' ? 'block' : 'none' }}>
               <input id="input" onKeyUp={this.handleEnterKey} />
+              <button type="button" onClick={this.handlePost}>Poster</button>
+              <button type="button" onClick={this.handleCancel}>X</button>
+            </div>
+            <div style={{ display: input && this.postType === 'Image' ? 'block' : 'none' }}>
+              <input id="input" type="file" accept="image/png, image/jpeg" />
               <button type="button" onClick={this.handlePost}>Poster</button>
               <button type="button" onClick={this.handleCancel}>X</button>
             </div>
