@@ -18,6 +18,7 @@ class Mobile extends Component {
       longPressTimer: null,
       mode: 'dynamic',
       input: false,
+      file: null,
     };
     this.postType = null;
     this.longPressed = false;
@@ -27,6 +28,7 @@ class Mobile extends Component {
     this.handleMove = this.handleMove.bind(this);
     this.handleTouchStart = this.handleTouchStart.bind(this);
     this.handleTouchEnd = this.handleTouchEnd.bind(this);
+    this.onFileChange = this.onFileChange.bind(this);
     this.handlePost = this.handlePost.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.handleEnterKey = this.handleEnterKey.bind(this);
@@ -170,20 +172,38 @@ class Mobile extends Component {
     clearTimeout(longPressTimer);
   }
 
+  onFileChange(e) {
+    this.setState({ file: e.target.files[0] });
+  }
+
   handlePost(event) {
-    const { socket, key } = this.state;
+    const { socket, key, file } = this.state;
     event.stopPropagation();
-    const input = document.getElementById('input');
+    let input;
     switch (this.postType) {
       case 'Text':
+        input = document.getElementById('textInput');
         if (input.value !== '') {
           socket.emit('posting', { contentType: 'TEXT', content: input.value, clientKey: key });
         }
         input.value = '';
         break;
       case 'Image':
-        if (event.target.files.length) { // TODO: fix this (event.target.file = null)
-          socket.emit('posting', { contentType: 'IMAGE', content: event.target.files[0], clientKey: key });
+        input = document.getElementById('imageInput');
+        if (file) {
+          socket.emit('debug', `file: ${file.name}`);
+          const formData = new FormData();
+          formData.append('file', file);
+          fetch(`/storage/${key}`, {
+            method: 'POST',
+            body: formData,
+          })
+            // .then(this.handleErrors)
+            .then((response) => response.text())
+            .then((data) => {
+              socket.emit('posting', { contentType: 'IMAGE', content: data, clientKey: key });
+            })
+            .catch((err) => socket.emit('debug', `err: ${err}`));
         } else {
           socket.emit('debug', 'no file');
         }
@@ -234,12 +254,12 @@ class Mobile extends Component {
               <img src={logo} className="Mobile-logo" alt="logo" />
             </header>
             <div style={{ display: input && this.postType === 'Text' ? 'block' : 'none' }}>
-              <input id="input" onKeyUp={this.handleEnterKey} />
+              <input id="textInput" onKeyUp={this.handleEnterKey} />
               <button type="button" onClick={this.handlePost}>Poster</button>
               <button type="button" onClick={this.handleCancel}>X</button>
             </div>
             <div style={{ display: input && this.postType === 'Image' ? 'block' : 'none' }}>
-              <input id="input" type="file" accept="image/png, image/jpeg" />
+              <input id="imageInput" type="file" accept="image/png, image/jpeg" onChange={this.onFileChange} />
               <button type="button" onClick={this.handlePost}>Poster</button>
               <button type="button" onClick={this.handleCancel}>X</button>
             </div>

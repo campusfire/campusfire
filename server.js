@@ -79,4 +79,6 @@ app.use((req, res) => {
 
 
 logger.info(process.env[process.env.PORT]);
-http.listen(process.env.PORT ? process.env[process.env.PORT] : 8080);
+const listener = http.listen(process.env.PORT ? process.env[process.env.PORT] : 8080, () => {
+  console.log(`Listening on port ${listener.address().port}`);
+});

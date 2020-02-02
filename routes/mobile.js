@@ -1,5 +1,18 @@
 const express = require('express');
+const multer = require('multer');
+const path = require('path');
 const { makeId } = require('./utils');
+
+const storage = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, 'public/uploads/');
+  },
+  filename(req, file, cb) {
+    cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
+  },
+});
+
+const upload = multer({ storage }).single('file');
 
 const app = express.Router();
 
@@ -21,6 +34,19 @@ app.get('/mobile/:key', (req, res) => {
   if (userAuthorized) {
     res.send('ok');
   } else { res.send('ko'); }
+});
+
+app.post('/storage/:key', (req, res) => {
+  console.log('posting key', req.params.key);
+  upload(req, res, (err) => {
+    if (err) {
+      console.log(err);
+      res.status(400).send('fail saving image');
+    } else {
+      console.log('saved file', req.file.path);
+      res.send(req.file.filename);
+    }
+  });
 });
 
 module.exports = app;
