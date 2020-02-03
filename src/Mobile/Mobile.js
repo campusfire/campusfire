@@ -69,6 +69,10 @@ class Mobile extends Component {
     }
   }
 
+  onFileChange(e) {
+    this.setState({ file: e.target.files[0] });
+  }
+
   handleMove(_, data) {
     const { distance, angle: { radian, degree } } = data;
     this.setState({
@@ -172,17 +176,13 @@ class Mobile extends Component {
     clearTimeout(longPressTimer);
   }
 
-  onFileChange(e) {
-    this.setState({ file: e.target.files[0] });
-  }
-
   handlePost(event) {
     const { socket, key, file } = this.state;
     event.stopPropagation();
-    let input;
+    const { postType } = this;
+    const input = document.getElementById(`${postType.toLowerCase()}Input`);
     switch (this.postType) {
       case 'Text':
-        input = document.getElementById('textInput');
         if (input.value !== '') {
           socket.emit('posting', { contentType: 'TEXT', content: input.value, clientKey: key });
         }
@@ -190,8 +190,6 @@ class Mobile extends Component {
         break;
       case 'Video':
       case 'Image':
-        const postType = this.postType;
-        input = document.getElementById(`${postType.toLowerCase()}Input`);
         if (file) {
           socket.emit('debug', `file: ${file.name}`);
           const formData = new FormData();
@@ -251,7 +249,7 @@ class Mobile extends Component {
     return (
       keyChecked
         ? (
-          <div className="Mobile" onTouchStart={this.handleTouchStart} onTouchEnd={this.handleTouchEnd} style={{ backgroundColor }}>
+          <div className="Mobile" onTouchStart={!input ? this.handleTouchStart : false} onTouchEnd={!input ? this.handleTouchEnd : false} style={{ backgroundColor }}>
             <header>
               <img src={logo} className="Mobile-logo" alt="logo" />
             </header>
@@ -270,14 +268,17 @@ class Mobile extends Component {
               <button type="button" onClick={this.handlePost}>Poster</button>
               <button type="button" onClick={this.handleCancel}>X</button>
             </div>
-            <ReactNipple
-              option={{ mode, threshold: this.threshold }}
-              style={{
-                flex: '1 1 auto',
-                position: 'relative',
-              }}
-              onMove={this.handleMove}
-            />
+            {!input
+              && (
+                <ReactNipple
+                  option={{ mode, threshold: this.threshold }}
+                  style={{
+                    flex: '1 1 auto',
+                    position: 'relative',
+                  }}
+                  onMove={this.handleMove}
+                />
+              )}
           </div>
         ) : (
           <div className="Display" />
