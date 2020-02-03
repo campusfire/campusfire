@@ -7,7 +7,7 @@ const contentSchema = mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['TEXT', 'IMAGE'],
+    enum: ['TEXT', 'IMAGE', 'VIDEO'],
     default: 'TEXT',
   },
   payload: String,

@@ -188,8 +188,10 @@ class Mobile extends Component {
         }
         input.value = '';
         break;
+      case 'Video':
       case 'Image':
-        input = document.getElementById('imageInput');
+        const postType = this.postType;
+        input = document.getElementById(`${postType.toLowerCase()}Input`);
         if (file) {
           socket.emit('debug', `file: ${file.name}`);
           const formData = new FormData();
@@ -201,7 +203,7 @@ class Mobile extends Component {
             // .then(this.handleErrors)
             .then((response) => response.text())
             .then((data) => {
-              socket.emit('posting', { contentType: 'IMAGE', content: data, clientKey: key });
+              socket.emit('posting', { contentType: postType.toUpperCase(), content: data, clientKey: key });
             })
             .catch((err) => socket.emit('debug', `err: ${err}`));
         } else {
@@ -259,7 +261,12 @@ class Mobile extends Component {
               <button type="button" onClick={this.handleCancel}>X</button>
             </div>
             <div style={{ display: input && this.postType === 'Image' ? 'block' : 'none' }}>
-              <input id="imageInput" type="file" accept="image/png, image/jpeg" onChange={this.onFileChange} />
+              <input id="imageInput" type="file" accept="image/*" onChange={this.onFileChange} />
+              <button type="button" onClick={this.handlePost}>Poster</button>
+              <button type="button" onClick={this.handleCancel}>X</button>
+            </div>
+            <div style={{ display: input && this.postType === 'Video' ? 'block' : 'none' }}>
+              <input id="videoInput" type="file" accept="video/*" onChange={this.onFileChange} />
               <button type="button" onClick={this.handlePost}>Poster</button>
               <button type="button" onClick={this.handleCancel}>X</button>
             </div>
