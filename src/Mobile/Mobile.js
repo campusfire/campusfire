@@ -156,7 +156,7 @@ class Mobile extends Component {
           // socket.emit('debug', 'close radial');
           socket.emit('close_radial', { clientKey: key, clientId: socket.id });
         } else {
-          this.setState({ input: true });
+          if (this.postType !== 'Other') this.setState({ input: true });
           socket.emit('selected_post_type', { clientKey: key, clientId: socket.id });
         }
         this.setState({ mode: 'dynamic' });
@@ -219,9 +219,9 @@ class Mobile extends Component {
 
   handleCancel(event) {
     event.stopPropagation();
-    const input = document.getElementById('input');
+    const input = document.getElementById(`${this.postType.toLowerCase()}Input`);
     input.value = '';
-    this.setState({ input: false });
+    this.setState({ file: null, input: false });
     this.postType = null;
   }
 
