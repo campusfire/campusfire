@@ -6,7 +6,7 @@ import Pointer from './Pointer';
 import Radial from './Radial';
 import Container from './Container';
 
-const getText = async (displayKey) => fetch(`/content/${displayKey}`, {
+const getContainers = async (displayKey) => fetch(`/content/${displayKey}`, {
   method: 'GET',
   headers: {
     Accept: 'application/json',
@@ -16,7 +16,7 @@ const getText = async (displayKey) => fetch(`/content/${displayKey}`, {
   .then((postits) => postits)
   .catch((err) => Promise.reject(err));
 
-function updateText(container) {
+function updateContainer(container) {
   return fetch(`/content/${container.id}`, {
     method: 'PUT',
     headers: {
@@ -27,7 +27,7 @@ function updateText(container) {
   });
 }
 
-function updateAllTexts(containers) {
+function updateAllContainers(containers) {
   return 0;
   /* fetch('/all/postit.json', {
     method: 'PUT',
@@ -47,7 +47,7 @@ function sortContainersZIndex(containers) {
       z: index,
     }
   ));
-  updateAllTexts(sortedContainers);
+  updateAllContainers(sortedContainers);
   console.log('sorted', sortedContainers);
   return sortedContainers;
 }
@@ -76,7 +76,7 @@ class Display extends Component {
     if (keyChecked) {
       // load from back
       const { containers } = this.state;
-      const postits = await getText(key);
+      const postits = await getContainers(key);
       postits.forEach((postit) => { containers.push(postit); });
       const sortedContainers = sortContainersZIndex(containers);
       this.setState({ containers: sortedContainers, key });
@@ -164,8 +164,9 @@ class Display extends Component {
           y: cursor.y,
           z: containers.length,
         };
+        console.log('container', container);
         newContainers.push(container); // front
-        await this.postText(container); // back
+        await this.postContainer(container); // back
         const sortedContainers = sortContainersZIndex(newContainers);
         this.setState({
           containers: sortedContainers,
@@ -179,7 +180,7 @@ class Display extends Component {
           const updatedContainer = updatedContainers.filter(
             (container) => container.id === draggedContainerId,
           )[0];
-          await updateText(updatedContainer);
+          await updateContainer(updatedContainer);
           cursors[data.clientKey].draggedContainerId = null;
           socket.emit('stop_dragging', data.clientId);
           const sortedContainersZ = sortContainersZIndex(updatedContainers);
@@ -246,7 +247,6 @@ class Display extends Component {
       socket.on('remote_selected_post_type', (data) => {
         const { cursors } = this.state;
         if (data.clientKey != null) {
-          socket.emit('start_posting', data.clientId);
           cursors[data.clientKey].showRadial = false;
           this.setState({
             cursors,
@@ -349,24 +349,26 @@ class Display extends Component {
   selectDir(data) {
     const menu = document.querySelector(`#radial_${data[1]}`);
     if (menu !== null) {
-      menu.querySelector(`.${data[0]}`).style.backgroundColor = 'white';
-      menu.querySelectorAll(`div:not(.${data[0]})`).forEach((el) => {
+      const element = data[0];
+      const classToSelect = element === 'None' ? 'innerCircle' : `pieSlice${element}`;
+      this.postType = element;
+      menu.querySelector(`.${classToSelect}`).style.backgroundColor = 'white';
+      menu.querySelectorAll(`div:not(.${classToSelect})`).forEach((el) => {
         el.style.backgroundColor = 'grey';
       });
     }
   }
 
-  postText(container) {
-    const { containers, key } = this.state;
-    console.log(container);
+  postContainer(container) {
+    const { key } = this.state;
     return fetch(`/content/${key}`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: (new Date()).valueOf(), ...container }),
-    });
+      body: JSON.stringify(container),
+    }).catch((err) => console.log('fetch error', err));
   }
 
   async checkKey(key) {

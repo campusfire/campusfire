@@ -95,10 +95,6 @@ module.exports = function (app, io) {
       io.to(app.locals.displayId).emit('remote_selected_post_type', data);
     });
 
-    socket.on('start_posting', (data) => {
-      io.to(data).emit('start_posting');
-    });
-
     socket.on('dragging_container', (data) => {
       io.to(data).emit('dragging_container');
     });

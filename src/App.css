@@ -73,6 +73,14 @@
   text-align: left;
 }
 
+.postit-img {
+  position: absolute;
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 20px;
+  border: 3px solid white;
+}
+
 .postit:nth-child(1n){
   transform: rotate(1deg);
 }
@@ -82,6 +90,18 @@
 }
 
 .postit:nth-child(3n){
+  transform: rotate(3deg);
+}
+
+.postit-img:nth-child(1n){
+  transform: rotate(1deg);
+}
+
+.postit-img:nth-child(2n){
+  transform: rotate(-2deg);
+}
+
+.postit-img:nth-child(3n){
   transform: rotate(3deg);
 }
 
@@ -108,6 +128,7 @@
   position:relative;
   width:210px;
   height:210px;
+  z-index: 3000;
 }
 
 .pieSlice {

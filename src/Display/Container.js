@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import '../App.css';
 import PostIt from './PostIt';
+import Image from './Image';
+import Video from './Video';
 
 function Container(props) {
   const {
@@ -13,12 +15,12 @@ function Container(props) {
       );
     case 'IMAGE':
       return (
-        <PostIt text={content} x={x} y={y} z={z} />
+        <Image id={id} src={content} x={x} y={y} z={z} />
       );
 
     case 'VIDEO':
       return (
-        <PostIt text={content} x={x} y={y} z={z} />
+        <Video id={id} src={content} x={x} y={y} z={z} />
       );
     default:
       return null;

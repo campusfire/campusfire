@@ -43,11 +43,11 @@ app.post('/content/:key', (req, res) => {
     if (err) res.send('fail');
     else {
       const newContent = new Content({
-        type: 'TEXT',
+        type: req.body.contentType,
         payload: req.body.content,
         position: {
           x: req.body.x,
-          y: req.body.y
+          y: req.body.y,
         },
         display: display._id,
       });
