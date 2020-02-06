@@ -216,11 +216,13 @@ class Mobile extends Component {
   }
 
   handleCancel(event) {
+    const { socket, key } = this.state;
     event.stopPropagation();
     const input = document.getElementById(`${this.postType.toLowerCase()}Input`);
     input.value = '';
     this.setState({ file: null, input: false });
     this.postType = null;
+    socket.emit('cancel', { clientKey: key, clientId: socket.id });
   }
 
   handleEnterKey(event) {

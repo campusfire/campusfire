@@ -173,3 +173,31 @@
   border-radius: 0 0 100% 0;
   /*background-image: url('');*/
 }
+
+.pulse {
+  position: absolute;
+  margin-top: -27.5px;
+  margin-left: -27.5px;
+  border-radius: 60px;
+  height: 50px;
+  width: 50px;
+  animation: pulse 1s ease-out;
+  animation-iteration-count: infinite;
+  opacity: 0;
+  z-index: 3000;
+}
+
+@keyframes pulse {
+  0% {
+    -webkit-transform: scale(0);
+    opacity: 0.0;
+  }
+  50% {
+    -webkit-transform: scale(0.1);
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: scale(1);
+    opacity: 0.0;
+  }
+}

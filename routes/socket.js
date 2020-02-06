@@ -91,6 +91,10 @@ module.exports = function (app, io) {
       io.to(app.locals.displayId).emit('remote_close_radial', data);
     });
 
+    socket.on('cancel', (data) => {
+      io.to(app.locals.displayId).emit('remote_cancel', data);
+    });
+
     socket.on('selected_post_type', (data) => {
       io.to(app.locals.displayId).emit('remote_selected_post_type', data);
     });

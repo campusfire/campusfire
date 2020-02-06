@@ -93,7 +93,7 @@ class Display extends Component {
           if (client.clientId) {
             const color = this.pickColor();
             cursors[client.clientKey] = {
-              x: 0, y: 0, color, showRadial: false, draggedContainerId: null,
+              x: 0, y: 0, color, showRadial: false, draggedContainerId: null, posting: false,
             };
           }
         });
@@ -123,7 +123,7 @@ class Display extends Component {
         if (senderKey != null) {
           const color = this.pickColor();
           cursors[senderKey] = {
-            x: 0, y: 0, color, showRadial: false, draggedContainerId: null,
+            x: 0, y: 0, color, showRadial: false, draggedContainerId: null, posting: false,
           };
           this.setState({
             cursors,
@@ -167,9 +167,11 @@ class Display extends Component {
         console.log('container', container);
         newContainers.push(container); // front
         await this.postContainer(container); // back
+        cursors[data.clientKey].posting = false;
         const sortedContainers = sortContainersZIndex(newContainers);
         this.setState({
           containers: sortedContainers,
+          cursors,
         });
       });
 
@@ -237,6 +239,15 @@ class Display extends Component {
         }
       });
 
+      socket.on('remote_cancel', (data) => {
+        const { cursors } = this.state;
+        console.log('remote cancel');
+        if (data.clientKey != null) {
+          cursors[data.clientKey].posting = false;
+          this.setState({ cursors });
+        }
+      });
+
       socket.on('remote_close_radial', (data) => {
         console.log('remote close radial');
         if (data.clientKey != null) {
@@ -248,12 +259,18 @@ class Display extends Component {
         const { cursors } = this.state;
         if (data.clientKey != null) {
           cursors[data.clientKey].showRadial = false;
+          cursors[data.clientKey].posting = true;
           this.setState({
             cursors,
           });
         }
       });
     }
+  }
+
+  getState() {
+    const { containers } = this.state;
+    // console.log('state', containers);
   }
 
   closeRadial(clientId) {
@@ -340,11 +357,6 @@ class Display extends Component {
     this.getState();
   }
 
-  getState() {
-    const { containers } = this.state;
-    // console.log('state', containers);
-  }
-
   // TODO: lint
   selectDir(data) {
     const menu = document.querySelector(`#radial_${data[1]}`);
@@ -411,6 +423,7 @@ class Display extends Component {
           color={object.color}
           x={object.x}
           y={object.y}
+          posting={object.posting}
         />
       ),
     );
