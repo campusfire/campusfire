@@ -14,7 +14,13 @@ if (process.env.ENV !== 'PROD') {
     });
   });
   url = `http://${ip}:3000`;
-} else url = `http://node.${process.env.PORT.toLowerCase()}.ovh1.ec-m.fr`;
+} else {
+  if (process.env.VIRTUAL_HOST)
+  { url = `http://${process.env.VIRTUAL_HOST}`; }
+  else
+  { url = `http://node.${process.env.PORT.toLowerCase()}.ovh1.ec-m.fr`; }
+}
+
 console.log(url);
 
 exports.url = url;

@@ -1,0 +1,43 @@
+version: '2'
+
+services:
+  db:
+    image: mongo:latest
+    volumes:
+      - db_data:/data/db
+    restart: always
+    networks:
+      - interne
+
+  site:
+    image: node:lts
+    working_dir: /home/node/app
+    volumes:
+      - ./:/home/node/app
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - interne
+      - proxy
+    environment:
+      VIRTUAL_HOST: cf.ginfo.ec-m.fr
+      NETWORK_ACCESS:
+      TRUSTED_PROXIES: reverse-proxy
+      PORT: GINFO
+      MONGO: mongodb://db
+    command: "npm run prod"
+
+volumes:
+  db_data:
+  site_data:
+
+networks:
+  proxy:
+    external:
+      name: nginx-proxy-ginfo
+  interne:
+    driver: bridge
+    internal: true
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: 'false'
