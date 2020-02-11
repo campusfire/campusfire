@@ -20,9 +20,11 @@ services:
     networks:
       - interne
       - proxy
+    expose:
+      - 80
     environment:
       VIRTUAL_HOST: cf.ginfo.ec-m.fr
-      NETWORK_ACCESS:
+      NETWORK_ACCESS: ""
       TRUSTED_PROXIES: reverse-proxy
       PORT: GINFO
       MONGO: mongodb://db
