@@ -2,7 +2,7 @@ import React from 'react';
 
 function Pointer(props) {
   const {
-    color, x, y, id, posting,
+    color, x, y, id, posting, pressing,
   } = props;
   return (
     <div>
@@ -10,14 +10,13 @@ function Pointer(props) {
         className="pointer"
         id={id}
         style={{
-          backgroundColor: color,
+          backgroundColor: `${pressing ? 'white' : color}`,
           left: `${x}px`,
           top: `${y}px`,
         }}
       />
       <div
         className="pulse"
-        id={id}
         style={{
           display: `${posting ? 'block' : 'none'}`,
           border: `10px solid ${color}`,

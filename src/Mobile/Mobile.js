@@ -116,17 +116,23 @@ class Mobile extends Component {
   handleTouchStart(e) {
     const { socket, key } = this.state;
     // socket.emit('debug', 'touch start');
+    if (socket && !this.longPressed) {
+      socket.emit('pressing', { clientKey: key, clientId: socket.id });
+    }
     const timer = setInterval(() => {
       const { distance, radian, degree } = this.state;
       if (socket) {
         if (!this.longPressed) {
           socket.emit('move', [radian, distance, key]);
+          if (distance > this.threshold) {
+            socket.emit('stop_pressing', { clientKey: key, clientId: socket.id });
+          }
         } else {
           this.handleRadialOptionChange(degree);
         }
       }
     }, 50);
-    const longPressTimer = setTimeout(() => this.handleLongPress(e), 500);
+    const longPressTimer = setTimeout(() => this.handleLongPress(e), 1000);
     this.setState({
       timer,
       longPressTimer,
@@ -153,6 +159,7 @@ class Mobile extends Component {
     clearInterval(timer);
     // socket.emit('debug', 'touch end');
     if (socket) {
+      socket.emit('stop_pressing', { clientKey: key, clientId: socket.id });
       if (!this.longPressed && distance === 0) {
         socket.emit('click', { clientKey: key, clientId: socket.id });
       } else if (this.longPressed) {

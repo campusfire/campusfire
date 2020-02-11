@@ -93,7 +93,7 @@ class Display extends Component {
           if (client.clientId) {
             const color = this.pickColor();
             cursors[client.clientKey] = {
-              x: 0, y: 0, color, showRadial: false, draggedContainerId: null, posting: false,
+              x: 0, y: 0, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false,
             };
           }
         });
@@ -112,6 +112,25 @@ class Display extends Component {
         }
       });
 
+      socket.on('remote_pressing', (data) => {
+        const { cursors } = this.state;
+        console.log('remote pressing');
+        if (data.clientKey != null) {
+          cursors[data.clientKey].pressing = true;
+          this.setState({ cursors });
+        }
+      });
+
+      socket.on('remote_stop_pressing', (data) => {
+        const { cursors } = this.state;
+        console.log('remote stop pressing');
+        if (data.clientKey != null) {
+          // Reset cursor color
+          cursors[data.clientKey].pressing = false;
+          this.setState({ cursors });
+        }
+      });
+
       socket.on('dir', (data) => { // to move cursor
         if (data.length === 2) {
           this.selectDir(data);
@@ -123,11 +142,9 @@ class Display extends Component {
         if (senderKey != null) {
           const color = this.pickColor();
           cursors[senderKey] = {
-            x: 0, y: 0, color, showRadial: false, draggedContainerId: null, posting: false,
+            x: 0, y: 0, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false,
           };
-          this.setState({
-            cursors,
-          });
+          this.setState({ cursors });
 
           // Envoi de la couleur au mobile pour set le background
           socket.emit('set_color', { client: senderKey, color });
@@ -177,6 +194,7 @@ class Display extends Component {
 
       socket.on('remote_click', async (data) => {
         const { cursors, containers: updatedContainers } = this.state;
+        // Drop postit, TODO: change behavior to touchStart/move/touchEnd
         const { draggedContainerId } = cursors[data.clientKey];
         if (draggedContainerId !== null) {
           const updatedContainer = updatedContainers.filter(
@@ -424,6 +442,7 @@ class Display extends Component {
           x={object.x}
           y={object.y}
           posting={object.posting}
+          pressing={object.pressing}
         />
       ),
     );

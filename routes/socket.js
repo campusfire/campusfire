@@ -70,17 +70,25 @@ module.exports = function (app, io) {
     });
 
     socket.on('move', (data) => {
-      //console.log('debug', 'moving');
+      // console.log('debug', 'moving');
       io.to(app.locals.displayId).emit('move', data);
     });
 
     socket.on('dir', (data) => {
-      //console.log('debug', 'changing direction');
+      // console.log('debug', 'changing direction');
       io.to(app.locals.displayId).emit('dir', data);
     });
 
     socket.on('click', (data) => {
       io.to(app.locals.displayId).emit('remote_click', data);
+    });
+
+    socket.on('pressing', (data) => {
+      io.to(app.locals.displayId).emit('remote_pressing', data);
+    });
+
+    socket.on('stop_pressing', (data) => {
+      io.to(app.locals.displayId).emit('remote_stop_pressing', data);
     });
 
     socket.on('long_press', (data) => {

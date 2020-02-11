@@ -105,12 +105,15 @@
   transform: rotate(3deg);
 }
 
+/*TODO: check duration*/
 .pointer{
   position: relative;
   height: 15px;
   width: 15px;
   border-radius: 8px;
   z-index: 3000;
+  -webkit-transition: background-color 1s ease-in;
+  transition: background-color 1s ease-in;
 }
 
 .qr{
