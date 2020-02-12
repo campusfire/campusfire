@@ -67,10 +67,11 @@
   float:left;
   margin: 10px;
   padding: 10px;
-  font-size: 18pt;
   box-shadow: 2px 2px #00000022;
   color: black;
   text-align: left;
+  overflow-wrap: break-word;
+  overflow: hidden;
 }
 
 .postit-img {
@@ -105,7 +106,6 @@
   transform: rotate(3deg);
 }
 
-/*TODO: check duration*/
 .pointer{
   position: relative;
   height: 15px;
