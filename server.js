@@ -19,6 +19,7 @@ app.locals.clients = [];
 app.locals.maxClients = 99;
 app.set('io', io);
 
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use(express.static(path.join(__dirname, 'build')));
 app.use(bodyParser.json());
 
