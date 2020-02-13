@@ -45,6 +45,26 @@
   z-index: 9999;
 }
 
+footer{
+  display: flex;
+  flex-flow: row-reverse;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  z-index: 999999999;
+}
+
+.logSquares{
+  width:20px;
+  height:20px;
+  border: 7px solid black;
+}
+
+#loggedUsers_wrapper{
+  display: flex;
+  flex-flow: column-reverse;
+}
+
 .Mobile{
   background-color: #012346;
   min-height: 100vh;
@@ -119,9 +139,7 @@
 .qr{
   width: 140px;
   height: 140px;
-  position: fixed;
-  bottom: 0px;
-  right: 0px;
+  align-self: flex-end;
 }
 
 
