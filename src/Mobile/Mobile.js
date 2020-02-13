@@ -61,6 +61,12 @@ class Mobile extends Component {
         });
       });
 
+      socket.on('disconnect', () => {
+        this.setState({
+          socket: null,
+        });
+      });
+
       this.setState({
         socket,
       });
@@ -143,7 +149,7 @@ class Mobile extends Component {
     const {
       socket, key, distance, longPressTimer,
     } = this.state;
-    if (distance <= this.threshold) {
+    if (socket && distance <= this.threshold) {
       // socket.emit('debug', 'long press');
       e.preventDefault();
       clearTimeout(longPressTimer);
@@ -229,7 +235,9 @@ class Mobile extends Component {
     input.value = '';
     this.setState({ file: null, input: false });
     this.postType = null;
-    socket.emit('cancel', { clientKey: key, clientId: socket.id });
+    if (socket) {
+      socket.emit('cancel', { clientKey: key, clientId: socket.id });
+    }
   }
 
   handleEnterKey(event) {
