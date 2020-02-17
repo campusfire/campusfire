@@ -62,7 +62,7 @@ class Display extends Component {
       keyChecked: false,
       qrPath: '/qr',
       colors: {
-        maroon: false, yellow: false, purple: false, pink: false,
+        maroon: false, gold: false, forestgreen: false, mediumorchid: false, hotpink: false, lightskyblue: false, aqua: false, chocolate: false
       },
       key: null,
       // socket: null,
@@ -446,6 +446,18 @@ class Display extends Component {
         />
       ),
     );
+    const loggedUsers = cursorsEntries.map(
+        ([key, object]) => (
+            <div
+                className="logSquares"
+                key={`square:${key}`}
+                id={`square:${key}`}
+                style={{
+                  backgroundColor: `${object.color}`
+                }}
+            />
+        ),
+    );
     const radialsToRender = cursorsEntries.length ? cursorsEntries.reduce((result, cursor) => {
       if (cursor[1].showRadial) {
         result.push(
@@ -475,6 +487,9 @@ class Display extends Component {
             </div>
             <footer>
               <img src={qrPath} alt="" className="qr" />
+              <div id="loggedUsers_wrapper">
+              {loggedUsers}
+              </div>
             </footer>
           </div>
         ) : (
