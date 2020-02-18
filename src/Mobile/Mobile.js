@@ -173,7 +173,7 @@ class Mobile extends Component {
           // socket.emit('debug', 'close radial');
           socket.emit('close_radial', { clientKey: key, clientId: socket.id });
         } else {
-          if (this.postType !== 'Other') this.setState({ input: true });
+          this.setState({ input: true });
           socket.emit('selected_post_type', { clientKey: key, clientId: socket.id });
         }
         this.setState({ mode: 'dynamic' });
@@ -195,6 +195,7 @@ class Mobile extends Component {
     const { postType } = this;
     const input = document.getElementById(`${postType.toLowerCase()}Input`);
     switch (this.postType) {
+      case 'Other':
       case 'Text':
         if (input.value !== '') {
           socket.emit('posting', { contentType: 'TEXT', content: input.value, clientKey: key });
@@ -282,6 +283,11 @@ class Mobile extends Component {
             </div>
             <div style={{ display: input && this.postType === 'Video' ? 'block' : 'none' }}>
               <input id="videoInput" type="file" accept="video/*" onChange={this.onFileChange} />
+              <button type="button" onClick={this.handlePost}>Poster</button>
+              <button type="button" onClick={this.handleCancel}>X</button>
+            </div>
+            <div style={{ display: input && this.postType === 'Other' ? 'block' : 'none' }}>
+              <input id="otherInput" onKeyUp={this.handleEnterKey} />
               <button type="button" onClick={this.handlePost}>Poster</button>
               <button type="button" onClick={this.handleCancel}>X</button>
             </div>

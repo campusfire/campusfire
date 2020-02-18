@@ -192,7 +192,7 @@ footer{
 
 .pieSliceOther {
   border-radius: 0 0 100% 0;
-  /*background-image: url('');*/
+  background-image:url('Assets/text.png');
 }
 
 .pulse {
