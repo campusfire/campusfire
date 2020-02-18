@@ -22,11 +22,20 @@
 }
 
 #containers {
-  position: relative;
+  position: absolute;
   display: flex;
   align-content: stretch;
   flex: 1;
-  margin: 0 160px 160px 0;
+  height: 100%;
+  width: 100%;
+}
+
+.header {
+  z-index: 9999;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
 
 .Display{
@@ -42,7 +51,6 @@
 
 .Display-logo{
   max-height: 10vh;
-  z-index: 9999;
 }
 
 footer{
@@ -51,18 +59,19 @@ footer{
   position: fixed;
   bottom: 0px;
   right: 0px;
-  z-index: 999999999;
+  z-index: 9999;
 }
 
 .logSquares{
   width:20px;
   height:20px;
-  border: 7px solid black;
+  border: 4px solid black;
+  align-self: flex-end;
 }
 
 #loggedUsers_wrapper{
   display: flex;
-  flex-flow: column-reverse;
+  flex-flow: row-reverse;
 }
 
 .Mobile{
@@ -127,7 +136,7 @@ footer{
 }
 
 .pointer{
-  position: relative;
+  position: absolute;
   height: 15px;
   width: 15px;
   border-radius: 8px;
@@ -140,13 +149,14 @@ footer{
   width: 140px;
   height: 140px;
   align-self: flex-end;
+  opacity: 0.85;
 }
 
 
 /* Radial Menu */
 
 .pieWrap {
-  position:relative;
+  position:absolute;
   width:210px;
   height:210px;
   z-index: 3000;

@@ -62,7 +62,7 @@ class Display extends Component {
       keyChecked: false,
       qrPath: '/qr',
       colors: {
-        maroon: false, gold: false, forestgreen: false, mediumorchid: false, hotpink: false, lightskyblue: false, aqua: false, chocolate: false
+        maroon: false, gold: false, forestgreen: false, mediumorchid: false, orange: false, lightskyblue: false, aqua: false, chocolate: false,
       },
       key: null,
       // socket: null,
@@ -327,11 +327,11 @@ class Display extends Component {
     }
     const {
       left, right, top, bottom,
-    } = document.getElementById('containers').getBoundingClientRect();
-    if (x < 0 || x > right - left) {
+    } = document.getElementById('root').getBoundingClientRect();
+    if (x <= 0 || x >= right - left) {
       x -= dx;
     }
-    if (y < 0 || y > bottom - top) {
+    if (y <= 0 || y >= bottom - top) {
       y -= dy;
     }
     cursors[key].x = x;
@@ -358,11 +358,11 @@ class Display extends Component {
     }
     const {
       left, right, top, bottom,
-    } = document.getElementById('containers').getBoundingClientRect();
-    if (x < 0 || x > right - left) {
+    } = document.getElementById('root').getBoundingClientRect();
+    if (x <= 0 || x >= right - left) {
       x -= dx;
     }
-    if (y < 0 || y > bottom - top) {
+    if (y <= 0 || y >= bottom - top) {
       y -= dy;
     }
     containers[containerIndex].x = x;
@@ -447,16 +447,16 @@ class Display extends Component {
       ),
     );
     const loggedUsers = cursorsEntries.map(
-        ([key, object]) => (
-            <div
-                className="logSquares"
-                key={`square:${key}`}
-                id={`square:${key}`}
-                style={{
-                  backgroundColor: `${object.color}`
-                }}
-            />
-        ),
+      ([key, object]) => (
+        <div
+          className="logSquares"
+          key={`square:${key}`}
+          id={`square:${key}`}
+          style={{
+            backgroundColor: `${object.color}`,
+          }}
+        />
+      ),
     );
     const radialsToRender = cursorsEntries.length ? cursorsEntries.reduce((result, cursor) => {
       if (cursor[1].showRadial) {
@@ -488,7 +488,7 @@ class Display extends Component {
             <footer>
               <img src={qrPath} alt="" className="qr" />
               <div id="loggedUsers_wrapper">
-              {loggedUsers}
+                {loggedUsers}
               </div>
             </footer>
           </div>
