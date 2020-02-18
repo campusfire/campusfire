@@ -119,13 +119,11 @@ class Mobile extends Component {
     }
   }
 
-  handleTouchStart(e) {
+  createMoveInterval() {
     const { socket, key } = this.state;
-    // socket.emit('debug', 'touch start');
-    if (socket && !this.longPressed) {
-      socket.emit('pressing', { clientKey: key, clientId: socket.id });
-    }
-    const timer = setInterval(() => {
+    let { timer } = this.state;
+    clearInterval(timer);
+    timer = setInterval(() => {
       const { distance, radian, degree } = this.state;
       if (socket) {
         if (!this.longPressed) {
@@ -138,9 +136,19 @@ class Mobile extends Component {
         }
       }
     }, 50);
+
+    this.setState({ timer });
+  }
+
+  handleTouchStart(e) {
+    const { socket, key } = this.state;
+    // socket.emit('debug', 'touch start');
+    if (socket && !this.longPressed) {
+      socket.emit('pressing', { clientKey: key, clientId: socket.id });
+    }
+    this.createMoveInterval();
     const longPressTimer = setTimeout(() => this.handleLongPress(e), 1000);
     this.setState({
-      timer,
       longPressTimer,
     });
   }
