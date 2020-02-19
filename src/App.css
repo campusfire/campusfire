@@ -232,3 +232,7 @@ footer{
     opacity: 0.0;
   }
 }
+
+td {
+  vertical-align: middle;
+}

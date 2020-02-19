@@ -279,11 +279,17 @@ class Mobile extends Component {
             <header>
               <img src={logo} className="Mobile-logo" alt="logo" />
             </header>
-            <div style={{ display: input && this.postType === 'Text' ? 'block' : 'none' }}>
-              <input id="textInput" onKeyUp={this.handleEnterKey} />
-              <button type="button" onClick={this.handlePost}>Poster</button>
-              <button type="button" onClick={this.handleCancel}>X</button>
-            </div>
+            <table style={{ display: input && this.postType === 'Text' ? 'block' : 'none' }}>
+              <tr>
+                <td>
+                  <textarea id="textInput" onKeyUp={this.handleEnterKey} maxLength="130" wrap={false} cols="25" rows="3" />
+                </td>
+                <td>
+                  <button type="button" onClick={this.handlePost}>Poster</button>
+                  <button type="button" onClick={this.handleCancel}>X</button>
+                </td>
+              </tr>
+            </table>
             <div style={{ display: input && this.postType === 'Image' ? 'block' : 'none' }}>
               <input id="imageInput" type="file" accept="image/*" onChange={this.onFileChange} />
               <button type="button" onClick={this.handlePost}>Poster</button>
@@ -294,11 +300,17 @@ class Mobile extends Component {
               <button type="button" onClick={this.handlePost}>Poster</button>
               <button type="button" onClick={this.handleCancel}>X</button>
             </div>
-            <div style={{ display: input && this.postType === 'Other' ? 'block' : 'none' }}>
-              <input id="otherInput" onKeyUp={this.handleEnterKey} />
-              <button type="button" onClick={this.handlePost}>Poster</button>
-              <button type="button" onClick={this.handleCancel}>X</button>
-            </div>
+            <table style={{ display: input && this.postType === 'Other' ? 'block' : 'none' }}>
+              <tr>
+                <td>
+                  <textarea id="otherInput" onKeyUp={this.handleEnterKey} maxLength="130" wrap={false} cols="25" rows="3" />
+                </td>
+                <td>
+                  <button type="button" onClick={this.handlePost}>Poster</button>
+                  <button type="button" onClick={this.handleCancel}>X</button>
+                </td>
+              </tr>
+            </table>
             {!input
               && (
                 <ReactNipple
