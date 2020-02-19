@@ -213,7 +213,7 @@ class Mobile extends Component {
       case 'Video':
       case 'Image':
         if (file) {
-          socket.emit('debug', `file: ${file.name}`);
+          // socket.emit('debug', `file: ${file.name}`);
           const formData = new FormData();
           formData.append('file', file);
           fetch(`/storage/${key}`, {

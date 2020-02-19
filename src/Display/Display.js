@@ -48,7 +48,7 @@ function sortContainersZIndex(containers) {
     }
   ));
   updateAllContainers(sortedContainers);
-  console.log('sorted', sortedContainers);
+  // console.log('sorted', sortedContainers);
   return sortedContainers;
 }
 
@@ -114,7 +114,7 @@ class Display extends Component {
 
       socket.on('remote_pressing', (data) => {
         const { cursors } = this.state;
-        console.log('remote pressing');
+        // console.log('remote pressing');
         if (data.clientKey != null) {
           cursors[data.clientKey].pressing = true;
           this.setState({ cursors });
@@ -123,7 +123,7 @@ class Display extends Component {
 
       socket.on('remote_stop_pressing', (data) => {
         const { cursors } = this.state;
-        console.log('remote stop pressing');
+        // console.log('remote stop pressing');
         if (data.clientKey != null) {
           // Reset cursor color
           cursors[data.clientKey].pressing = false;
@@ -149,7 +149,7 @@ class Display extends Component {
           // Envoi de la couleur au mobile pour set le background
           socket.emit('set_color', { client: senderKey, color });
         }
-        console.log(cursors);
+        // console.log(cursors);
       });
 
       socket.on('disconnect_user', (senderKey) => { // removes cursor when user disconnects
@@ -181,7 +181,7 @@ class Display extends Component {
           y: cursor.y,
           z: containers.length,
         };
-        console.log('container', container);
+        // console.log('container', container);
         newContainers.push(container); // front
         await this.postContainer(container); // back
         cursors[data.clientKey].posting = false;
@@ -206,7 +206,7 @@ class Display extends Component {
           const sortedContainersZ = sortContainersZIndex(updatedContainers);
           this.setState({ containers: sortedContainersZ, cursors });
         }
-        console.log('click', cursors[data.clientKey].x, cursors[data.clientKey].y);
+        // console.log('click', cursors[data.clientKey].x, cursors[data.clientKey].y);
       });
 
       socket.on('remote_long_press', (data) => {
@@ -246,7 +246,7 @@ class Display extends Component {
           });
           if (draggedContainer) {
             cursors[data.clientKey].draggedContainerId = draggedContainer.id;
-            console.log('dragging container');
+            // console.log('dragging container');
           } else {
             cursors[data.clientKey].showRadial = true;
             socket.emit('radial_open', data.clientId);
@@ -259,7 +259,7 @@ class Display extends Component {
 
       socket.on('remote_cancel', (data) => {
         const { cursors } = this.state;
-        console.log('remote cancel');
+        // console.log('remote cancel');
         if (data.clientKey != null) {
           cursors[data.clientKey].posting = false;
           this.setState({ cursors });
@@ -267,7 +267,7 @@ class Display extends Component {
       });
 
       socket.on('remote_close_radial', (data) => {
-        console.log('remote close radial');
+        // console.log('remote close radial');
         if (data.clientKey != null) {
           this.closeRadial(data.clientKey);
         }
@@ -293,7 +293,7 @@ class Display extends Component {
 
   closeRadial(clientId) {
     const { cursors } = this.state;
-    console.log('close radial', cursors[clientId]);
+    // console.log('close radial', cursors[clientId]);
     cursors[clientId].showRadial = false;
     this.setState({
       cursors,
