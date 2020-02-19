@@ -137,8 +137,8 @@ footer{
 
 .pointer{
   position: absolute;
-  height: 15px;
-  width: 15px;
+  height: 16px;
+  width: 16px;
   border-radius: 8px;
   z-index: 3000;
   -webkit-transition: background-color 1s ease-in;

@@ -11,8 +11,8 @@ function Pointer(props) {
         id={id}
         style={{
           backgroundColor: `${pressing ? 'white' : color}`,
-          left: `${x}px`,
-          top: `${y}px`,
+          left: `${x - 8}px`,
+          top: `${y - 8}px`,
         }}
       />
       <div
@@ -20,8 +20,8 @@ function Pointer(props) {
         style={{
           display: `${posting ? 'block' : 'none'}`,
           border: `10px solid ${color}`,
-          left: `${x}px`,
-          top: `${y}px`,
+          left: `${x - 8}px`,
+          top: `${y - 8}px`,
         }}
       />
     </div>
