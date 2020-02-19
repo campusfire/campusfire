@@ -13,6 +13,7 @@ const io = require('socket.io')(http);
 const bodyParser = require('body-parser');
 const { makeId } = require('./routes/utils');
 
+io.eio.pingTimeout = 60000;
 
 app.locals.displayId = '';
 app.locals.clients = [];
