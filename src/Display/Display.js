@@ -131,6 +131,7 @@ class Display extends Component {
           this.setState({ cursors });
           const { draggedContainerId } = cursors[data.clientKey];
           if (draggedContainerId !== null) {
+            document.getElementById(`postit_${draggedContainerId}`).style.boxShadow = '';
             const updatedContainer = updatedContainers.filter(
               (container) => container.id === draggedContainerId,
             )[0];
@@ -246,6 +247,7 @@ class Display extends Component {
           });
           if (draggedContainer) {
             cursors[data.clientKey].draggedContainerId = draggedContainer.id;
+            document.getElementById(`postit_${draggedContainer.id}`).style.boxShadow = `0 0 0 5px ${cursors[data.clientKey].color}`;
             // console.log('dragging container');
           } else {
             cursors[data.clientKey].showRadial = true;
