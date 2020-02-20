@@ -23,7 +23,7 @@ class Mobile extends Component {
     this.postType = null;
     this.longPressed = false;
     this.radialOption = '';
-    this.threshold = 15;
+    this.threshold = 20;
 
     this.handleMove = this.handleMove.bind(this);
     this.handleTouchStart = this.handleTouchStart.bind(this);
@@ -128,9 +128,6 @@ class Mobile extends Component {
       if (socket) {
         if (!this.longPressed) {
           socket.emit('move', [radian, distance, key]);
-          if (distance > this.threshold) {
-            socket.emit('stop_pressing', { clientKey: key, clientId: socket.id });
-          }
         } else {
           this.handleRadialOptionChange(degree);
         }

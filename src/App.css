@@ -141,6 +141,12 @@ footer{
   width: 16px;
   border-radius: 8px;
   z-index: 3000;
+  -webkit-transition: background-color 0.5s ease-out;
+  transition: background-color 0.5s ease-out;
+}
+
+.pointer.pressing {
+  background-color: white !important;
   -webkit-transition: background-color 1s ease-in;
   transition: background-color 1s ease-in;
 }

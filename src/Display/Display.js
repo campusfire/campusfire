@@ -67,6 +67,7 @@ class Display extends Component {
       key: null,
       // socket: null,
     };
+    this.threshold = 20;
   }
 
   async componentDidMount() {
@@ -93,7 +94,7 @@ class Display extends Component {
           if (client.clientId) {
             const color = this.pickColor();
             cursors[client.clientKey] = {
-              x: 0, y: 0, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false,
+              x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false,
             };
           }
         });
@@ -121,13 +122,24 @@ class Display extends Component {
         }
       });
 
-      socket.on('remote_stop_pressing', (data) => {
-        const { cursors } = this.state;
+      socket.on('remote_stop_pressing', async (data) => {
+        const { cursors, containers: updatedContainers } = this.state;
         // console.log('remote stop pressing');
         if (data.clientKey != null) {
           // Reset cursor color
           cursors[data.clientKey].pressing = false;
           this.setState({ cursors });
+          const { draggedContainerId } = cursors[data.clientKey];
+          if (draggedContainerId !== null) {
+            const updatedContainer = updatedContainers.filter(
+              (container) => container.id === draggedContainerId,
+            )[0];
+            await updateContainer(updatedContainer);
+            cursors[data.clientKey].draggedContainerId = null;
+            socket.emit('stop_dragging', data.clientId);
+            const sortedContainersZ = sortContainersZIndex(updatedContainers);
+            this.setState({ containers: sortedContainersZ, cursors });
+          }
         }
       });
 
@@ -142,7 +154,7 @@ class Display extends Component {
         if (senderKey != null) {
           const color = this.pickColor();
           cursors[senderKey] = {
-            x: 0, y: 0, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false,
+            x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false,
           };
           this.setState({ cursors });
 
@@ -193,20 +205,8 @@ class Display extends Component {
       });
 
       socket.on('remote_click', async (data) => {
-        const { cursors, containers: updatedContainers } = this.state;
-        // Drop postit, TODO: change behavior to touchStart/move/touchEnd
-        const { draggedContainerId } = cursors[data.clientKey];
-        if (draggedContainerId !== null) {
-          const updatedContainer = updatedContainers.filter(
-            (container) => container.id === draggedContainerId,
-          )[0];
-          await updateContainer(updatedContainer);
-          cursors[data.clientKey].draggedContainerId = null;
-          socket.emit('stop_dragging', data.clientId);
-          const sortedContainersZ = sortContainersZIndex(updatedContainers);
-          this.setState({ containers: sortedContainersZ, cursors });
-        }
-        // console.log('click', cursors[data.clientKey].x, cursors[data.clientKey].y);
+        const { cursors } = this.state;
+        console.log('click', cursors[data.clientKey].x, cursors[data.clientKey].y);
       });
 
       socket.on('remote_long_press', (data) => {
@@ -319,6 +319,9 @@ class Display extends Component {
     const dx = displacement * Math.cos(data[0]);
     const dy = -displacement * Math.sin(data[0]);
     const { cursors } = this.state;
+    if (displacement > 6) {
+      cursors[key].pressing = false;
+    }
     let { x, y } = cursors[key];
 
     if (key !== null) {

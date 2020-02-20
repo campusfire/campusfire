@@ -7,10 +7,10 @@ function Pointer(props) {
   return (
     <div>
       <div
-        className="pointer"
+        className={`pointer${pressing ? ' pressing' : ''}`}
         id={id}
         style={{
-          backgroundColor: `${pressing ? 'white' : color}`,
+          backgroundColor: color,
           left: `${x - 8}px`,
           top: `${y - 8}px`,
         }}
