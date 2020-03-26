@@ -5,11 +5,16 @@ Campus Fire est une borne (un écran) qui doit permettre de rassembler et de par
 
 ### Prérequis
 
-[Node.js](https://nodejs.org/fr/) doit être installé.
+ * [Node.js](https://nodejs.org/fr/) doit être installé.
+ * Il faut également avoir une base de données MongoDB (MongoDB Cloud peut être utilisé).
 
 ### Installation
 
-L'installation des packages se fait avec `npm i`.
+L'installation des packages se fait avec `npm install`.
+
+Il faut ensuite créer une copie du fichier `.env.dist` et l'appeler `.env`, et y mettre la configuration. (Notamment MongoDB)
+
+Pour finir il faut initialiser la base de données avec `node init.db.js`. Si aucune erreur ne se présente, la BDD est bien initalisée.
 
 ### Lancement
 
@@ -17,7 +22,7 @@ L'application a été générée avec [Create React App](https://github.com/face
 Nous utilisons également [Nodemon](https://nodemon.io/) en développement.
 
 * pour lancer le front : `npm run start`
-* pour lancer le back en développement : `npm run dev`
+* pour lancer le back en développement : `npm run dev` ou `node server.js` (sans nodemon).
 
 Pour accéder à l'application en développement, ouvrir `http://localhost:3000/d/fire`.
 
@@ -27,16 +32,15 @@ Avant de lancer en production, il faut build le front avec : `npm run build`.\
 Puis pour lancer le back en production : `npm run prod`.
 
 ### BDD
-?
 
-### Tests
-?
+L'application utilise MongoDB avec l'ORM Mongoose. Les modèles de données sont disponibles dans le dossier models/.
 
 ### Raspi
-?
+Voir le tutoriel pour utiliser une [Raspberry PI en mode Kiosk](http://blog.philippegarry.com/2018/08/19/faire-de-son-pi-une-borne-raspberry-pi-kiosk-mode-stretch-version/). 
 
 ### Docker
-?
+Le fichier `docker-compose.yml` permet de lancer l'application sous forme dockerisée. 
+Pour celà, cloner le dossier et lancer la commande `docker-compose up`. Attention, la configuration des réseaux correspond à l'architecture du GInfo. A modifier si nécéssaire. 
 
 ### Architecture de l'application
 Une connection websocket permet la communication entre la borne et un utilisateur en particulier. Le fichier `socket.js` fait le lien entre les composants React `Mobile` et `Display`.
