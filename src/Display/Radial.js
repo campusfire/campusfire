@@ -11,7 +11,7 @@ function Radial(props) {
       <div className="pieSlice pieSliceText" />
       <div className="pieSlice pieSliceImage" />
       <div className="pieSlice pieSliceVideo" />
-      <div className="pieSlice pieSliceOther" />
+      <div className="pieSlice pieSliceCredits" />
     </div>
   );
 }

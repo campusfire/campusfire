@@ -103,7 +103,7 @@ class Mobile extends Component {
           element = 'Video';
           break;
         case angle >= 270 && angle < 360:
-          element = 'Other';
+          element = 'Credits';
           break;
         default:
           element = 'None';
@@ -177,9 +177,12 @@ class Mobile extends Component {
         if (distance <= this.threshold) {
           // socket.emit('debug', 'close radial');
           socket.emit('close_radial', { clientKey: key, clientId: socket.id });
-        } else {
+        } else if (this.postType !== 'Credits') {
           this.setState({ input: true });
           socket.emit('selected_post_type', { clientKey: key, clientId: socket.id });
+        } else {
+          socket.emit('post_credits', { clientKey: key, clientId: socket.id });
+          this.postType = null;
         }
         this.setState({ mode: 'dynamic' });
       }
@@ -200,7 +203,6 @@ class Mobile extends Component {
     const { postType } = this;
     const input = document.getElementById(`${postType.toLowerCase()}Input`);
     switch (this.postType) {
-      case 'Other':
       case 'Text':
         if (input.value !== '') {
           socket.emit('posting', { contentType: 'TEXT', content: input.value, clientKey: key });
@@ -297,17 +299,6 @@ class Mobile extends Component {
               <button type="button" onClick={this.handlePost}>Poster</button>
               <button type="button" onClick={this.handleCancel}>X</button>
             </div>
-            <table style={{ display: input && this.postType === 'Other' ? 'block' : 'none' }}>
-              <tr>
-                <td>
-                  <textarea id="otherInput" onKeyUp={this.handleEnterKey} maxLength="130" wrap={false} cols="25" rows="3" />
-                </td>
-                <td>
-                  <button type="button" onClick={this.handlePost}>Poster</button>
-                  <button type="button" onClick={this.handleCancel}>X</button>
-                </td>
-              </tr>
-            </table>
             {!input
               && (
                 <ReactNipple

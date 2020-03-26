@@ -10,8 +10,10 @@ function PostIt(props) {
     fontSize = '20pt';
   } else if (textLength > 20 && textLength <= 58) {
     fontSize = '15pt';
-  } else if (textLength > 58) {
+  } else if (textLength > 58 && textLength <= 78) {
     fontSize = '10pt';
+  } else if (textLength > 78) {
+    fontSize = '6pt';
   }
   return (
     <div

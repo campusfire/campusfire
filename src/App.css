@@ -206,9 +206,9 @@ footer{
   background-image:url('Assets/video.png');
 }
 
-.pieSliceOther {
+.pieSliceCredits {
   border-radius: 0 0 100% 0;
-  background-image:url('Assets/text.png');
+  background-image:url('Assets/credits.png');
 }
 
 .pulse {

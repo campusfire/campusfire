@@ -115,6 +115,11 @@ module.exports = function (app, io) {
       io.to(data).emit('radial_open');
     });
 
+    socket.on('post_credits', (data) => {
+      console.log('credits');
+      io.to(app.locals.displayId).emit('post_credits', data);
+    });
+
     socket.on('posting', (data) => {
       console.log('POSTING');
       io.to(app.locals.displayId).emit('posting', data);

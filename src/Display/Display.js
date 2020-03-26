@@ -6,6 +6,8 @@ import Pointer from './Pointer';
 import Radial from './Radial';
 import Container from './Container';
 
+const creditsContent = 'Crédits : Gabriel Carlotti, Joséphine Solier, Victor Yvergniaux, Simon Sauvestre, Sébastien Gahat, François Carlué, Antoine Rousselot-Vigier, Romain Grondin, Christian Martin, Antoine Mirande, Jules Seguin, François Brucker, Christian Jalain';
+
 const getContainers = async (displayKey) => fetch(`/content/${displayKey}`, {
   method: 'GET',
   headers: {
@@ -284,6 +286,28 @@ class Display extends Component {
             cursors,
           });
         }
+      });
+
+      socket.on('post_credits', async (data) => {
+        const { cursors, containers: newContainers } = this.state;
+        cursors[data.clientKey].showRadial = false;
+        const cursor = cursors[data.clientKey];
+        const container = {
+          id: (new Date()).valueOf(),
+          contentType: 'TEXT',
+          content: creditsContent,
+          x: cursor.x,
+          y: cursor.y,
+          z: containers.length,
+        };
+        newContainers.push(container); // front
+        await this.postContainer(container); // back
+        cursors[data.clientKey].posting = false;
+        const sortedContainers = sortContainersZIndex(newContainers);
+        this.setState({
+          containers: sortedContainers,
+          cursors,
+        });
       });
     }
   }
