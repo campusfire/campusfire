@@ -1,74 +1,43 @@
-## Campus Fire
+# Campus Fire
 
-Pour lancer faire `npm start` pour lancer le front, puis `node server.js` pour lancer le back. 
+Campus Fire est une borne (un écran) qui doit permettre de rassembler et de partager, plus que de donner des informations déjà accessibles en ligne. Il s’agit donc d’un objet physique et non d’une plateforme en ligne, l’objectif étant d’enrichir les interactions entres les personnes présentes sur le campus. L’idée est de permettre aux utilisateurs de publier du contenu (sous diverses formes) qui soit affiché pendant un certain temps afin que les autres puisse interagir avec. Une description du concept est celle d’un mur de graffitis numérique, proposant bien sûr plus de fonctionnalités pour rendre l’expérience intéressante pour les utilisateurs. L'application web permet de connecter la borne, les smartphones des utilisateurs et le serveur ensemble.
 
----
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Prérequis
 
-## Available Scripts
+[Node.js](https://nodejs.org/fr/) doit être installé.
 
-In the project directory, you can run:
+### Installation
 
-### `npm start`
+L'installation des packages se fait avec `npm i`.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Lancement
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+L'application a été générée avec [Create React App](https://github.com/facebook/create-react-app) et donc plusieurs scripts sont déjà disponibles.\
+Nous utilisons également [Nodemon](https://nodemon.io/) en développement.
 
-### `npm test`
+* pour lancer le front : `npm run start`
+* pour lancer le back en développement : `npm run dev`
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Pour accéder à l'application en développement, ouvrir `http://localhost:3000/d/fire`.
 
-### `npm run build`
+### Déploiement
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Avant de lancer en production, il faut build le front avec : `npm run build`.\
+Puis pour lancer le back en production : `npm run prod`.
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+### BDD
+?
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Tests
+?
 
-### `npm run eject`
+### Raspi
+?
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Docker
+?
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+### Architecture de l'application
+Une connection websocket permet la communication entre la borne et un utilisateur en particulier. Le fichier `socket.js` fait le lien entre les composants React `Mobile` et `Display`.
+...
