@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Display = require('./models/display');
 const Content = require('./models/content');
 
-mongoose.connect(process.env.MONGO, { useNewUrlParser: true });
+mongoose.connect(process.env.MONGO, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const db = mongoose.connection;
 
