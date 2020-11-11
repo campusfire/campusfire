@@ -22,15 +22,16 @@ L'application a été générée avec [Create React App](https://github.com/face
 Nous utilisons également [Nodemon](https://nodemon.io/) en développement.
 
 * pour lancer le front : `npm run start`
-* pour lancer le back en développement : `npm run dev` (avec nodemon) ou `node server.js` (sans nodemon).
+* pour lancer le back en développement : `npm run dev` (avec nodemon : le serveur se restart dès qu'une modification est enregistrée) ou `node server.js` (sans nodemon).
 
-### Lancer toute l'appli (back, front web et mobile)
+### Lancement de toute l'appli (back, front web et mobile)
 
 Plus précisément voyons comment lancer l'application, c'est-à-dire faire tourner le back, fait tourner le front à la fois de l'appli web (display sur l'écran) et l'appli mobile utilisée pour gérer les contrôles.
 
 Les étapes sont les suivantes:
 - S'assurer que son adresse IP est bien whitelisté sur la DB (normalement c'est le cas car toutes les IP sont whitelistées pour le moment)
 - S'assurer qu'on a bien installé tous les package comme indiqué dans l'[installation](#Installation).
+- Lancer le backend en se plaçant à la racine du projet. Run la commande `npm run dev`, ce qui va lancer le back en mode developpement avec [nodemon](#Lancer le front et le back).
 
 Pour accéder à l'application en développement, ouvrir `http://localhost:3000/d/fire`.
 
