@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import ReactNipple from 'react-nipple';
 import io from 'socket.io-client';
 import logo from '../Assets/logomobile.png';
@@ -279,15 +280,17 @@ class Mobile extends Component {
               <img src={logo} className="Mobile-logo" alt="logo" />
             </header>
             <table style={{ display: input && this.postType === 'Text' ? 'block' : 'none' }}>
-              <tr>
-                <td>
-                  <textarea id="textInput" onKeyUp={this.handleEnterKey} maxLength="130" wrap={false} cols="25" rows="3" />
-                </td>
-                <td>
-                  <button type="button" onClick={this.handlePost}>Poster</button>
-                  <button type="button" onClick={this.handleCancel}>X</button>
-                </td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td>
+                    <textarea id="textInput" onKeyUp={this.handleEnterKey} maxLength="130" cols="25" rows="3" />
+                  </td>
+                  <td>
+                    <button type="button" onClick={this.handlePost}>Poster</button>
+                    <button type="button" onClick={this.handleCancel}>X</button>
+                  </td>
+                </tr>
+              </tbody>
             </table>
             <div style={{ display: input && this.postType === 'Image' ? 'block' : 'none' }}>
               <input id="imageInput" type="file" accept="image/*" onChange={this.onFileChange} />
@@ -317,5 +320,21 @@ class Mobile extends Component {
     );
   }
 }
+
+Mobile.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      key: PropTypes.string,
+    }),
+  }),
+};
+
+Mobile.defaultProps = {
+  match: {
+    params: {
+      key: 'fire',
+    },
+  },
+};
 
 export default Mobile;
