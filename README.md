@@ -24,6 +24,8 @@ Nous utilisons également [Nodemon](https://nodemon.io/) en développement.
 * pour lancer le front : `npm run start`
 * pour lancer le back en développement : `npm run dev` (avec nodemon : le serveur se restart dès qu'une modification est enregistrée) ou `node server.js` (sans nodemon).
 
+Pour accéder à l'application en développement, ouvrir `http://localhost:3000/d/fire`.
+
 ### Lancement de toute l'appli (back, front web et mobile)
 
 Plus précisément voyons comment lancer l'application, c'est-à-dire faire tourner le back, fait tourner le front à la fois de l'appli web (display sur l'écran) et l'appli mobile utilisée pour gérer les contrôles.
@@ -31,9 +33,13 @@ Plus précisément voyons comment lancer l'application, c'est-à-dire faire tour
 Les étapes sont les suivantes:
 - S'assurer que son adresse IP est bien whitelisté sur la DB (normalement c'est le cas car toutes les IP sont whitelistées pour le moment)
 - S'assurer qu'on a bien installé tous les package comme indiqué dans l'[installation](#Installation).
-- Lancer le backend en se plaçant à la racine du projet. Run la commande `npm run dev`, ce qui va lancer le back en mode developpement avec [nodemon](#Lancer le front et le back).
+- S'assurer que son ordi et son téléphone sont sur le même réseau wifi. Auquel cas ils sont reliés sur le même localhost, ce qui prend son sens dans la dernière étape de ce tuto.
+- Lancer le backend en se plaçant à la racine du projet. Run la commande `npm run dev` dans un terminal, ce qui va lancer le back en mode developpement avec [nodemon](#Lancer le front et le back).
+- Dans un autre terminal, lancez le front avec la commande `npm run start`. De cette façon le front de l'appli web qui va sur l'écran et le front de l'appli mobile sont accessibles sur le réseau local.
+- Sur votre navigateur, allez à l'url suivant : `http://localhost:3000/d/fire`. Il correspond à l'appli web.
+- Sur l'appli web vous voyez un QR code en bas à droite de votre écran. Scannez le avec votre téléphone. Vous serez redirigés sur votre navigateur sur un url du type `http://localhost:3000/m/UbSNNXQE` sachant que `UbSNNXQE` est la clé qui vous identifie à ce moment là. Elle vous est attribuée lorsque vous scannez le QR code. Celui-ci change lorsqu'un nouvel appareil se connecte.
 
-Pour accéder à l'application en développement, ouvrir `http://localhost:3000/d/fire`.
+Maintenant vous pouvez manipuler le joystick en bougeant sur votre mobile.
 
 ### Déploiement
 
