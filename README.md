@@ -31,7 +31,8 @@ Pour accéder à l'application en développement, ouvrir `http://localhost:3000/
 Plus précisément voyons comment lancer l'application, c'est-à-dire faire tourner le back, fait tourner le front à la fois de l'appli web (display sur l'écran) et l'appli mobile utilisée pour gérer les contrôles.
 
 Les étapes sont les suivantes:
-- S'assurer que son adresse IP est bien whitelisté sur la DB (normalement c'est le cas car toutes les IP sont whitelistées pour le moment)
+- S'assurer que son adresse IP est bien whitelisté sur la DB (normalement c'est le cas car toutes les IP sont whitelistées pour le moment).
+- S'assurer que le lien dans le .env vers la DB mongo est le bon.
 - S'assurer qu'on a bien installé tous les package comme indiqué dans l'[installation](#Installation).
 - S'assurer que son ordi et son téléphone sont sur le même réseau wifi. Auquel cas ils sont reliés sur le même localhost, ce qui prend son sens dans la dernière étape de ce tuto.
 - Lancer le backend en se plaçant à la racine du projet. Run la commande `npm run dev` dans un terminal, ce qui va lancer le back en mode developpement avec [nodemon](#Lancer le front et le back).
