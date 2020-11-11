@@ -20,6 +20,7 @@ Pour finir il faut initialiser la base de données avec `node init.db.js`. Si au
 
 L'application a été générée avec [Create React App](https://github.com/facebook/create-react-app) et donc plusieurs scripts sont déjà disponibles.\
 Nous utilisons également [Nodemon](https://nodemon.io/) en développement.
+Les étapes pour lancer toute l'appli depuis le début sont dans la partie suivante.
 
 * pour lancer le front : `npm run start`
 * pour lancer le back en développement : `npm run dev` (avec nodemon : le serveur se restart dès qu'une modification est enregistrée) ou `node server.js` (sans nodemon).
