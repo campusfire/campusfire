@@ -16,13 +16,21 @@ Il faut ensuite créer une copie du fichier `.env.dist` et l'appeler `.env`, et 
 
 Pour finir il faut initialiser la base de données avec `node init.db.js`. Si aucune erreur ne se présente, la BDD est bien initalisée.
 
-### Lancement
+### Lancer le front et le back
 
 L'application a été générée avec [Create React App](https://github.com/facebook/create-react-app) et donc plusieurs scripts sont déjà disponibles.\
 Nous utilisons également [Nodemon](https://nodemon.io/) en développement.
 
 * pour lancer le front : `npm run start`
-* pour lancer le back en développement : `npm run dev` ou `node server.js` (sans nodemon).
+* pour lancer le back en développement : `npm run dev` (avec nodemon) ou `node server.js` (sans nodemon).
+
+### Lancer toute l'appli (back, front web et mobile)
+
+Plus précisément voyons comment lancer l'application, c'est-à-dire faire tourner le back, fait tourner le front à la fois de l'appli web (display sur l'écran) et l'appli mobile utilisée pour gérer les contrôles.
+
+Les étapes sont les suivantes:
+- S'assurer que son adresse IP est bien whitelisté sur la DB (normalement c'est le cas car toutes les IP sont whitelistées pour le moment)
+- S'assurer qu'on a bien installé tous les package comme indiqué dans l'[installation](#Installation).
 
 Pour accéder à l'application en développement, ouvrir `http://localhost:3000/d/fire`.
 
