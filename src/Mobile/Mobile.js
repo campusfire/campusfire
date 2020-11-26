@@ -2,12 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactNipple from 'react-nipple';
 import io from 'socket.io-client';
-import TimePicker from 'react-time-picker';
 import logo from '../Assets/logomobile.png';
 import '../App.css';
-
-
-const defaultExpiryTime = '10:00'
 
 class Mobile extends Component {
   constructor(props) {
@@ -24,7 +20,6 @@ class Mobile extends Component {
       mode: 'dynamic',
       input: false,
       file: null,
-      expiryTime: defaultExpiryTime,
     };
     this.postType = null;
     this.longPressed = false;
