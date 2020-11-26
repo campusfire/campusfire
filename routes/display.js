@@ -4,8 +4,15 @@ const fs = require('fs');
 const path = require('path');
 const Display = require('../models/display');
 const Content = require('../models/content');
+const moment = require('moment');
 
 const app = express.Router();
+
+const expirationTest = (post_lifetime,post_date) => {
+  const moment_post = moment(post_date);
+  moment_post.add(post_lifetime,'s');
+  return moment().isBefore(moment_post);  // return true if post expired
+};
 
 app.get('/display/:key', (req, res) => {
   Display.findOne({ token: req.params.key }, (err, display) => {
@@ -23,15 +30,26 @@ app.get('/content/:key', (req, res) => {
         const retour = [];
 
         for (let i = 0; i < contents.length; i += 1) {
-          retour.push({
-            id: contents[i]._id,
-            contentType: contents[i].type,
-            content: contents[i].payload,
-            x: contents[i].position.x,
-            y: contents[i].position.y,
-          });
-        }
 
+          if (expirationTest(contents[i].lifetime,contents[i].createdOn)) {
+            retour.push({
+              id: contents[i]._id,
+              contentType: contents[i].type,
+              content: contents[i].payload,
+              x: contents[i].position.x,
+              y: contents[i].position.y,
+              lifetime: contents[i].lifetime
+            });
+          } else {
+            Content.deleteOne({ _id: contents[i]._id }, function(err, result) {
+              if (err) {
+                res.send(err);
+              } else {
+                console.log("Object deleted from database");
+              }
+            });
+          }
+        }
         res.send(JSON.stringify(retour));
       });
     }
