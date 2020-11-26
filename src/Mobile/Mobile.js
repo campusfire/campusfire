@@ -2,8 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactNipple from 'react-nipple';
 import io from 'socket.io-client';
+import TimePicker from 'react-time-picker';
 import logo from '../Assets/logomobile.png';
 import '../App.css';
+
+
+const defaultExpiryTime = '10:00'
 
 class Mobile extends Component {
   constructor(props) {
@@ -20,6 +24,7 @@ class Mobile extends Component {
       mode: 'dynamic',
       input: false,
       file: null,
+      expiryTime: defaultExpiryTime,
     };
     this.postType = null;
     this.longPressed = false;
@@ -34,6 +39,7 @@ class Mobile extends Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.handleEnterKey = this.handleEnterKey.bind(this);
     this.checkKey = this.checkKey.bind(this);
+    this.expiryTime = this.setExpiryTime.bind(this);
   }
 
   async componentDidMount() {
@@ -74,6 +80,10 @@ class Mobile extends Component {
       socket.emit('store_client_info', { clientKey: key });
       socket.emit('cursor', { clientKey: key });
     }
+  }
+
+  setExpiryTime(expiryTime) {
+    this.setState({expiryTime});
   }
 
   onFileChange(e) {
@@ -205,6 +215,7 @@ class Mobile extends Component {
     const input = document.getElementById(`${postType.toLowerCase()}Input`);
     switch (this.postType) {
       case 'Text':
+        console.log("Expiry time : " + this.state.expiryTime)
         if (input.value !== '') {
           socket.emit('posting', { contentType: 'TEXT', content: input.value, clientKey: key });
         }
@@ -291,6 +302,10 @@ class Mobile extends Component {
                   </td>
                 </tr>
               </tbody>
+              <TimePicker
+                onChange={(time) => this.setExpiryTime(time)}
+                value={this.state.expiryTime}
+              />
             </table>
             <div style={{ display: input && this.postType === 'Image' ? 'block' : 'none' }}>
               <input id="imageInput" type="file" accept="image/*" onChange={this.onFileChange} />
