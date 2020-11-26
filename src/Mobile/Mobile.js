@@ -6,6 +6,9 @@ import TimePicker from 'react-time-picker';
 import logo from '../Assets/logomobile.png';
 import '../App.css';
 
+
+const defaultExpiryTime = '10:00'
+
 class Mobile extends Component {
   constructor(props) {
     super(props);
@@ -21,7 +24,7 @@ class Mobile extends Component {
       mode: 'dynamic',
       input: false,
       file: null,
-      expiryTime: '10:00',
+      expiryTime: defaultExpiryTime,
     };
     this.postType = null;
     this.longPressed = false;
