@@ -2,16 +2,16 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const moment = require('moment');
 const Display = require('../models/display');
 const Content = require('../models/content');
-const moment = require('moment');
 
 const app = express.Router();
 
-const expirationTest = (post_lifetime,post_date) => {
+const expirationTest = (post_lifetime, post_date) => {
   const moment_post = moment(post_date);
-  moment_post.add(post_lifetime,'s');
-  return moment().isBefore(moment_post);  // return true if post expired
+  moment_post.add(post_lifetime, 's');
+  return moment().isBefore(moment_post); // return true if post expired
 };
 
 app.get('/display/:key', (req, res) => {
@@ -30,22 +30,21 @@ app.get('/content/:key', (req, res) => {
         const retour = [];
 
         for (let i = 0; i < contents.length; i += 1) {
-
-          if (expirationTest(contents[i].lifetime,contents[i].createdOn)) {
+          if (expirationTest(contents[i].lifetime, contents[i].createdOn)) {
             retour.push({
               id: contents[i]._id,
               contentType: contents[i].type,
               content: contents[i].payload,
               x: contents[i].position.x,
               y: contents[i].position.y,
-              lifetime: contents[i].lifetime
+              lifetime: contents[i].lifetime,
             });
           } else {
-            Content.deleteOne({ _id: contents[i]._id }, function(err, result) {
-              if (err) {
-                res.send(err);
+            Content.deleteOne({ _id: contents[i]._id }, (err3, result) => {
+              if (err3) {
+                res.send(err3);
               } else {
-                console.log("Object deleted from database");
+                console.log(`Object with id ${contents[i]._id} deleted from database`);
               }
             });
           }
@@ -68,6 +67,7 @@ app.post('/content/:key', (req, res) => {
           y: req.body.y,
         },
         display: display._id,
+        lifetime: req.body.lifetime | 60,
       });
       newContent.save();
       res.send('ok');
@@ -77,8 +77,8 @@ app.post('/content/:key', (req, res) => {
 
 app.put('/content/:key', (req, res) => {
   Content.findOne({ _id: req.params.key }, (err, content) => {
-    if(err) res.send('fail')
-    else{
+    if (err) res.send('fail');
+    else {
       content.position.x = req.body.x;
       content.position.y = req.body.y;
       content.position.z = req.body.z;
