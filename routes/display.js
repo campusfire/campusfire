@@ -10,7 +10,7 @@ const app = express.Router();
 
 const expirationTest = (post_lifetime, post_date) => {
   const moment_post = moment(post_date);
-  moment_post.add(post_lifetime, 's');
+  moment_post.add(post_lifetime, 'm');
   return moment().isBefore(moment_post); // return true if post expired
 };
 
@@ -67,7 +67,7 @@ app.post('/content/:key', (req, res) => {
           y: req.body.y,
         },
         display: display._id,
-        lifetime: req.body.lifetime | 60,
+        lifetime: req.body.lifetime || 60, //default lifetime is 60 minutes
       });
       newContent.save();
       res.send('ok');

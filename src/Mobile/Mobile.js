@@ -5,6 +5,8 @@ import io from 'socket.io-client';
 import TimePicker from 'react-time-picker';
 import logo from '../Assets/logomobile.png';
 import '../App.css';
+const moment = require('moment');
+
 
 const defaultLifetime = '01:00'
 
@@ -216,7 +218,10 @@ class Mobile extends Component {
       case 'Text':
         console.log(`Lifetime : ${this.state.lifetime}`);
         if (input.value !== '') {
-          socket.emit('posting', { contentType: 'TEXT', content: input.value, clientKey: key, lifetime: this.state.lifetime });
+          const lifetimeHours = Number(this.state.lifetime.split(":")[0])
+          const lifetimeInMinutes = Number(this.state.lifetime.split(":")[1]) + 60*lifetimeHours
+          console.log("lifetime in minutes", lifetimeInMinutes)
+          socket.emit('posting', { contentType: 'TEXT', content: input.value, clientKey: key, lifetime: lifetimeInMinutes });
         }
         input.value = '';
         break;

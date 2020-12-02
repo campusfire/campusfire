@@ -188,6 +188,7 @@ class Display extends Component {
         const { cursors, containers: newContainers } = this.state;
         const { contentType, content, lifetime } = data;
         const cursor = cursors[data.clientKey];
+        console.log("data", data)
         const container = {
           id: (new Date()).valueOf(),
           contentType,
@@ -195,7 +196,7 @@ class Display extends Component {
           x: cursor.x,
           y: cursor.y,
           z: containers.length,
-          lifetime,
+          lifetime: data.lifetime,
         };
         // console.log('container', container);
         newContainers.push(container); // front
