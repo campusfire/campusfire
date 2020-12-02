@@ -2,7 +2,7 @@ import React from 'react';
 
 function PostIt(props) {
   const {
-    key, id, text, x, y, z,
+    key, id, text, x, y, z, lifetime
   } = props;
   const textLength = text.length;
   let fontSize = '25pt';

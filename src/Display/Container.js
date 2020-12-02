@@ -6,12 +6,12 @@ import Video from './Video';
 
 function Container(props) {
   const {
-    id, x, y, z, content, contentType,
+    id, x, y, z, content, contentType, lifetime
   } = props;
   switch (contentType) {
     case 'TEXT':
       return (
-        <PostIt id={id} text={content} x={x} y={y} z={z} />
+        <PostIt id={id} text={content} x={x} y={y} z={z} lifetime={lifetime} />
       );
     case 'IMAGE':
       return (

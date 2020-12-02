@@ -6,7 +6,7 @@ import TimePicker from 'react-time-picker';
 import logo from '../Assets/logomobile.png';
 import '../App.css';
 
-const defaultExpiryTime = '10:00'
+const defaultLifetime = '01:00'
 
 class Mobile extends Component {
   constructor(props) {
@@ -23,7 +23,7 @@ class Mobile extends Component {
       mode: 'dynamic',
       input: false,
       file: null,
-      expiryTime: defaultExpiryTime,
+      lifetime: defaultLifetime,
     };
     this.postType = null;
     this.longPressed = false;
@@ -38,7 +38,7 @@ class Mobile extends Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.handleEnterKey = this.handleEnterKey.bind(this);
     this.checkKey = this.checkKey.bind(this);
-    this.expiryTime = this.setExpiryTime.bind(this);
+    this.lifetime = this.setLifetime.bind(this);
   }
 
   async componentDidMount() {
@@ -85,8 +85,8 @@ class Mobile extends Component {
     this.setState({ file: e.target.files[0] });
   }
 
-  setExpiryTime(expiryTime) {
-    this.setState({ expiryTime });
+  setLifetime(lifetime) {
+    this.setState({ lifetime });
   }
 
   handleMove(_, data) {
@@ -214,9 +214,9 @@ class Mobile extends Component {
     const input = document.getElementById(`${postType.toLowerCase()}Input`);
     switch (this.postType) {
       case 'Text':
-        console.log(`Expiry time : ${this.state.expiryTime}`);
+        console.log(`Lifetime : ${this.state.lifetime}`);
         if (input.value !== '') {
-          socket.emit('posting', { contentType: 'TEXT', content: input.value, clientKey: key });
+          socket.emit('posting', { contentType: 'TEXT', content: input.value, clientKey: key, lifetime: this.state.lifetime });
         }
         input.value = '';
         break;
@@ -302,8 +302,8 @@ class Mobile extends Component {
                 </tr>
               </tbody>
               <TimePicker
-                onChange={(time) => this.setExpiryTime(time)}
-                value={this.state.expiryTime}
+                onChange={(time) => this.setLifetime(time)}
+                value={this.state.lifetime}
               />
             </table>
             <div style={{ display: input && this.postType === 'Image' ? 'block' : 'none' }}>

@@ -186,7 +186,7 @@ class Display extends Component {
 
       socket.on('posting', async (data) => {
         const { cursors, containers: newContainers } = this.state;
-        const { contentType, content } = data;
+        const { contentType, content, lifetime } = data;
         const cursor = cursors[data.clientKey];
         const container = {
           id: (new Date()).valueOf(),
@@ -195,6 +195,7 @@ class Display extends Component {
           x: cursor.x,
           y: cursor.y,
           z: containers.length,
+          lifetime,
         };
         // console.log('container', container);
         newContainers.push(container); // front
