@@ -31,7 +31,7 @@ module.exports = function (app, io) {
   }
 
   // this job runs every minute
-  schedule.scheduleJob('*/5 * * * * *', () => {
+  schedule.scheduleJob({ start: new Date(Date.now() + 10000), rule: '*/5 * * * * *' }, () => {
     Display.find({}, (err, allDisplays) => {
       if (err) console.log(err);
       else {
