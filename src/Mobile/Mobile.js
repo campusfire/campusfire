@@ -197,6 +197,7 @@ class Mobile extends Component {
           socket.emit('posting', {
             contentType: 'TEXT', content: input.value, clientKey: key, lifetime: lifetimeInMinutes,
           });
+          this.setState({ lifetime: defaultLifetime });
         }
         input.value = '';
         break;
