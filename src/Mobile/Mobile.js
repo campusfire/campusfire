@@ -5,10 +5,8 @@ import io from 'socket.io-client';
 import TimePicker from 'react-time-picker';
 import logo from '../Assets/logomobile.png';
 import '../App.css';
-const moment = require('moment');
 
-
-const defaultLifetime = '01:00'
+const defaultLifetime = '01:00';
 
 class Mobile extends Component {
   constructor(props) {
@@ -83,14 +81,6 @@ class Mobile extends Component {
     }
   }
 
-  onFileChange(e) {
-    this.setState({ file: e.target.files[0] });
-  }
-
-  setLifetime(lifetime) {
-    this.setState({ lifetime });
-  }
-
   handleMove(_, data) {
     const { distance, angle: { radian, degree } } = data;
     this.setState({
@@ -129,24 +119,6 @@ class Mobile extends Component {
       socket.emit('dir', [element, key]);
       this.radialOption = element;
     }
-  }
-
-  createMoveInterval() {
-    const { socket, key } = this.state;
-    let { timer } = this.state;
-    clearInterval(timer);
-    timer = setInterval(() => {
-      const { distance, radian, degree } = this.state;
-      if (socket) {
-        if (!this.longPressed) {
-          socket.emit('move', [radian, distance, key]);
-        } else {
-          this.handleRadialOptionChange(degree);
-        }
-      }
-    }, 50);
-
-    this.setState({ timer });
   }
 
   handleTouchStart(e) {
@@ -214,14 +186,17 @@ class Mobile extends Component {
     event.stopPropagation();
     const { postType } = this;
     const input = document.getElementById(`${postType.toLowerCase()}Input`);
+    const { lifetime } = this.state;
     switch (this.postType) {
       case 'Text':
-        console.log(`Lifetime : ${this.state.lifetime}`);
+        console.log(`Lifetime : ${lifetime}`);
         if (input.value !== '') {
-          const lifetimeHours = Number(this.state.lifetime.split(":")[0])
-          const lifetimeInMinutes = Number(this.state.lifetime.split(":")[1]) + 60*lifetimeHours
-          console.log("lifetime in minutes", lifetimeInMinutes)
-          socket.emit('posting', { contentType: 'TEXT', content: input.value, clientKey: key, lifetime: lifetimeInMinutes });
+          const lifetimeHours = Number(lifetime.split(':')[0]);
+          const lifetimeInMinutes = Number(lifetime.split(':')[1]) + 60 * lifetimeHours;
+          console.log('lifetime in minutes', lifetimeInMinutes);
+          socket.emit('posting', {
+            contentType: 'TEXT', content: input.value, clientKey: key, lifetime: lifetimeInMinutes,
+          });
         }
         input.value = '';
         break;
@@ -266,6 +241,32 @@ class Mobile extends Component {
 
   handleEnterKey(event) {
     if (event.keyCode === 13) { this.handlePost(event); }
+  }
+
+  onFileChange(e) {
+    this.setState({ file: e.target.files[0] });
+  }
+
+  setLifetime(lifetime) {
+    this.setState({ lifetime });
+  }
+
+  createMoveInterval() {
+    const { socket, key } = this.state;
+    let { timer } = this.state;
+    clearInterval(timer);
+    timer = setInterval(() => {
+      const { distance, radian, degree } = this.state;
+      if (socket) {
+        if (!this.longPressed) {
+          socket.emit('move', [radian, distance, key]);
+        } else {
+          this.handleRadialOptionChange(degree);
+        }
+      }
+    }, 50);
+
+    this.setState({ timer });
   }
 
   checkKey(key) {
