@@ -1,4 +1,8 @@
 /* eslint-disable no-param-reassign */
+const schedule = require('node-schedule');
+const Display = require('../models/display');
+const Content = require('../models/content');
+const { expirationTest } = require('../routes/display');
 const { makeId } = require('./utils');
 
 // eslint-disable-next-line func-names
@@ -25,6 +29,22 @@ module.exports = function (app, io) {
       }
     }
   }
+
+  // this job runs every minute
+  schedule.scheduleJob('*/5 * * * * *', () => {
+    Display.find({}, (err, allDisplays) => {
+      if (err) console.log(err);
+      else {
+        allDisplays.map(async (display) => {
+          const name_socket = `refresh_posts_${display.token}`;
+          let all_contents_to_check_expiry_date = await Content.find({ display: display._id }).select('lifetime _id createdOn');
+          all_contents_to_check_expiry_date = all_contents_to_check_expiry_date.filter((content) => !expirationTest(content.lifetime, content.createdOn));
+          console.log('all_contents_to_check_expiry_date', all_contents_to_check_expiry_date);
+          io.emit(name_socket, all_contents_to_check_expiry_date);
+        });
+      }
+    });
+  });
 
   // Client callbacks
   io.on('connection', (socket) => {
