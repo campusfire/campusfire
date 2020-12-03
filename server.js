@@ -55,7 +55,7 @@ db.once('open', () => {
   logger.info('Connected to database');
 });
 
-const displayRoutes = require('./routes/display');
+const displayRoutes = require('./routes/display').app;
 const mobileRoutes = require('./routes/mobile');
 require('./routes/socket')(app, io);
 
