@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
 import logo from '../Assets/cfwhite.png';
+import scanMe from '../Assets/scanMe.png';
 import '../App.css';
 import Pointer from './Pointer';
 import Radial from './Radial';
@@ -515,9 +516,10 @@ class Display extends Component {
               {containersToRender}
               {cursorsToRender}
               {radialsToRender}
+              <img src={scanMe} alt="" className="scanMe" />
             </div>
             <footer>
-              <img src={qrPath} alt="" className="qr" />
+              <img src={qrPath} alt="" className="qr"/>
               <div id="loggedUsers_wrapper">
                 {loggedUsers}
               </div>

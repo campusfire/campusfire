@@ -158,6 +158,15 @@ footer{
   opacity: 0.85;
 }
 
+.scanMe{
+  width: 140px;
+  height: 140px;
+  position: absolute;
+  bottom: 148px;
+  right: 0;
+  opacity: 0.95;
+}
+
 
 /* Radial Menu */
 
