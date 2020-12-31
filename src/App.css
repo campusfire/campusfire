@@ -87,6 +87,13 @@ footer{
   max-height: 16vh;
 }
 
+.helpButton{
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  opacity: 0.8;
+}
+
 .postit{
   position: absolute;
   width: 130px;

@@ -4,6 +4,7 @@ import ReactNipple from 'react-nipple';
 import io from 'socket.io-client';
 import TimePicker from 'react-time-picker';
 import logo from '../Assets/logomobile.png';
+import help from '../Assets/helpLogo.png'
 import '../App.css';
 
 const defaultLifetime = '01:00';
@@ -285,6 +286,10 @@ class Mobile extends Component {
         }));
   }
 
+  displayHelp() {
+    alert(`Utilise ton smartphone pour déplacer le curseur à l\'écran. Appui long pour ajouter un élément.\nPlus d\'info sur ${<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />}`);
+  }
+
   render() {
     const {
       keyChecked, mode, backgroundColor, input,
@@ -295,6 +300,7 @@ class Mobile extends Component {
           <div className="Mobile" onTouchStart={!input ? this.handleTouchStart : false} onTouchEnd={!input ? this.handleTouchEnd : false} style={{ backgroundColor }}>
             <header>
               <img src={logo} className="Mobile-logo" alt="logo" />
+              <img src={help} className="helpButton" alt="help" onClick={this.displayHelp}/>
             </header>
             <table style={{ display: input && this.postType === 'Text' ? 'block' : 'none' }}>
               <tbody>
