@@ -6,6 +6,7 @@ import TimePicker from 'react-time-picker';
 import logo from '../Assets/logomobile.png';
 import help from '../Assets/helpLogo.png'
 import '../App.css';
+import TextField from 'material-ui/TextField';
 
 const defaultLifetime = '01:00';
 
@@ -292,7 +293,7 @@ class Mobile extends Component {
 
   render() {
     const {
-      keyChecked, mode, backgroundColor, input,
+      keyChecked, mode, backgroundColor, input, classes
     } = this.state;
     return (
       keyChecked
@@ -314,16 +315,12 @@ class Mobile extends Component {
                   </td>
                 </tr>
               </tbody>
-              <!-- <TimePicker
-                onChange={(time) => this.setLifetime(time)}
-                value={this.state.lifetime}
-              /> -->
+              <form noValidate>
                 <TextField
                   id="time"
                   label="Time bomb"
                   type="time"
                   defaultValue="00:30"
-                  className={classes.textField}
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -331,6 +328,7 @@ class Mobile extends Component {
                     step: 60, // 5 min
                   }}
                 />
+                </form>
             </table>
             <div style={{ display: input && this.postType === 'Image' ? 'block' : 'none' }}>
               <input id="imageInput" type="file" accept="image/*" onChange={this.onFileChange} />
