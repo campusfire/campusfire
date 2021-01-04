@@ -1,17 +1,19 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './popupStyle.css';
 
-class Popup extends React.Component {
-  render() {
-    return (
-      <div className='popup'>
-        <div className='popup_inner'>
-          <h1>{this.props.text}</h1>
-        <button onClick={this.props.closePopup}>close me</button>
-        </div>
-      </div>
-    );
-  }
-}
+const Popup = function ({ text, closePopup }) {
+  return (
+    <div>
+      <h1>{text}</h1>
+      <button type="button" onClick={closePopup}>close me</button>
+    </div>
+  );
+};
+
+Popup.propTypes = {
+  text: PropTypes.string.isRequired,
+  closePopup: PropTypes.func.isRequired,
+};
 
 export default Popup;
