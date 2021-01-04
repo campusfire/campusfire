@@ -293,7 +293,7 @@ class Mobile extends Component {
 
   render() {
     const {
-      keyChecked, mode, backgroundColor, input, classes
+      keyChecked, mode, backgroundColor, input
     } = this.state;
     return (
       keyChecked
@@ -315,21 +315,23 @@ class Mobile extends Component {
                   </td>
                 </tr>
               </tbody>
-              <form noValidate>
-                <TextField
-                  id="time"
-                  label="Time bomb"
-                  type="time"
-                  defaultValue="00:30"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  inputProps={{
-                    step: 60, // 5 min
-                  }}
-                />
-                </form>
             </table>
+            <div>
+            <form noValidate>
+              <TextField
+                id="time"
+                label="Time bomb"
+                type="time"
+                defaultValue="00:30"
+                inputlabelprops={{
+                  shrink: true,
+                }}
+                inputprops={{
+                  step: 60, // 5 min
+                }}
+              />
+            </form>
+            </div>
             <div style={{ display: input && this.postType === 'Image' ? 'block' : 'none' }}>
               <input id="imageInput" type="file" accept="image/*" onChange={this.onFileChange} />
               <button type="button" onClick={this.handlePost}>Poster</button>

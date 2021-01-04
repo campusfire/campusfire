@@ -13,17 +13,17 @@ function App() {
   // }
 
   return (
-    <Switch>
-        <MuiThemeProvider>
+    <MuiThemeProvider>
+        <Switch>
           <Route path="/d/:key" component={Display} />
 
           <Route path="/m/:key" component={Mobile} />
 
           <Route path="/">
             <Mobile />
-          </Route>
-      </MuiThemeProvider>
-    </Switch>
+            </Route>
+        </Switch>
+    </MuiThemeProvider>
 
   );
 }
