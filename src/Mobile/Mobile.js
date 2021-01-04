@@ -336,10 +336,6 @@ class Mobile extends Component {
                   </td>
                 </tr>
               </tbody>
-              <TimePicker
-                onChange={(time) => this.setLifetime(time)}
-                value={this.state.lifetime}
-              />
             </table>
             <div style={{ display: input && this.postType === 'Image' ? 'block' : 'none' }}>
               <input id="imageInput" type="file" accept="image/*" onChange={this.onFileChange} />

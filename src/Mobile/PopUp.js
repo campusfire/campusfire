@@ -4,9 +4,11 @@ import './popupStyle.css';
 
 const Popup = function ({ text, closePopup }) {
   return (
-    <div>
-      <h1>{text}</h1>
-      <button type="button" onClick={closePopup}>close me</button>
+    <div className="popup">
+      <div className="popup_inner">
+        <h1>{text}</h1>
+        <button type="button" onClick={closePopup}>close me</button>
+      </div>
     </div>
   );
 };
