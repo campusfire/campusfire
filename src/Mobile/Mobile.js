@@ -40,7 +40,7 @@ class Mobile extends Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.handleEnterKey = this.handleEnterKey.bind(this);
     this.checkKey = this.checkKey.bind(this);
-    this.lifetime = this.setLifetime.bind(this);
+    this.setLifetime = this.setLifetime.bind(this);
   }
 
   async componentDidMount() {
@@ -184,6 +184,7 @@ class Mobile extends Component {
   }
 
   handlePost(event) {
+    event.preventDefault();
     const { socket, key, file } = this.state;
     event.stopPropagation();
     const { postType } = this;
@@ -199,7 +200,7 @@ class Mobile extends Component {
           socket.emit('posting', {
             contentType: 'TEXT', content: input.value, clientKey: key, lifetime: lifetimeInMinutes,
           });
-          this.setState({ lifetime: defaultLifetime });
+        this.setState({ lifetime: defaultLifetime });
         }
         input.value = '';
         break;
@@ -315,23 +316,28 @@ class Mobile extends Component {
                   </td>
                 </tr>
               </tbody>
+            <tbody>
+                <tr>
+                    <td>
+                        <form noValidate>
+                          <TextField
+                            id="time"
+                            label="Time bomb"
+                            type="time"
+                            value={this.state.lifetime}
+                            inputlabelprops={{
+                              shrink: true,
+                            }}
+                            inputprops={{
+                              step: 60, // 1 min
+                            }}
+                            onChange={(event) => this.setLifetime(event.target.value)}
+                          />
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
             </table>
-            <div>
-            <form noValidate>
-              <TextField
-                id="time"
-                label="Time bomb"
-                type="time"
-                defaultValue="00:30"
-                inputlabelprops={{
-                  shrink: true,
-                }}
-                inputprops={{
-                  step: 60, // 5 min
-                }}
-              />
-            </form>
-            </div>
             <div style={{ display: input && this.postType === 'Image' ? 'block' : 'none' }}>
               <input id="imageInput" type="file" accept="image/*" onChange={this.onFileChange} />
               <button type="button" onClick={this.handlePost}>Poster</button>
