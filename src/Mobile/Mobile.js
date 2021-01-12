@@ -317,7 +317,7 @@ class Mobile extends Component {
                 ?
                 (
                   <Popup
-                    text='Click "Close Button" to hide popup'
+                    text='Comment utliser la borne ?'
                     closePopup={this.togglePopup}
                   />
                 )

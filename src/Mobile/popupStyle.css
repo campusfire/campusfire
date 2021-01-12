@@ -14,15 +14,29 @@
 .popup_inner {
   position: absolute;
   z-index: 1001;
-  left: 25%;
-  right: 25%;
-  top: 25%;
-  bottom: 25%;
+  left: 10%;
+  right: 10%;
+  top: 15%;
+  bottom: 15%;
   margin: auto;
   border-radius: 20px;
   background: white;
 }
 
+.closeButton {
+  position: inherit;
+  z-index: 1002;
+  right: 2%;
+  top: 2%;
+  margin: auto;
+  border-radius: 20px;
+}
+
 h1 {
   color: black;
+}
+
+p {
+  color: black;
+  padding: 5%;
 }
