@@ -241,9 +241,11 @@ class Display extends Component {
                 right,
                 top,
                 bottom,
+                depth : target.z
               };
             },
           );
+          console.log(boundingBoxes);
           const draggedContainer = boundingBoxes.find((boundingBox) => {
             const {
               left, right, top, bottom,
