@@ -80,6 +80,6 @@ app.use((req, res) => {
 });
 
 logger.info(process.env[process.env.PORT]);
-const listener = http.listen(process.env.ENV === 'PROD' ? process.env.PORT : 8080, () => {
+const listener = http.listen(process.env.ENV === 'PROD' ? process.env[process.env.PORT] : 8080, () => {
   console.log(`Listening on port ${listener.address().port}`);
 });
