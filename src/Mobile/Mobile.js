@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import ReactNipple from 'react-nipple';
 import io from 'socket.io-client';
 import TimePicker from 'react-time-picker';
+import Popup from './PopUp';
 import logo from '../Assets/logomobile.png';
 import help from '../Assets/helpLogo.png'
 import '../App.css';
@@ -25,6 +26,7 @@ class Mobile extends Component {
       input: false,
       file: null,
       lifetime: defaultLifetime,
+      showPopup: false,
     };
     this.postType = null;
     this.longPressed = false;
@@ -40,6 +42,7 @@ class Mobile extends Component {
     this.handleEnterKey = this.handleEnterKey.bind(this);
     this.checkKey = this.checkKey.bind(this);
     this.lifetime = this.setLifetime.bind(this);
+    this.togglePopup = this.togglePopup.bind(this);
   }
 
   async componentDidMount() {
@@ -286,8 +289,17 @@ class Mobile extends Component {
         }));
   }
 
-  displayHelp() {
-    alert(`Utilise ton smartphone pour déplacer le curseur à l\'écran. Appui long pour ajouter un élément.\nPlus d\'info sur ${<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />}`);
+  // displayHelp() {
+  //   alert(`Utilise ton smartphone pour déplacer le curseur à l\'écran. Appui long pour ajouter un élément.\nPlus d\'info sur ${<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />}`);
+  // }
+
+  togglePopup(e) {
+    e.preventDefault();
+    this.setState((prevState) => ({
+      ...prevState,
+      showPopup: !prevState.showPopup,
+    }));
+    console.log('ça fait des bails');
   }
 
   render() {
@@ -300,7 +312,17 @@ class Mobile extends Component {
           <div className="Mobile" onTouchStart={!input ? this.handleTouchStart : false} onTouchEnd={!input ? this.handleTouchEnd : false} style={{ backgroundColor }}>
             <header>
               <img src={logo} className="Mobile-logo" alt="logo" />
-              <img src={help} className="helpButton" alt="help" onClick={this.displayHelp}/>
+              <img src={help} className="helpButton" alt="help" onClick={this.togglePopup} />
+              {this.state.showPopup
+                ?
+                (
+                  <Popup
+                    text='Comment utliser la borne ?'
+                    closePopup={this.togglePopup}
+                  />
+                )
+                : null
+              }
             </header>
             <table style={{ display: input && this.postType === 'Text' ? 'block' : 'none' }}>
               <tbody>
@@ -314,10 +336,6 @@ class Mobile extends Component {
                   </td>
                 </tr>
               </tbody>
-              <TimePicker
-                onChange={(time) => this.setLifetime(time)}
-                value={this.state.lifetime}
-              />
             </table>
             <div style={{ display: input && this.postType === 'Image' ? 'block' : 'none' }}>
               <input id="imageInput" type="file" accept="image/*" onChange={this.onFileChange} />
