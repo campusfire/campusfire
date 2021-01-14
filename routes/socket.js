@@ -1,4 +1,9 @@
 /* eslint-disable no-param-reassign */
+const schedule = require('node-schedule');
+const mongoose = require('mongoose');
+const Display = require('../models/display');
+const Content = require('../models/content');
+const { expirationTest } = require('../routes/display');
 const { makeId } = require('./utils');
 
 // eslint-disable-next-line func-names
@@ -25,6 +30,23 @@ module.exports = function (app, io) {
       }
     }
   }
+
+  // this job runs every minute
+  schedule.scheduleJob({ start: new Date(Date.now() + 10000), rule: '*/5 * * * * *' }, () => {
+    Display.find({}, (err, allDisplays) => {
+      if (err) console.log(err);
+      else {
+        allDisplays.map(async (display) => {
+          const name_socket = `refresh_posts_${display.token}`;
+          let all_contents_to_check_expiry_date = await Content.find({ display: display._id }).select('lifetime _id createdOn');
+          all_contents_to_check_expiry_date = all_contents_to_check_expiry_date.filter((content) => !expirationTest(content.lifetime, content.createdOn));
+          io.emit(name_socket, all_contents_to_check_expiry_date);
+          const contents_to_delete_in_db = all_contents_to_check_expiry_date.map((elt) => mongoose.Types.ObjectId(elt._id));
+          await Content.remove({ _id: { $in: contents_to_delete_in_db } });
+        });
+      }
+    });
+  });
 
   // Client callbacks
   io.on('connection', (socket) => {

@@ -200,8 +200,9 @@ class Display extends Component {
           lifetime: data.lifetime,
         };
         // console.log('container', container);
+        const { id_content } = JSON.parse(await (await this.postContainer(container)).text()); // back
+        container.id = id_content;
         newContainers.push(container); // front
-        await this.postContainer(container); // back
         cursors[data.clientKey].posting = false;
         const sortedContainers = sortContainersZIndex(newContainers);
         this.setState({
@@ -213,6 +214,20 @@ class Display extends Component {
       socket.on('remote_click', async (data) => {
         const { cursors } = this.state;
         console.log('click', cursors[data.clientKey].x, cursors[data.clientKey].y);
+      });
+
+      const name_socket = `refresh_posts_${key}`;
+      console.log('name_socket', name_socket);
+      socket.on(name_socket, async (contents_to_remove) => {
+        contents_to_remove = contents_to_remove.map((elt) => elt._id);
+        console.log('contents_to_remove', contents_to_remove);
+        console.log('containers on the screen --> ', this.state.containers);
+        if (contents_to_remove.length > 0) {
+          this.setState((prevState) => ({
+            ...prevState,
+            containers: prevState.containers.filter((cont) => !contents_to_remove.includes(cont.id)),
+          }));
+        }
       });
 
       socket.on('remote_long_press', (data) => {
@@ -423,16 +438,22 @@ class Display extends Component {
     }
   }
 
-  postContainer(container) {
+  async postContainer(container) {
     const { key } = this.state;
-    return fetch(`/content/${key}`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(container),
-    }).catch((err) => console.log('fetch error', err));
+    try {
+      const res = await fetch(`/content/${key}`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(container),
+      });
+      return res;
+    } catch (err) {
+      console.log('fetch error', err);
+      return 'ERROR';
+    }
   }
 
   async checkKey(key) {

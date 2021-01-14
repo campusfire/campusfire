@@ -56,7 +56,7 @@ app.get('/content/:key', (req, res) => {
 });
 
 app.post('/content/:key', (req, res) => {
-  Display.findOne({ token: req.params.key }, (err, display) => {
+  Display.findOne({ token: req.params.key }, async (err, display) => {
     if (err) res.send('fail');
     else {
       const newContent = new Content({
@@ -69,8 +69,8 @@ app.post('/content/:key', (req, res) => {
         display: display._id,
         lifetime: req.body.lifetime || 60, //default lifetime is 60 minutes
       });
-      newContent.save();
-      res.send('ok');
+      const id_content = await newContent.save();
+      res.json({ id_content: id_content._id });
     }
   });
 });
@@ -147,4 +147,7 @@ app.get('/qr', (req, res) => {
   res.sendFile(path.resolve(`${__dirname}/../qr.png`));
 });
 
-module.exports = app;
+module.exports = {
+  app,
+  expirationTest,
+};
