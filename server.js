@@ -55,7 +55,7 @@ db.once('open', () => {
   logger.info('Connected to database');
 });
 
-const displayRoutes = require('./routes/display');
+const displayRoutes = require('./routes/display').app;
 const mobileRoutes = require('./routes/mobile');
 require('./routes/socket')(app, io);
 
@@ -79,8 +79,7 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-
 logger.info(process.env[process.env.PORT]);
-const listener = http.listen(process.env.PORT ? process.env[process.env.PORT] : 8080, () => {
+const listener = http.listen(process.env.ENV === 'PROD' ? process.env[process.env.PORT] : 8080, () => {
   console.log(`Listening on port ${listener.address().port}`);
 });

@@ -1,7 +1,13 @@
 const os = require('os');
 
 let url = '';
-if (process.env.ENV !== 'PROD') {
+if (process.env.ENV === 'PROD') {
+  if (process.env.VIRTUAL_HOST) {
+    url = `http://${process.env.VIRTUAL_HOST}`;
+  } else {
+    url = `http://node.${process.env.PORT.toLowerCase()}.ovh1.ec-m.fr`;
+  }
+} else {
   let ip = '';
   const ifaces = os.networkInterfaces();
   Object.keys(ifaces).forEach((ifname) => {
@@ -13,12 +19,7 @@ if (process.env.ENV !== 'PROD') {
       ip = iface.address;
     });
   });
-  url = `http://${ip}:3000`;
-} else {
-  if (process.env.VIRTUAL_HOST)
-  { url = `http://${process.env.VIRTUAL_HOST}`; }
-  else
-  { url = `http://node.${process.env.PORT.toLowerCase()}.ovh1.ec-m.fr`; }
+  url = `http://${ip}:${process.env.DEV_REACT_PORT}`;
 }
 
 console.log(url);
