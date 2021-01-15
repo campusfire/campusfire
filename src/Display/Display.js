@@ -260,7 +260,10 @@ class Display extends Component {
               };
             },
           );
-          console.log(boundingBoxes);
+          console.log('boundigBoxes', boundingBoxes);
+          //we need to sort containers by depth
+          boundingBoxes.sort((a,b)=>(b.depth - a.depth));
+          //then we take the first one (the one at the foreground)
           const draggedContainer = boundingBoxes.find((boundingBox) => {
             const {
               left, right, top, bottom,
