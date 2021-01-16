@@ -53,7 +53,7 @@ Puis pour lancer le back en production : `npm run prod`.
 L'application utilise MongoDB avec l'ORM Mongoose. Les modèles de données sont disponibles dans le dossier models/.
 
 ### Raspi
-Voir le tutoriel pour utiliser une [Raspberry PI en mode Kiosk](http://blog.philippegarry.com/2018/08/19/faire-de-son-pi-une-borne-raspberry-pi-kiosk-mode-stretch-version/). 
+Voir notre tutoriel pour utiliser une [Raspberry PI en mode Kiosk](https://docs.google.com/document/d/1SmxOe2YuxBn3k09AuSDzoZAskMb_VE45NCo6sfN_Bgc/edit?usp=sharing). 
 
 ### Docker
 Le fichier `docker-compose.yml` permet de lancer l'application sous forme dockerisée. 
