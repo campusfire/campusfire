@@ -7,7 +7,8 @@ import Popup from './PopUp';
 import logo from '../Assets/logomobile.png';
 import help from '../Assets/helpLogo.png'
 import '../App.css';
-import TextField from 'material-ui/TextField';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 
 const defaultLifetime = '01:00';
 
@@ -301,7 +302,6 @@ class Mobile extends Component {
       ...prevState,
       showPopup: !prevState.showPopup,
     }));
-    console.log('ça fait des bails');
   }
 
   render() {
@@ -347,7 +347,6 @@ class Mobile extends Component {
                       <TextField
                         style={{width: '100px'}}
                         id="time"
-                        label="Time bomb"
                         type="time"
                         value={this.state.lifetime}
                         inputlabelprops={{
@@ -361,9 +360,9 @@ class Mobile extends Component {
                     </form>
                   </div>
                 </div>
-                <div style={{marginTop: '20px'}}>
-                  <button type="button" onClick={this.handlePost}>Poster</button>
-                  <button type="button" onClick={this.handleCancel}>X</button>
+                <div style={{display: 'flex','flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width:'100%'}}>
+                  <Button variant="contained" style={{marginRight:'10px'}} onClick={this.handlePost}>Poster</Button>
+                  <Button variant="contained" style={{marginLeft: '10px'}} onClick={this.handleCancel}>X</Button>
                 </div>
             </div>
 
@@ -380,7 +379,6 @@ class Mobile extends Component {
                       <TextField
                         style={{width: '100px'}}
                         id="time"
-                        label="Time bomb"
                         type="time"
                         value={this.state.lifetime}
                         inputlabelprops={{
@@ -394,10 +392,10 @@ class Mobile extends Component {
                     </form>
                   </div>
                 </div>
-                <div style={{marginTop: '20px'}}>
-                  <button type="button" onClick={this.handlePost}>Poster</button>
-                  <button type="button" onClick={this.handleCancel}>X</button>
-              </div>
+                <div style={{display: 'flex','flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width:'100%'}}>
+                  <Button variant="contained" style={{marginRight:'10px'}} onClick={this.handlePost}>Poster</Button>
+                  <Button variant="contained" style={{marginLeft: '10px'}} onClick={this.handleCancel}>X</Button>
+                </div>
             </div>
 
             <div style={styleType('Video')}>
@@ -413,7 +411,6 @@ class Mobile extends Component {
                       <TextField
                         style={{width: '100px'}}
                         id="time"
-                        label="Time bomb"
                         type="time"
                         value={this.state.lifetime}
                         inputlabelprops={{
@@ -427,10 +424,10 @@ class Mobile extends Component {
                     </form>
                   </div>
                 </div>
-                <div style={{marginTop: '20px'}}>
-                  <button type="button" onClick={this.handlePost}>Poster</button>
-                  <button type="button" onClick={this.handleCancel}>X</button>
-              </div>
+                <div style={{display: 'flex','flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width:'100%'}}>
+                  <Button variant="contained" style={{marginRight:'10px'}} onClick={this.handlePost}>Poster</Button>
+                  <Button variant="contained" style={{marginLeft: '10px'}} onClick={this.handleCancel}>X</Button>
+                </div>
             </div>
 
             {!input
