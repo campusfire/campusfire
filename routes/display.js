@@ -8,6 +8,24 @@ const Content = require('../models/content');
 
 const app = express.Router();
 
+const asyncDeleteMultipleFiles = (list_names_in_upload) => {
+  Promise.all(list_names_in_upload.map((file) => {
+    if (file) {
+      fs.unlink(`public/uploads/${file}`, (err) => {
+        if (err) {
+          console.log(`(ERROR) An error occured when deleting the file : ${file}`);
+          console.log(`(ERROR) This error is the following : ${err}`);
+        };
+        console.log(`${file} was deleted`);
+      });
+    }
+  }));
+};
+
+const filterMediaToDeleteFromContentsAndReturnNames = (list_of_contents) => list_of_contents.map((content) => (content.type === 'TEXT' ? undefined : content.payload)).filter((e) => e);
+
+
+
 const expirationTest = (post_lifetime, post_date) => {
   const moment_post = moment(post_date);
   moment_post.add(post_lifetime, 'm');
@@ -150,4 +168,6 @@ app.get('/qr', (req, res) => {
 module.exports = {
   app,
   expirationTest,
+  filterMediaToDeleteFromContentsAndReturnNames,
+  asyncDeleteMultipleFiles,
 };

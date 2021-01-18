@@ -3,8 +3,9 @@ const schedule = require('node-schedule');
 const mongoose = require('mongoose');
 const Display = require('../models/display');
 const Content = require('../models/content');
-const { expirationTest } = require('../routes/display');
+const { expirationTest } = require('./display');
 const { makeId } = require('./utils');
+const { filterMediaToDeleteFromContentsAndReturnNames, asyncDeleteMultipleFiles } = require('./display');
 
 // eslint-disable-next-line func-names
 module.exports = function (app, io) {
@@ -38,11 +39,15 @@ module.exports = function (app, io) {
       else {
         allDisplays.map(async (display) => {
           const name_socket = `refresh_posts_${display.token}`;
-          let all_contents_to_check_expiry_date = await Content.find({ display: display._id }).select('lifetime _id createdOn');
-          all_contents_to_check_expiry_date = all_contents_to_check_expiry_date.filter((content) => !expirationTest(content.lifetime, content.createdOn));
-          io.emit(name_socket, all_contents_to_check_expiry_date);
-          const contents_to_delete_in_db = all_contents_to_check_expiry_date.map((elt) => mongoose.Types.ObjectId(elt._id));
-          await Content.remove({ _id: { $in: contents_to_delete_in_db } });
+          const all_contents_to_check_expiry_date = await Content.find({ display: display._id }).select('lifetime _id createdOn payload type');
+          const contents_to_delete_in_db = all_contents_to_check_expiry_date.filter((content) => !expirationTest(content.lifetime, content.createdOn));
+          if (contents_to_delete_in_db.length > 0) {
+            console.log('Refresh post to delete : ', contents_to_delete_in_db);
+          }
+          io.emit(name_socket, contents_to_delete_in_db);
+          await asyncDeleteMultipleFiles(filterMediaToDeleteFromContentsAndReturnNames(contents_to_delete_in_db));
+          const contents_to_delete_in_db_ids = contents_to_delete_in_db.map((elt) => mongoose.Types.ObjectId(elt._id));
+          await Content.remove({ _id: { $in: contents_to_delete_in_db_ids } });
         });
       }
     });
