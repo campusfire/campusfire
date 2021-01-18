@@ -308,6 +308,13 @@ class Mobile extends Component {
     const {
       keyChecked, mode, backgroundColor, input
     } = this.state;
+    const styleType = (inputType) => ({
+         display: input && this.postType === inputType ? 'flex' : 'none',
+         'flex-direction': 'column',
+         'flex-wrap': 'wrap',
+         'justify-content': 'space-around',
+         'align-content': 'space-around'
+    })
     return (
       keyChecked
         ? (
@@ -326,50 +333,106 @@ class Mobile extends Component {
                 : null
               }
             </header>
-            <table style={{ display: input && this.postType === 'Text' ? 'block' : 'none' }}>
-              <tbody>
-                <tr>
-                  <td>
-                    <textarea id="textInput" onKeyUp={this.handleEnterKey} maxLength="130" cols="25" rows="3" />
-                  </td>
-                  <td>
-                    <button type="button" onClick={this.handlePost}>Poster</button>
-                    <button type="button" onClick={this.handleCancel}>X</button>
-                  </td>
-                </tr>
-              </tbody>
-            <tbody>
-                <tr>
-                    <td>
-                        <form noValidate>
-                          <TextField
-                            id="time"
-                            label="Time bomb"
-                            type="time"
-                            value={this.state.lifetime}
-                            inputlabelprops={{
-                              shrink: true,
-                            }}
-                            inputprops={{
-                              step: 60, // 1 min
-                            }}
-                            onChange={(event) => this.setLifetime(event.target.value)}
-                          />
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-            </table>
-            <div style={{ display: input && this.postType === 'Image' ? 'block' : 'none' }}>
-              <input id="imageInput" type="file" accept="image/*" onChange={this.onFileChange} />
-              <button type="button" onClick={this.handlePost}>Poster</button>
-              <button type="button" onClick={this.handleCancel}>X</button>
+
+            <div style={styleType('Text')}>
+                <div style={{display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%'}}>
+                  <div>
+                   <textarea id="textInput" onKeyUp={this.handleEnterKey} maxLength="130" cols="25" rows="3" />
+                  </div>
+                  <div>
+                    <p style={{color: 'black', margin: 0}}>
+                      Durée de vie
+                    </p>
+                    <form noValidate>
+                      <TextField
+                        style={{width: '100px'}}
+                        id="time"
+                        label="Time bomb"
+                        type="time"
+                        value={this.state.lifetime}
+                        inputlabelprops={{
+                          shrink: true,
+                        }}
+                        inputprops={{
+                          step: 60, // 1 min
+                        }}
+                        onChange={(event) => this.setLifetime(event.target.value)}
+                      />
+                    </form>
+                  </div>
+                </div>
+                <div style={{marginTop: '20px'}}>
+                  <button type="button" onClick={this.handlePost}>Poster</button>
+                  <button type="button" onClick={this.handleCancel}>X</button>
+                </div>
             </div>
-            <div style={{ display: input && this.postType === 'Video' ? 'block' : 'none' }}>
-              <input id="videoInput" type="file" accept="video/*" onChange={this.onFileChange} />
-              <button type="button" onClick={this.handlePost}>Poster</button>
-              <button type="button" onClick={this.handleCancel}>X</button>
+
+            <div style={styleType('Image')}>
+              <div style={{display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%'}}>
+                  <div>
+                      <input id="imageInput" type="file" accept="image/*" onChange={this.onFileChange} />
+                  </div>
+                  <div>
+                    <p style={{color: 'black', margin: 0}}>
+                      Durée de vie
+                    </p>
+                    <form noValidate>
+                      <TextField
+                        style={{width: '100px'}}
+                        id="time"
+                        label="Time bomb"
+                        type="time"
+                        value={this.state.lifetime}
+                        inputlabelprops={{
+                          shrink: true,
+                        }}
+                        inputprops={{
+                          step: 60, // 1 min
+                        }}
+                        onChange={(event) => this.setLifetime(event.target.value)}
+                      />
+                    </form>
+                  </div>
+                </div>
+                <div style={{marginTop: '20px'}}>
+                  <button type="button" onClick={this.handlePost}>Poster</button>
+                  <button type="button" onClick={this.handleCancel}>X</button>
+              </div>
             </div>
+
+            <div style={styleType('Video')}>
+              <div style={{display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%'}}>
+                  <div>
+                      <input id="videoInput" type="file" accept="video/*" onChange={this.onFileChange} />
+                  </div>
+                  <div>
+                    <p style={{color: 'black', margin: 0}}>
+                      Durée de vie
+                    </p>
+                    <form noValidate>
+                      <TextField
+                        style={{width: '100px'}}
+                        id="time"
+                        label="Time bomb"
+                        type="time"
+                        value={this.state.lifetime}
+                        inputlabelprops={{
+                          shrink: true,
+                        }}
+                        inputprops={{
+                          step: 60, // 1 min
+                        }}
+                        onChange={(event) => this.setLifetime(event.target.value)}
+                      />
+                    </form>
+                  </div>
+                </div>
+                <div style={{marginTop: '20px'}}>
+                  <button type="button" onClick={this.handlePost}>Poster</button>
+                  <button type="button" onClick={this.handleCancel}>X</button>
+              </div>
+            </div>
+
             {!input
               && (
                 <ReactNipple
