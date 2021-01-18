@@ -9,6 +9,8 @@ import help from '../Assets/helpLogo.png'
 import '../App.css';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import CancelPresentationTwoToneIcon from '@material-ui/icons/CancelPresentationTwoTone';
 
 const defaultLifetime = '01:00';
 
@@ -315,6 +317,12 @@ class Mobile extends Component {
          'justify-content': 'space-around',
          'align-content': 'space-around'
     })
+    const styleIcon = {
+        marginLeft: '10px',
+        width: 36,
+        height: 36,
+    };
+
     return (
       keyChecked
         ? (
@@ -361,8 +369,8 @@ class Mobile extends Component {
                   </div>
                 </div>
                 <div style={{display: 'flex','flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width:'100%'}}>
-                  <Button variant="contained" style={{marginRight:'10px'}} onClick={this.handlePost}>Poster</Button>
-                  <Button variant="contained" style={{marginLeft: '10px'}} onClick={this.handleCancel}>X</Button>
+                  <Button variant="contained" style={{marginRight:'10px'}} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
+                  <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
                 </div>
             </div>
 
@@ -393,8 +401,8 @@ class Mobile extends Component {
                   </div>
                 </div>
                 <div style={{display: 'flex','flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width:'100%'}}>
-                  <Button variant="contained" style={{marginRight:'10px'}} onClick={this.handlePost}>Poster</Button>
-                  <Button variant="contained" style={{marginLeft: '10px'}} onClick={this.handleCancel}>X</Button>
+                  <Button variant="contained" style={{marginRight:'10px'}} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
+                  <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
                 </div>
             </div>
 
@@ -425,8 +433,8 @@ class Mobile extends Component {
                   </div>
                 </div>
                 <div style={{display: 'flex','flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width:'100%'}}>
-                  <Button variant="contained" style={{marginRight:'10px'}} onClick={this.handlePost}>Poster</Button>
-                  <Button variant="contained" style={{marginLeft: '10px'}} onClick={this.handleCancel}>X</Button>
+                  <Button variant="contained" style={{marginRight:'10px'}} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
+                  <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
                 </div>
             </div>
 
