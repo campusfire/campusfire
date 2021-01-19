@@ -12,6 +12,7 @@ import Button from '@material-ui/core/Button';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import CancelPresentationTwoToneIcon from '@material-ui/icons/CancelPresentationTwoTone';
 
+
 const defaultLifetime = '01:00';
 
 class Mobile extends Component {
@@ -353,9 +354,10 @@ class Mobile extends Component {
                     </p>
                     <form noValidate>
                       <TextField
-                        style={{width: '100px'}}
+                        style={{width: '120px'}}
                         id="time"
                         type="time"
+                        variant="outlined"
                         value={this.state.lifetime}
                         inputlabelprops={{
                           shrink: true,
@@ -385,9 +387,10 @@ class Mobile extends Component {
                     </p>
                     <form noValidate>
                       <TextField
-                        style={{width: '100px'}}
+                        style={{width: '120px'}}
                         id="time"
                         type="time"
+                        variant="outlined"
                         value={this.state.lifetime}
                         inputlabelprops={{
                           shrink: true,
@@ -417,9 +420,10 @@ class Mobile extends Component {
                     </p>
                     <form noValidate>
                       <TextField
-                        style={{width: '100px'}}
+                        style={{width: '120px'}}
                         id="time"
                         type="time"
+                        variant="outlined"
                         value={this.state.lifetime}
                         inputlabelprops={{
                           shrink: true,
