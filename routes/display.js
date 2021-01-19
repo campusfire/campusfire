@@ -8,6 +8,24 @@ const Content = require('../models/content');
 
 const app = express.Router();
 
+const asyncDeleteMultipleFiles = (list_names_in_upload) => {
+  Promise.all(list_names_in_upload.map((file) => {
+    if (file) {
+      fs.unlink(`public/uploads/${file}`, (err) => {
+        if (err) {
+          console.log(`(ERROR) An error occured when deleting the file : ${file}`);
+          console.log(`(ERROR) This error is the following : ${err}`);
+        }
+        console.log(`${file} was deleted`);
+      });
+    }
+  }));
+};
+
+const filterMediaToDeleteFromContentsAndReturnNames = (list_of_contents) => list_of_contents.map((content) => (content.type === 'TEXT' ? undefined : content.payload)).filter((e) => e);
+
+
+
 const expirationTest = (post_lifetime, post_date) => {
   const moment_post = moment(post_date);
   moment_post.add(post_lifetime, 'm');
@@ -25,9 +43,10 @@ app.get('/content/:key', (req, res) => {
   Display.findOne({ token: req.params.key }, (err, display) => {
     if (err) res.send(JSON.stringify([]));
     else {
-      Content.find({ display: display._id }, (err2, contents) => {
+      Content.find({ display: display._id }, async (err2, contents) => {
         if (err2) res.send(JSON.stringify([]));
         const retour = [];
+        const contents_to_delete_in_db = [];
 
         for (let i = 0; i < contents.length; i += 1) {
           if (expirationTest(contents[i].lifetime, contents[i].createdOn)) {
@@ -40,6 +59,7 @@ app.get('/content/:key', (req, res) => {
               lifetime: contents[i].lifetime,
             });
           } else {
+            contents_to_delete_in_db.push(contents[i]);
             Content.deleteOne({ _id: contents[i]._id }, (err3, result) => {
               if (err3) {
                 res.send(err3);
@@ -49,6 +69,7 @@ app.get('/content/:key', (req, res) => {
             });
           }
         }
+        await asyncDeleteMultipleFiles(filterMediaToDeleteFromContentsAndReturnNames(contents_to_delete_in_db));
         res.send(JSON.stringify(retour));
       });
     }
@@ -150,4 +171,6 @@ app.get('/qr', (req, res) => {
 module.exports = {
   app,
   expirationTest,
+  filterMediaToDeleteFromContentsAndReturnNames,
+  asyncDeleteMultipleFiles,
 };
