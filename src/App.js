@@ -4,7 +4,7 @@ import './App.css';
 import { Switch, Route } from 'react-router-dom';
 import Display from './Display/Display';
 import Mobile from './Mobile/Mobile';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 
 
 function App() {
