@@ -207,13 +207,16 @@ class Mobile extends Component {
           socket.emit('posting', {
             contentType: 'TEXT', content: input.value, clientKey: key, lifetime: lifetimeInMinutes,
           });
-        this.setState({ lifetime: defaultLifetime });
+          this.setState({ lifetime: defaultLifetime });
         }
         input.value = '';
         break;
       case 'Video':
       case 'Image':
         if (file) {
+          const lifetimeHours = Number(lifetime.split(':')[0]);
+          const lifetimeInMinutes = Number(lifetime.split(':')[1]) + 60 * lifetimeHours;
+          console.log('lifetime in minutes', lifetimeInMinutes);
           // socket.emit('debug', `file: ${file.name}`);
           const formData = new FormData();
           formData.append('file', file);
@@ -224,9 +227,10 @@ class Mobile extends Component {
             // .then(this.handleErrors)
             .then((response) => response.text())
             .then((data) => {
-              socket.emit('posting', { contentType: postType.toUpperCase(), content: data, clientKey: key });
+              socket.emit('posting', { contentType: postType.toUpperCase(), content: data, clientKey: key, lifetime: lifetimeInMinutes });
             })
             .catch((err) => socket.emit('debug', `err: ${err}`));
+          this.setState({ lifetime: defaultLifetime });
         } else {
           socket.emit('debug', 'no file');
         }
@@ -312,16 +316,16 @@ class Mobile extends Component {
       keyChecked, mode, backgroundColor, input
     } = this.state;
     const styleType = (inputType) => ({
-         display: input && this.postType === inputType ? 'flex' : 'none',
-         'flex-direction': 'column',
-         'flex-wrap': 'wrap',
-         'justify-content': 'space-around',
-         'align-content': 'space-around'
+      display: input && this.postType === inputType ? 'flex' : 'none',
+      'flex-direction': 'column',
+      'flex-wrap': 'wrap',
+      'justify-content': 'space-around',
+      'align-content': 'space-around'
     })
     const styleIcon = {
-        marginLeft: '10px',
-        width: 36,
-        height: 36,
+      marginLeft: '10px',
+      width: 36,
+      height: 36,
     };
 
     return (
@@ -344,102 +348,102 @@ class Mobile extends Component {
             </header>
 
             <div style={styleType('Text')}>
-                <div style={{display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%'}}>
-                  <div>
-                   <textarea id="textInput" onKeyUp={this.handleEnterKey} maxLength="130" cols="25" rows="3" />
-                  </div>
-                  <div>
-                    <p style={{color: 'black', margin: 0}}>
-                      Durée de vie
+              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%' }}>
+                <div>
+                  <textarea id="textInput" onKeyUp={this.handleEnterKey} maxLength="130" cols="25" rows="3" />
+                </div>
+                <div>
+                  <p style={{ color: 'black', margin: 0 }}>
+                    Durée de vie
                     </p>
-                    <form noValidate>
-                      <TextField
-                        style={{width: '120px'}}
-                        id="time"
-                        type="time"
-                        variant="outlined"
-                        value={this.state.lifetime}
-                        inputlabelprops={{
-                          shrink: true,
-                        }}
-                        inputprops={{
-                          step: 60, // 1 min
-                        }}
-                        onChange={(event) => this.setLifetime(event.target.value)}
-                      />
-                    </form>
-                  </div>
+                  <form noValidate>
+                    <TextField
+                      style={{ width: '120px' }}
+                      id="time"
+                      type="time"
+                      variant="outlined"
+                      value={this.state.lifetime}
+                      inputlabelprops={{
+                        shrink: true,
+                      }}
+                      inputprops={{
+                        step: 60, // 1 min
+                      }}
+                      onChange={(event) => this.setLifetime(event.target.value)}
+                    />
+                  </form>
                 </div>
-                <div style={{display: 'flex','flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width:'100%'}}>
-                  <Button variant="contained" style={{marginRight:'10px'}} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
-                  <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
-                </div>
+              </div>
+              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width: '100%' }}>
+                <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
+                <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
+              </div>
             </div>
 
             <div style={styleType('Image')}>
-              <div style={{display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%'}}>
-                  <div>
-                      <input id="imageInput" type="file" accept="image/*" onChange={this.onFileChange} />
-                  </div>
-                  <div>
-                    <p style={{color: 'black', margin: 0}}>
-                      Durée de vie
+              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%' }}>
+                <div>
+                  <input id="imageInput" type="file" accept="image/*" onChange={this.onFileChange} />
+                </div>
+                <div>
+                  <p style={{ color: 'black', margin: 0 }}>
+                    Durée de vie
                     </p>
-                    <form noValidate>
-                      <TextField
-                        style={{width: '120px'}}
-                        id="time"
-                        type="time"
-                        variant="outlined"
-                        value={this.state.lifetime}
-                        inputlabelprops={{
-                          shrink: true,
-                        }}
-                        inputprops={{
-                          step: 60, // 1 min
-                        }}
-                        onChange={(event) => this.setLifetime(event.target.value)}
-                      />
-                    </form>
-                  </div>
+                  <form noValidate>
+                    <TextField
+                      style={{ width: '120px' }}
+                      id="time"
+                      type="time"
+                      variant="outlined"
+                      value={this.state.lifetime}
+                      inputlabelprops={{
+                        shrink: true,
+                      }}
+                      inputprops={{
+                        step: 60, // 1 min
+                      }}
+                      onChange={(event) => this.setLifetime(event.target.value)}
+                    />
+                  </form>
                 </div>
-                <div style={{display: 'flex','flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width:'100%'}}>
-                  <Button variant="contained" style={{marginRight:'10px'}} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
-                  <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
-                </div>
+              </div>
+              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width: '100%' }}>
+                <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
+                <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
+              </div>
             </div>
 
             <div style={styleType('Video')}>
-              <div style={{display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%'}}>
-                  <div>
-                      <input id="videoInput" type="file" accept="video/*" onChange={this.onFileChange} />
-                  </div>
-                  <div>
-                    <p style={{color: 'black', margin: 0}}>
-                      Durée de vie
+              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%' }}>
+                <div>
+                  <input id="videoInput" type="file" accept="video/*" onChange={this.onFileChange} />
+                </div>
+                <div>
+                  <p style={{ color: 'black', margin: 0 }}>
+                    Durée de vie
                     </p>
-                    <form noValidate>
-                      <TextField
-                        style={{width: '120px'}}
-                        id="time"
-                        type="time"
-                        variant="outlined"
-                        value={this.state.lifetime}
-                        inputlabelprops={{
-                          shrink: true,
-                        }}
-                        inputprops={{
-                          step: 60, // 1 min
-                        }}
-                        onChange={(event) => this.setLifetime(event.target.value)}
-                      />
-                    </form>
-                  </div>
+                  <form noValidate>
+                    <TextField
+                      style={{ width: '120px' }}
+                      id="time"
+                      type="time"
+                      variant="outlined"
+                      value={this.state.lifetime}
+                      inputlabelprops={{
+                        shrink: true,
+                      }}
+                      inputprops={{
+                        step: 60, // 1 min
+                      }}
+                      onChange={(event) => this.setLifetime(event.target.value)}
+                    />
+                  </form>
                 </div>
-                <div style={{display: 'flex','flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width:'100%'}}>
-                  <Button variant="contained" style={{marginRight:'10px'}} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
-                  <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
-                </div>
+              </div>
+              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width: '100%' }}>
+                <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
+                <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
+              </div>
             </div>
 
             {!input
