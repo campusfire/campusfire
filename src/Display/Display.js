@@ -75,6 +75,7 @@ class Display extends Component {
 
   async componentDidMount() {
     const { match: { params: { key } } } = this.props;
+    //console.log("La key est :",key)
     await this.checkKey(key);
     const { keyChecked, colors } = this.state;
     if (keyChecked) {
@@ -169,8 +170,20 @@ class Display extends Component {
       });
 
       socket.on('disconnect_user', (senderKey) => { // removes cursor when user disconnects
-        const { cursors } = this.state;
+        //console.log("Key of disconnected user :",senderKey);
+        console.log("La key :",senderKey);
+        const { cursors, containers } = this.state;
+        for (let i=0; i<containers.length;i++) { //checks for every container if the disconnected user is the creator of the container
+          console.log("avant test", containers[i], senderKey);
+          console.log("test", containers[i].creatorKey == senderKey);
+          if(containers[i].creatorKey == senderKey){
+            console.log("Processing");
+            containers[i].editable = false;
+          }
+        };
+        this.setState({ containers });
         if (cursors[senderKey]) {
+
           colors[cursors[senderKey].color] = false;
           delete cursors[senderKey];
           this.setState({ cursors });
@@ -189,7 +202,7 @@ class Display extends Component {
         const { cursors, containers: newContainers } = this.state;
         const { contentType, content, lifetime } = data;
         const cursor = cursors[data.clientKey];
-        console.log("data", data)
+        //console.log("data", data)
         const container = {
           id: (new Date()).valueOf(),
           contentType,
@@ -198,6 +211,8 @@ class Display extends Component {
           y: cursor.y,
           z: containers.length,
           lifetime: data.lifetime,
+          creatorKey : data.clientKey,
+          editable : true
         };
         // console.log('container', container);
         const { id_content } = JSON.parse(await (await this.postContainer(container)).text()); // back
@@ -260,7 +275,7 @@ class Display extends Component {
               };
             },
           );
-          console.log('boundigBoxes', boundingBoxes);
+          //console.log('boundigBoxes', boundingBoxes);
           //we need to sort containers by depth
           boundingBoxes.sort((a,b)=>(b.depth - a.depth));
           //then we take the first one (the one at the foreground)

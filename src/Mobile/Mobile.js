@@ -18,6 +18,7 @@ const defaultLifetime = '01:00';
 class Mobile extends Component {
   constructor(props) {
     super(props);
+    console.log("Mobile constructor :",this);
     this.state = {
       socket: null,
       distance: 0,
