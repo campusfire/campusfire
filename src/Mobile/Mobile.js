@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactNipple from 'react-nipple';
 import io from 'socket.io-client';
-import TimePicker from 'react-time-picker';
+//import TimePicker from 'react-time-picker';
 import Popup from './PopUp';
 import logo from '../Assets/logomobile.png';
 import help from '../Assets/helpLogo.png'
@@ -11,7 +11,6 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import CancelPresentationTwoToneIcon from '@material-ui/icons/CancelPresentationTwoTone';
-
 
 const defaultLifetime = '01:00';
 
@@ -316,10 +315,10 @@ class Mobile extends Component {
     } = this.state;
     const styleType = (inputType) => ({
       display: input && this.postType === inputType ? 'flex' : 'none',
-      'flex-direction': 'column',
-      'flex-wrap': 'wrap',
-      'justify-content': 'space-around',
-      'align-content': 'space-around'
+      'flexDirection': 'column',
+      'flexWrap': 'wrap',
+      'justifyContent': 'space-around',
+      'alignContent': 'space-around'
     })
     const styleIcon = {
       marginLeft: '10px',
@@ -330,7 +329,7 @@ class Mobile extends Component {
     return (
       keyChecked
         ? (
-          <div className="Mobile" onTouchStart={!input ? this.handleTouchStart : false} onTouchEnd={!input ? this.handleTouchEnd : false} style={{ backgroundColor }}>
+          <div className="Mobile" onTouchStart={!input ? this.handleTouchStart : undefined} onTouchEnd={!input ? this.handleTouchEnd : undefined} style={{ backgroundColor }}>
             <header>
               <img src={logo} className="Mobile-logo" alt="logo" />
               <img src={help} className="helpButton" alt="help" onClick={this.togglePopup} />
@@ -347,7 +346,7 @@ class Mobile extends Component {
             </header>
 
             <div style={styleType('Text')}>
-              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%' }}>
+              <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'space-around', 'alignItems': 'center', marginTop: '20px', width: '100%' }}>
                 <div>
                   <textarea id="textInput" onKeyUp={this.handleEnterKey} maxLength="130" cols="25" rows="3" />
                 </div>
@@ -373,14 +372,14 @@ class Mobile extends Component {
                   </form>
                 </div>
               </div>
-              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width: '100%' }}>
+              <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', marginTop: '20px', width: '100%' }}>
                 <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
                 <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
               </div>
             </div>
 
-            <div style={styleType('Image')}>
-              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%' }}>
+            <div style={styleType('Media')}>
+              <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'space-around', 'alignItems': 'center', marginTop: '20px', width: '100%' }}>
                 <div>
                   <input id="imageInput" type="file" accept="image/*" onChange={this.onFileChange} />
                 </div>
@@ -406,14 +405,14 @@ class Mobile extends Component {
                   </form>
                 </div>
               </div>
-              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width: '100%' }}>
+              <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', marginTop: '20px', width: '100%' }}>
                 <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
                 <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
               </div>
             </div>
 
             <div style={styleType('Video')}>
-              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%' }}>
+              <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'space-around', 'alignItems': 'center', marginTop: '20px', width: '100%' }}>
                 <div>
                   <input id="videoInput" type="file" accept="video/*" onChange={this.onFileChange} />
                 </div>
@@ -439,7 +438,7 @@ class Mobile extends Component {
                   </form>
                 </div>
               </div>
-              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width: '100%' }}>
+              <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', marginTop: '20px', width: '100%' }}>
                 <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
                 <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
               </div>

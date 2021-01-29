@@ -6,7 +6,7 @@ import Video from './Video';
 
 function Container(props) {
   const {
-    id, src, x, y, z, content, contentType, lifetime
+    id, x, y, z, content, contentType, lifetime
   } = props;
   var regExp = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i;
   switch (contentType) {
@@ -15,7 +15,7 @@ function Container(props) {
         <PostIt id={id} text={content} x={x} y={y} z={z} lifetime={lifetime} />
       );
     case 'MEDIA':
-      if (regExp.test(src)) {
+      if (regExp.test(content)) {
         return (
           <Image id={id} src={content} x={x} y={y} z={z} />
         );
