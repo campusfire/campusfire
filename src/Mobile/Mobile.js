@@ -105,13 +105,13 @@ class Mobile extends Component {
     if (distance > this.threshold) {
       switch (true) {
         case angle >= 0 && angle < 90:
-          element = 'Image';
+          element = 'Media';
           break;
         case angle >= 90 && angle < 180:
           element = 'Text';
           break;
         case angle >= 180 && angle < 270:
-          element = 'Video';
+          element = 'Media';
           break;
         case angle >= 270 && angle < 360:
           element = 'Credits';
@@ -211,8 +211,7 @@ class Mobile extends Component {
         }
         input.value = '';
         break;
-      case 'Video':
-      case 'Image':
+      case 'Media':
         if (file) {
           const lifetimeHours = Number(lifetime.split(':')[0]);
           const lifetimeInMinutes = Number(lifetime.split(':')[1]) + 60 * lifetimeHours;

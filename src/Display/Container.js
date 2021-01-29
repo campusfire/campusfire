@@ -6,22 +6,24 @@ import Video from './Video';
 
 function Container(props) {
   const {
-    id, x, y, z, content, contentType, lifetime
+    id, src, x, y, z, content, contentType, lifetime
   } = props;
+  var regExp = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i;
   switch (contentType) {
     case 'TEXT':
       return (
         <PostIt id={id} text={content} x={x} y={y} z={z} lifetime={lifetime} />
       );
-    case 'IMAGE':
-      return (
-        <Image id={id} src={content} x={x} y={y} z={z} />
-      );
-
-    case 'VIDEO':
-      return (
-        <Video id={id} src={content} x={x} y={y} z={z} />
-      );
+    case 'MEDIA':
+      if (regExp.test(src)) {
+        return (
+          <Image id={id} src={content} x={x} y={y} z={z} />
+        );
+      } else {
+        return (
+          <Video id={id} src={content} x={x} y={y} z={z} />
+        );
+      }
     default:
       return null;
   }
