@@ -381,40 +381,7 @@ class Mobile extends Component {
             <div style={styleType('Media')}>
               <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'space-around', 'alignItems': 'center', marginTop: '20px', width: '100%' }}>
                 <div>
-                  <input id="imageInput" type="file" accept="image/*" onChange={this.onFileChange} />
-                </div>
-                <div>
-                  <p style={{ color: 'black', margin: 0 }}>
-                    Durée de vie
-                    </p>
-                  <form noValidate>
-                    <TextField
-                      style={{ width: '120px' }}
-                      id="time"
-                      type="time"
-                      variant="outlined"
-                      value={this.state.lifetime}
-                      inputlabelprops={{
-                        shrink: true,
-                      }}
-                      inputprops={{
-                        step: 60, // 1 min
-                      }}
-                      onChange={(event) => this.setLifetime(event.target.value)}
-                    />
-                  </form>
-                </div>
-              </div>
-              <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', marginTop: '20px', width: '100%' }}>
-                <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
-                <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
-              </div>
-            </div>
-
-            <div style={styleType('Video')}>
-              <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'space-around', 'alignItems': 'center', marginTop: '20px', width: '100%' }}>
-                <div>
-                  <input id="videoInput" type="file" accept="video/*" onChange={this.onFileChange} />
+                  <input id="imageInput" type="file" accept="image/*, video/*" onChange={this.onFileChange} />
                 </div>
                 <div>
                   <p style={{ color: 'black', margin: 0 }}>

@@ -12,10 +12,7 @@ function App() {
   // constructor(props){
   //   super(props);
   // }
-    const theme = createMuiTheme({
-      status: {
-      },
-    });
+    const theme = createMuiTheme({ });
 
   return (
     <MuiThemeProvider theme={theme}>
