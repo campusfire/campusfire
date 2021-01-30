@@ -108,12 +108,29 @@ class Display extends Component {
       });
 
       socket.on('move', (data) => { // to move cursor
-        const { cursors } = this.state;
+        const { cursors, containers } = this.state;
         if (data.length === 3) {
           if (cursors[data[2]].draggedContainerId) {
             this.moveContainer(data);
           }
           this.moveCursor(data);
+        }
+        console.log("Les containers avant selction", containers);
+        const topBox = this.selectTopContainer({clientKey : data[2], clientId : "foo"});
+        if (topBox == undefined) {
+          console.log("No container");
+        }
+        else {
+          const topContainer = containers.find( (obj) => {
+            if (obj.id == topBox.id) {
+              return obj;
+            }
+          })
+          console.log('Top container',topContainer);
+          console.log('Cursor key',data[2]);
+          if (topContainer.creatorKey == data[2] ) {
+            console.log("C'est le même");
+          }
         }
       });
 
@@ -235,8 +252,8 @@ class Display extends Component {
       console.log('name_socket', name_socket);
       socket.on(name_socket, async (contents_to_remove) => {
         contents_to_remove = contents_to_remove.map((elt) => elt._id);
-        console.log('contents_to_remove', contents_to_remove);
-        console.log('containers on the screen --> ', this.state.containers);
+        //console.log('contents_to_remove', contents_to_remove);
+        //console.log('containers on the screen --> ', this.state.containers);
         if (contents_to_remove.length > 0) {
           this.setState((prevState) => ({
             ...prevState,
@@ -246,45 +263,8 @@ class Display extends Component {
       });
 
       socket.on('remote_long_press', (data) => {
+        const draggedContainer = this.selectTopContainer(data);
         const { cursors, containers: targets } = this.state;
-        if (data.clientKey != null && cursors[data.clientKey].draggedContainerId == null) {
-          const {
-            left: cursorLeft,
-            right: cursorRight,
-            top: cursorTop,
-            bottom: cursorBottom,
-          } = document.getElementById(data.clientKey).getBoundingClientRect();
-          const x = (cursorLeft + cursorRight) / 2;
-          const y = (cursorTop + cursorBottom) / 2;
-          const boundingBoxes = targets.map(
-            // (target) => ({
-            //   id: target.id,
-            //   ...document.getElementsByName('Container').getBoundingClientRect(),
-            // }),
-            (target) => {
-              const {
-                left, right, top, bottom,
-              } = document.getElementById(`postit_${target.id}`).getBoundingClientRect();
-              return {
-                id: target.id,
-                left,
-                right,
-                top,
-                bottom,
-                depth : target.z
-              };
-            },
-          );
-          //console.log('boundigBoxes', boundingBoxes);
-          //we need to sort containers by depth
-          boundingBoxes.sort((a,b)=>(b.depth - a.depth));
-          //then we take the first one (the one at the foreground)
-          const draggedContainer = boundingBoxes.find((boundingBox) => {
-            const {
-              left, right, top, bottom,
-            } = boundingBox;
-            return (x > left && x < right && y > top && y < bottom);
-          });
           if (draggedContainer) {
             cursors[data.clientKey].draggedContainerId = draggedContainer.id;
             document.getElementById(`postit_${draggedContainer.id}`).style.boxShadow = `0 0 0 5px ${cursors[data.clientKey].color}`;
@@ -296,8 +276,7 @@ class Display extends Component {
           this.setState({
             cursors,
           });
-        }
-      });
+        });
 
       socket.on('remote_cancel', (data) => {
         const { cursors } = this.state;
@@ -407,6 +386,48 @@ class Display extends Component {
       cursors,
     });
   }
+
+  selectTopContainer(data) {
+  const { cursors, containers: targets } = this.state;
+  if (data.clientKey != null && cursors[data.clientKey].draggedContainerId == null) {
+    const {
+      left: cursorLeft,
+      right: cursorRight,
+      top: cursorTop,
+      bottom: cursorBottom,
+    } = document.getElementById(data.clientKey).getBoundingClientRect();
+    const x = (cursorLeft + cursorRight) / 2;
+    const y = (cursorTop + cursorBottom) / 2;
+    const boundingBoxes = targets.map(
+      (target) => {
+        const {
+          left, right, top, bottom,
+        } = document.getElementById(`postit_${target.id}`).getBoundingClientRect();
+        return {
+          id: target.id,
+          left,
+          right,
+          top,
+          bottom,
+          depth : target.z
+        };
+      },
+    );
+    //console.log('boundigBoxes', boundingBoxes);
+    //we need to sort containers by depth
+    boundingBoxes.sort((a,b)=>(b.depth - a.depth));
+    //then we take the first one (the one at the foreground)
+    const draggedContainer = boundingBoxes.find((boundingBox) => {
+      const {
+        left, right, top, bottom,
+      } = boundingBox;
+      return (x > left && x < right && y > top && y < bottom);
+    })
+    //console.log(typeof draggedContainer);
+    return(draggedContainer);
+  }
+
+}
 
   moveContainer(data) {
     const displacement = data[1] * 0.3;
