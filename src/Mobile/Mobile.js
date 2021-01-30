@@ -38,6 +38,7 @@ class Mobile extends Component {
     this.longPressed = false;
     this.radialOption = '';
     this.threshold = 20;
+    this.showEditable = false;
 
     this.handleMove = this.handleMove.bind(this);
     this.handleTouchStart = this.handleTouchStart.bind(this);
@@ -82,6 +83,15 @@ class Mobile extends Component {
           socket: null,
         });
       });
+
+      socket.on('post_is_editable', (data) => {
+        this.showEditable = true;
+      });
+
+      socket.on('post_is_not_editable', (data) => {
+        this.showEditable = false;
+      });
+
 
       this.setState({
         socket,

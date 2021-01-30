@@ -98,7 +98,7 @@ class Display extends Component {
           if (client.clientId) {
             const color = this.pickColor();
             cursors[client.clientKey] = {
-              x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false,
+              x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false,
             };
           }
         });
@@ -115,21 +115,25 @@ class Display extends Component {
           }
           this.moveCursor(data);
         }
-        console.log("Les containers avant selction", containers);
+        //now checking if cursor is above an editabe post
         const topBox = this.selectTopContainer({clientKey : data[2], clientId : "foo"});
-        if (topBox == undefined) {
-          console.log("No container");
+        if (topBox == undefined && cursors[data[2]].editable == true) { // if cursor is above no post and was above a post before => not editable anymore
+          console.log("Not editable anymore");
+          socket.emit('not_editable_post', { clientKey : data[2]});
+          cursors[data[2]].editable = false;
+          this.setState({ cursors });
         }
-        else {
-          const topContainer = containers.find( (obj) => {
+        else if (topBox != undefined && cursors[data[2]].editable == false) { //if cursor is above a post and wasn't before => set to editable
+          const topContainer = containers.find( (obj) => { //select the top container
             if (obj.id == topBox.id) {
               return obj;
             }
           })
-          console.log('Top container',topContainer);
-          console.log('Cursor key',data[2]);
           if (topContainer.creatorKey == data[2] ) {
-            console.log("C'est le même");
+            console.log("Editable");
+            socket.emit('editable_post', { postId : topBox.id, clientKey : data[2]});
+            cursors[data[2]].editable = true;
+            this.setState({ cursors });
           }
         }
       });
@@ -176,7 +180,7 @@ class Display extends Component {
         if (senderKey != null) {
           const color = this.pickColor();
           cursors[senderKey] = {
-            x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false,
+            x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false,
           };
           this.setState({ cursors });
 
@@ -188,17 +192,7 @@ class Display extends Component {
 
       socket.on('disconnect_user', (senderKey) => { // removes cursor when user disconnects
         //console.log("Key of disconnected user :",senderKey);
-        console.log("La key :",senderKey);
         const { cursors, containers } = this.state;
-        for (let i=0; i<containers.length;i++) { //checks for every container if the disconnected user is the creator of the container
-          console.log("avant test", containers[i], senderKey);
-          console.log("test", containers[i].creatorKey == senderKey);
-          if(containers[i].creatorKey == senderKey){
-            console.log("Processing");
-            containers[i].editable = false;
-          }
-        };
-        this.setState({ containers });
         if (cursors[senderKey]) {
 
           colors[cursors[senderKey].color] = false;
@@ -229,7 +223,6 @@ class Display extends Component {
           z: containers.length,
           lifetime: data.lifetime,
           creatorKey : data.clientKey,
-          editable : true
         };
         // console.log('container', container);
         const { id_content } = JSON.parse(await (await this.postContainer(container)).text()); // back

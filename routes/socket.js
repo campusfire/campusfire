@@ -166,6 +166,29 @@ module.exports = function (app, io) {
       console.log(app.locals.clients);
     });
 
+    socket.on('editable_post', (data) => {
+      const editorClient = app.locals.clients.find( (client) => {
+          if (client.clientKey == data.clientKey) {
+            return(client);
+          }
+        });
+      console.log("sending editable to :",editorClient.clientId);
+      console.log("data sent :",data);
+      io.to(editorClient.clientId).emit('post_is_editable', data);
+    });
+
+    socket.on('not_editable_post', (data) => {
+      const editorClient = app.locals.clients.find( (client) => {
+          if (client.clientKey == data.clientKey) {
+            return(client);
+          }
+        });
+      console.log("sending not editable to :",editorClient.clientId);
+      console.log("data sent :",data);
+      io.to(editorClient.clientId).emit('post_is_not_editable', data);
+
+    });
+
     // DEVELOPMENT ONLY!
     socket.on('debug', (content) => {
       console.log('debug', content);
