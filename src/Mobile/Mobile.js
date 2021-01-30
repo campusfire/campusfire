@@ -31,6 +31,7 @@ class Mobile extends Component {
       file: null,
       lifetime: defaultLifetime,
       showPopup: false,
+      disablePostButton: true,
     };
     this.postType = null;
     this.longPressed = false;
@@ -189,6 +190,10 @@ class Mobile extends Component {
     clearTimeout(longPressTimer);
   }
 
+  setDisablePostButton(value) {
+    this.setState({disablePostButton: value});
+  }
+
   handlePost(event) {
     event.preventDefault();
     const { socket, key, file } = this.state;
@@ -209,6 +214,7 @@ class Mobile extends Component {
           this.setState({ lifetime: defaultLifetime });
         }
         input.value = '';
+        this.setDisablePostButton(true);
         break;
       case 'Media':
         if (file) {
@@ -232,6 +238,8 @@ class Mobile extends Component {
         } else {
           socket.emit('debug', 'no file');
         }
+        input.value = '';
+        this.setDisablePostButton(true);
         break;
       default:
         break;
@@ -253,11 +261,14 @@ class Mobile extends Component {
   }
 
   handleEnterKey(event) {
-    if (event.keyCode === 13) { this.handlePost(event); }
+    if (!this.state.disablePostButton){
+      if (event.keyCode === 13) { this.handlePost(event); }
+    }
   }
 
   onFileChange(e) {
     this.setState({ file: e.target.files[0] });
+    this.setDisablePostButton(false);
   }
 
   setLifetime(lifetime) {
@@ -348,7 +359,7 @@ class Mobile extends Component {
             <div style={styleType('Text')}>
               <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'space-around', 'alignItems': 'center', marginTop: '20px', width: '100%' }}>
                 <div>
-                  <textarea id="textInput" onKeyUp={this.handleEnterKey} maxLength="130" cols="25" rows="3" />
+                  <textarea id="textInput" onKeyUp={this.handleEnterKey} onChange={(text) => this.setDisablePostButton(text.target.value.trim()=="")} maxLength="130" cols="25" rows="3" />
                 </div>
                 <div>
                   <p style={{ color: 'black', margin: 0 }}>
@@ -373,7 +384,7 @@ class Mobile extends Component {
                 </div>
               </div>
               <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', marginTop: '20px', width: '100%' }}>
-                <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
+                <Button variant="contained" disabled={this.state.disablePostButton} style={{ marginRight: '10px' }} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
                 <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
               </div>
             </div>
@@ -381,7 +392,7 @@ class Mobile extends Component {
             <div style={styleType('Media')}>
               <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'space-around', 'alignItems': 'center', marginTop: '20px', width: '100%' }}>
                 <div>
-                  <input id="imageInput" type="file" accept="image/*, video/*" onChange={this.onFileChange} />
+                  <input id="mediaInput" type="file" accept="image/*, video/*" onChange={this.onFileChange} />
                 </div>
                 <div>
                   <p style={{ color: 'black', margin: 0 }}>
@@ -406,7 +417,7 @@ class Mobile extends Component {
                 </div>
               </div>
               <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', marginTop: '20px', width: '100%' }}>
-                <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
+                <Button variant="contained" disabled={this.state.disablePostButton} style={{ marginRight: '10px' }} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
                 <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
               </div>
             </div>
