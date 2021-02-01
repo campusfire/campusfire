@@ -172,8 +172,8 @@ module.exports = function (app, io) {
             return(client);
           }
         });
-      console.log("sending editable to :",editorClient.clientId);
-      console.log("data sent :",data);
+      //console.log("sending editable to :",editorClient.clientId);
+      //console.log("data sent :",data);
       io.to(editorClient.clientId).emit('post_is_editable', data);
     });
 
@@ -183,10 +183,9 @@ module.exports = function (app, io) {
             return(client);
           }
         });
-      console.log("sending not editable to :",editorClient.clientId);
-      console.log("data sent :",data);
+      //console.log("sending not editable to :",editorClient.clientId);
+      //console.log("data sent :",data);
       io.to(editorClient.clientId).emit('post_is_not_editable', data);
-
     });
 
     // DEVELOPMENT ONLY!

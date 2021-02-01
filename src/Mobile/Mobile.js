@@ -33,12 +33,12 @@ class Mobile extends Component {
       file: null,
       lifetime: defaultLifetime,
       showPopup: false,
+      showEditable: false,
     };
     this.postType = null;
     this.longPressed = false;
     this.radialOption = '';
     this.threshold = 20;
-    this.showEditable = false;
 
     this.handleMove = this.handleMove.bind(this);
     this.handleTouchStart = this.handleTouchStart.bind(this);
@@ -50,6 +50,7 @@ class Mobile extends Component {
     this.checkKey = this.checkKey.bind(this);
     this.setLifetime = this.setLifetime.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
+    this.handleEditClick = this.handleEditClick.bind(this);
   }
 
   async componentDidMount() {
@@ -85,11 +86,12 @@ class Mobile extends Component {
       });
 
       socket.on('post_is_editable', (data) => {
-        this.showEditable = true;
+        this.state.showEditable = true;
+        socket.emit('EditClicked');
       });
 
       socket.on('post_is_not_editable', (data) => {
-        this.showEditable = false;
+        this.state.showEditable = false;
       });
 
 
@@ -322,6 +324,11 @@ class Mobile extends Component {
     }));
   }
 
+  handleEditClick(e) {
+    const { socket } = this.state;
+    socket.emit('EditClicked');
+  }
+
   render() {
     const {
       keyChecked, mode, backgroundColor, input
@@ -357,6 +364,15 @@ class Mobile extends Component {
                 : null
               }
             </header>
+
+            <div>
+              {this.state.showEditable
+                ? <Button onClick={this.handleEditClick}>
+                  'Edit'
+                  </Button>
+                : null
+              }
+            </div>
 
             <div style={styleType('Text')}>
               <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%' }}>
