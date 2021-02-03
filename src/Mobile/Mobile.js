@@ -34,6 +34,7 @@ class Mobile extends Component {
       showPopup: false,
       showEditable: false,
       editing: false,
+      editablePostId: null,
       textAreaValue: '',
       disablePostButton: true,
     };
@@ -56,6 +57,7 @@ class Mobile extends Component {
     this.capitalizeFirstLetter = this.capitalizeFirstLetter.bind(this);
     this.handleOnChangeTextArea = this.handleOnChangeTextArea.bind(this);
     this.lifetimeIntToString = this.lifetimeIntToString.bind(this);
+    this.fillSingleNumberString = this.fillSingleNumberString.bind(this);
   }
 
   async componentDidMount() {
@@ -93,7 +95,7 @@ class Mobile extends Component {
       socket.on('post_is_editable', (data) => {
         console.log('DATA editable', data);
         console.log('lifetime', this.lifetimeIntToString(data.postLifetime))
-        this.setState({ showEditable: true, textAreaValue: data.postContent, lifetime: this.lifetimeIntToString(data.postLifetime) });
+        this.setState({ showEditable: true, editablePostId: data.id, textAreaValue: data.postContent, lifetime: this.lifetimeIntToString(data.postLifetime) });
         this.postType = this.capitalizeFirstLetter(data.postType);
       });
 
@@ -112,9 +114,13 @@ class Mobile extends Component {
   }
 
   lifetimeIntToString(nb_minutes) {
-    const nbHeures = Math.trunc(nb_minutes / 60);
-    const resteMin = nb_minutes % 60;
-    return ([nbHeures.toString(), resteMin.toString()].join(':'))
+    const nbHeures = this.fillSingleNumberString((Math.trunc(nb_minutes / 60)).toString());
+    const resteMin = this.fillSingleNumberString((nb_minutes % 60).toString());
+    return ([nbHeures, resteMin].join(':'))
+  }
+
+  fillSingleNumberString(stringNumber) {
+    return stringNumber.length < 2 ? '0' + stringNumber : stringNumber
   }
 
   capitalizeFirstLetter(string) {
@@ -231,24 +237,25 @@ class Mobile extends Component {
     event.stopPropagation();
     const { postType } = this;
     // const input = document.getElementById(`${postType.toLowerCase()}Input`);
-    const { lifetime } = this.state;
+    const { lifetime, textAreaValue, editing, editablePostId } = this.state;
     switch (this.postType) {
       case 'Text':
         console.log(`Lifetime : ${lifetime}`);
-        if (this.state.textAreaValue !== '') {
+        if (textAreaValue !== '') {
           const lifetimeHours = Number(lifetime.split(':')[0]);
           const lifetimeInMinutes = Number(lifetime.split(':')[1]) + 60 * lifetimeHours;
           console.log('lifetime in minutes', lifetimeInMinutes);
           if (editing) {
             socket.emit('edit_post', {
-              contentType: 'TEXT', content: this.state.textAreaValue, clientKey: key, lifetime: lifetimeInMinutes,
+              contentType: 'TEXT', content: textAreaValue, clientKey: key, lifetime: lifetimeInMinutes, id: editablePostId
             });
+            this.setState({ lifetime: defaultLifetime, textAreaValue: '', editablePostId: null });
           } else {
             socket.emit('posting', {
-              contentType: 'TEXT', content: this.state.textAreaValue, clientKey: key, lifetime: lifetimeInMinutes,
+              contentType: 'TEXT', content: textAreaValue, clientKey: key, lifetime: lifetimeInMinutes,
             });
+            this.setState({ lifetime: defaultLifetime, textAreaValue: '' });
           }
-          this.setState({ lifetime: defaultLifetime, textAreaValue: '' });
         }
         // input.value = '';
         this.setDisablePostButton(true);
@@ -275,18 +282,18 @@ class Mobile extends Component {
         } else {
           socket.emit('debug', 'no file');
         }
-        input.value = '';
+        // input.value = '';
         this.setDisablePostButton(true);
         break;
       case 'Embeded':
-        if (input.value !== '') {
+        if (textAreaValue !== '') {
           // Extract post id from post url
-          input.value = input.value.substring(28, 39)
+          textAreaValue = textAreaValue.substring(28, 39)
           socket.emit('posting', {
-            contentType: 'EMBEDED', content: input.value, clientKey: key,
+            contentType: 'EMBEDED', content: textAreaValue, clientKey: key,
           });
         }
-        input.value = '';
+        textAreaValue = '';
         break;
       default:
         break;
@@ -298,6 +305,7 @@ class Mobile extends Component {
   handleCancel(event) {
     const { socket, key } = this.state;
     event.stopPropagation();
+    // HERE NEED TO CHANGE two ways of changing value for textarea
     const input = document.getElementById(`${this.postType.toLowerCase()}Input`);
     input.value = '';
     this.setState({ file: null, input: false });
@@ -372,7 +380,7 @@ class Mobile extends Component {
   }
 
   handleOnChangeTextArea(event) {
-    this.setDisablePostButton(text.target.value.trim() === "")
+    this.setDisablePostButton(event.target.value.trim() === "")
     this.setState({ textAreaValue: event.target.value });
   }
 

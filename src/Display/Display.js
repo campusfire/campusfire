@@ -126,8 +126,7 @@ class Display extends Component {
         else if (topBox != undefined && cursors[data[2]].editable == false) { //if cursor is above a post and wasn't before => set to editable
           const topContainer = containers.find((obj) => obj.id == topBox.id)
           if (topContainer.creatorKey == data[2]) {
-            console.log("Editable");
-            socket.emit('editable_post', { clientKey: data[2], postType: topContainer.contentType, postContent: topContainer.content, postLifetime: topContainer.lifetime });
+            socket.emit('editable_post', { clientKey: data[2], id: topContainer.id, postType: topContainer.contentType, postContent: topContainer.content, postLifetime: topContainer.lifetime });
             cursors[data[2]].editable = true;
             this.setState({ cursors });
           }
@@ -205,29 +204,23 @@ class Display extends Component {
         });
       });
 
-      socket.on('edit_post', async (postToEdit) => {
-        const { containers } = this.state;
-
-      });
-
       socket.on('posting', async (data) => {
         const { cursors, containers: newContainers } = this.state;
-        const { contentType, content, lifetime } = data;
-        const cursor = cursors[data.clientKey];
+        const { contentType, content, lifetime, clientKey } = data;
+        const cursor = cursors[clientKey];
         //console.log("data", data)
         const container = {
-          id: (new Date()).valueOf(),
           contentType,
           content,
           x: cursor.x,
           y: cursor.y,
           z: containers.length,
-          lifetime: data.lifetime,
-          creatorKey: data.clientKey,
+          lifetime,
+          creatorKey: clientKey,
         };
         // console.log('container', container);
         const { id_content } = JSON.parse(await (await this.postContainer(container)).text()); // back
-        container.id = id_content;
+        container['id'] = id_content;
         newContainers.push(container); // front
         cursors[data.clientKey].posting = false;
         const sortedContainers = sortContainersZIndex(newContainers);
@@ -235,6 +228,23 @@ class Display extends Component {
           containers: sortedContainers,
           cursors,
         });
+      });
+
+      socket.on('edit_post', async (data) => {
+        const { containers } = this.state;
+        const { content, lifetime, id } = data;
+        console.log('(edit_post) data', data);
+        const newContainerContent = {
+          content,
+          lifetime
+        };
+        const newContainers = containers.map(container => {
+          if (container.id == id) {
+            return ({ ...container, ...newContainerContent })
+          }
+          return container
+        });
+        this.setState({ containers: newContainers });
       });
 
       socket.on('remote_click', async (data) => {
