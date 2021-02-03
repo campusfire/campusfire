@@ -10,7 +10,7 @@ function Radial(props) {
       <div className="innerCircle" style={{ backgroundColor: color }} />
       <div className="pieSlice pieSliceText" />
       <div className="pieSlice pieSliceMedia" />
-      <div className="pieSlice pieSliceVideo" />
+      <div className="pieSlice pieSliceEmbeded" />
       <div className="pieSlice pieSliceCredits" />
     </div>
   );
