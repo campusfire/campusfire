@@ -250,6 +250,7 @@ class Mobile extends Component {
           });
         }
         input.value = '';
+        this.setState({ lifetime: defaultLifetime });
         break;
       default:
         break;
