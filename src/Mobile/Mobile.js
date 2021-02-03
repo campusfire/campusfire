@@ -18,7 +18,7 @@ const defaultLifetime = '01:00';
 class Mobile extends Component {
   constructor(props) {
     super(props);
-    console.log("Mobile constructor :",this);
+    console.log("Mobile constructor :", this);
     this.state = {
       socket: null,
       distance: 0,
@@ -34,10 +34,8 @@ class Mobile extends Component {
       lifetime: defaultLifetime,
       showPopup: false,
       showEditable: false,
-      editablePostContent: null,
-      editablePostLifetime: null,
       editing: false,
-      textAreaValue : '',
+      textAreaValue: '',
     };
     this.postType = null;
     this.longPressed = false;
@@ -57,6 +55,7 @@ class Mobile extends Component {
     this.handleEditClick = this.handleEditClick.bind(this);
     this.capitalizeFirstLetter = this.capitalizeFirstLetter.bind(this);
     this.handleOnChangeTextArea = this.handleOnChangeTextArea.bind(this);
+    this.lifetimeIntToString = this.lifetimeIntToString.bind(this);
   }
 
   async componentDidMount() {
@@ -92,12 +91,14 @@ class Mobile extends Component {
       });
 
       socket.on('post_is_editable', (data) => {
-        this.setState({showEditable:true, editablePostContent: data.postContent, editablePostLifetime : data.postLifetime});
+        console.log('DATA editable', data);
+        console.log('lifetime', this.lifetimeIntToString(data.postLifetime))
+        this.setState({ showEditable: true, textAreaValue: data.postContent, lifetime: this.lifetimeIntToString(data.postLifetime) });
         this.postType = this.capitalizeFirstLetter(data.postType);
       });
 
       socket.on('post_is_not_editable', (data) => {
-        this.setState({showEditable:false, editablePostContent: null, editablePostLifetime : null});
+        this.setState({ showEditable: false, textAreaValue: null, lifetime: null });
         this.postType = null;
       });
 
@@ -108,6 +109,12 @@ class Mobile extends Component {
       socket.emit('store_client_info', { clientKey: key });
       socket.emit('cursor', { clientKey: key });
     }
+  }
+
+  lifetimeIntToString(nb_minutes) {
+    const nbHeures = Math.trunc(nb_minutes / 60);
+    const resteMin = nb_minutes % 60;
+    return ([nbHeures.toString(), resteMin.toString()].join(':'))
   }
 
   capitalizeFirstLetter(string) {
@@ -228,9 +235,15 @@ class Mobile extends Component {
           const lifetimeHours = Number(lifetime.split(':')[0]);
           const lifetimeInMinutes = Number(lifetime.split(':')[1]) + 60 * lifetimeHours;
           console.log('lifetime in minutes', lifetimeInMinutes);
-          socket.emit('posting', {
-            contentType: 'TEXT', content: this.state.textAreaValue, clientKey: key, lifetime: lifetimeInMinutes,
-          });
+          if (editing) {
+            socket.emit('edit_post', {
+              contentType: 'TEXT', content: this.state.textAreaValue, clientKey: key, lifetime: lifetimeInMinutes,
+            });
+          } else {
+            socket.emit('posting', {
+              contentType: 'TEXT', content: this.state.textAreaValue, clientKey: key, lifetime: lifetimeInMinutes,
+            });
+          }
           this.setState({ lifetime: defaultLifetime, textAreaValue: '' });
         }
         // input.value = '';
@@ -324,7 +337,7 @@ class Mobile extends Component {
   }
 
   handleEditClick() {
-    this.setState({ showEditable: false, editing: true});
+    this.setState({ showEditable: false, editing: true });
   }
 
   // displayHelp() {
@@ -340,8 +353,7 @@ class Mobile extends Component {
   }
 
   handleOnChangeTextArea(event) {
-    console.log('(handleOnChangeTextArea) Changing', event.target.value)
-      this.setState({textAreaValue: event.target.value});
+    this.setState({ textAreaValue: event.target.value });
   }
 
 
@@ -385,7 +397,7 @@ class Mobile extends Component {
             <div>
               {this.state.showEditable
                 ? <Button onClick={this.handleEditClick}>
-                Edit
+                  Edit
                 </Button>
                 : null
               }
@@ -395,7 +407,7 @@ class Mobile extends Component {
               <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%' }}>
                 <div>
                   <textarea id="textInput" value={this.state.textAreaValue}
-                  onchange={this.handleOnChangeTextArea} onKeyUp={this.handleEnterKey} maxLength="130" cols="25" rows="3" />
+                    onChange={this.handleOnChangeTextArea} onKeyUp={this.handleEnterKey} maxLength="130" cols="25" rows="3" />
                 </div>
                 <div>
                   <p style={{ color: 'black', margin: 0 }}>

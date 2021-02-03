@@ -116,18 +116,18 @@ class Display extends Component {
           this.moveCursor(data);
         }
         //now checking if cursor is above an editabe post
-        const topBox = this.selectTopContainer({clientKey : data[2], clientId : "foo"});
+        const topBox = this.selectTopContainer({ clientKey: data[2], clientId: "foo" });
         if (topBox == undefined && cursors[data[2]].editable == true) { // if cursor is above no post and was above a post before => not editable anymore
           console.log("Not editable anymore");
-          socket.emit('not_editable_post', { clientKey : data[2]});
+          socket.emit('not_editable_post', { clientKey: data[2] });
           cursors[data[2]].editable = false;
           this.setState({ cursors });
         }
         else if (topBox != undefined && cursors[data[2]].editable == false) { //if cursor is above a post and wasn't before => set to editable
-          const topContainer = containers.find( (obj) => obj.id == topBox.id)
-          if (topContainer.creatorKey == data[2] ) {
+          const topContainer = containers.find((obj) => obj.id == topBox.id)
+          if (topContainer.creatorKey == data[2]) {
             console.log("Editable");
-            socket.emit('editable_post', { clientKey : data[2], postType : topContainer.contentType, postContent : topContainer.content, postLifetime : topContainer.lifetime});
+            socket.emit('editable_post', { clientKey: data[2], postType: topContainer.contentType, postContent: topContainer.content, postLifetime: topContainer.lifetime });
             cursors[data[2]].editable = true;
             this.setState({ cursors });
           }
@@ -205,6 +205,11 @@ class Display extends Component {
         });
       });
 
+      socket.on('edit_post', async (postToEdit) => {
+        const { containers } = this.state;
+
+      });
+
       socket.on('posting', async (data) => {
         const { cursors, containers: newContainers } = this.state;
         const { contentType, content, lifetime } = data;
@@ -218,7 +223,7 @@ class Display extends Component {
           y: cursor.y,
           z: containers.length,
           lifetime: data.lifetime,
-          creatorKey : data.clientKey,
+          creatorKey: data.clientKey,
         };
         // console.log('container', container);
         const { id_content } = JSON.parse(await (await this.postContainer(container)).text()); // back
@@ -254,18 +259,18 @@ class Display extends Component {
       socket.on('remote_long_press', (data) => {
         const draggedContainer = this.selectTopContainer(data);
         const { cursors, containers: targets } = this.state;
-          if (draggedContainer) {
-            cursors[data.clientKey].draggedContainerId = draggedContainer.id;
-            document.getElementById(`postit_${draggedContainer.id}`).style.boxShadow = `0 0 0 5px ${cursors[data.clientKey].color}`;
-            // console.log('dragging container');
-          } else {
-            cursors[data.clientKey].showRadial = true;
-            socket.emit('radial_open', data.clientId);
-          }
-          this.setState({
-            cursors,
-          });
+        if (draggedContainer) {
+          cursors[data.clientKey].draggedContainerId = draggedContainer.id;
+          document.getElementById(`postit_${draggedContainer.id}`).style.boxShadow = `0 0 0 5px ${cursors[data.clientKey].color}`;
+          // console.log('dragging container');
+        } else {
+          cursors[data.clientKey].showRadial = true;
+          socket.emit('radial_open', data.clientId);
+        }
+        this.setState({
+          cursors,
         });
+      });
 
       socket.on('remote_cancel', (data) => {
         const { cursors } = this.state;
@@ -377,46 +382,46 @@ class Display extends Component {
   }
 
   selectTopContainer(data) {
-  const { cursors, containers: targets } = this.state;
-  if (data.clientKey != null && cursors[data.clientKey].draggedContainerId == null) {
-    const {
-      left: cursorLeft,
-      right: cursorRight,
-      top: cursorTop,
-      bottom: cursorBottom,
-    } = document.getElementById(data.clientKey).getBoundingClientRect();
-    const x = (cursorLeft + cursorRight) / 2;
-    const y = (cursorTop + cursorBottom) / 2;
-    const boundingBoxes = targets.map(
-      (target) => {
+    const { cursors, containers: targets } = this.state;
+    if (data.clientKey != null && cursors[data.clientKey].draggedContainerId == null) {
+      const {
+        left: cursorLeft,
+        right: cursorRight,
+        top: cursorTop,
+        bottom: cursorBottom,
+      } = document.getElementById(data.clientKey).getBoundingClientRect();
+      const x = (cursorLeft + cursorRight) / 2;
+      const y = (cursorTop + cursorBottom) / 2;
+      const boundingBoxes = targets.map(
+        (target) => {
+          const {
+            left, right, top, bottom,
+          } = document.getElementById(`postit_${target.id}`).getBoundingClientRect();
+          return {
+            id: target.id,
+            left,
+            right,
+            top,
+            bottom,
+            depth: target.z
+          };
+        },
+      );
+      //console.log('boundigBoxes', boundingBoxes);
+      //we need to sort containers by depth
+      boundingBoxes.sort((a, b) => (b.depth - a.depth));
+      //then we take the first one (the one at the foreground)
+      const draggedContainer = boundingBoxes.find((boundingBox) => {
         const {
           left, right, top, bottom,
-        } = document.getElementById(`postit_${target.id}`).getBoundingClientRect();
-        return {
-          id: target.id,
-          left,
-          right,
-          top,
-          bottom,
-          depth : target.z
-        };
-      },
-    );
-    //console.log('boundigBoxes', boundingBoxes);
-    //we need to sort containers by depth
-    boundingBoxes.sort((a,b)=>(b.depth - a.depth));
-    //then we take the first one (the one at the foreground)
-    const draggedContainer = boundingBoxes.find((boundingBox) => {
-      const {
-        left, right, top, bottom,
-      } = boundingBox;
-      return (x > left && x < right && y > top && y < bottom);
-    })
-    //console.log(typeof draggedContainer);
-    return(draggedContainer);
-  }
+        } = boundingBox;
+        return (x > left && x < right && y > top && y < bottom);
+      })
+      //console.log(typeof draggedContainer);
+      return (draggedContainer);
+    }
 
-}
+  }
 
   moveContainer(data) {
     const displacement = data[1] * 0.3;
@@ -570,7 +575,7 @@ class Display extends Component {
               <img src={scanMe} alt="" className="scanMe" />
             </div>
             <footer>
-              <img src={qrPath} alt="" className="qr"/>
+              <img src={qrPath} alt="" className="qr" />
               <div id="loggedUsers_wrapper">
                 {loggedUsers}
               </div>
