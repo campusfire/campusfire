@@ -77,8 +77,9 @@ module.exports = function (app, io) {
     });
 
     socket.on('display', () => {
-      app.locals.displayId = socket.id;
-      io.to(app.locals.displayId).emit('client_list', app.locals.clients);
+      // No need to keep the following line except for loging the id of the new display that just connected
+      app.locals.displayId = socket.id; // This line stores the id of the last display which connected
+      io.emit('client_list', app.locals.clients);
       console.log(`Borne id: ${app.locals.displayId}`);
     });
 
@@ -93,75 +94,77 @@ module.exports = function (app, io) {
 
     socket.on('cursor', (data) => {
       // console.log('Mobile id:' + cursorId);
-      io.to(app.locals.displayId).emit('display_cursor', data.clientKey);
+      io.emit('display_cursor', data.clientKey);
     });
 
     socket.on('move', (data) => {
       // console.log('debug', 'moving');
-      io.to(app.locals.displayId).emit('move', data);
+      io.emit('move', data);
     });
 
     socket.on('dir', (data) => {
       // console.log('debug', 'changing direction');
-      io.to(app.locals.displayId).emit('dir', data);
+      io.emit('dir', data);
     });
 
     socket.on('click', (data) => {
-      io.to(app.locals.displayId).emit('remote_click', data);
+      io.emit('remote_click', data);
     });
 
     socket.on('pressing', (data) => {
-      io.to(app.locals.displayId).emit('remote_pressing', data);
+      io.emit('remote_pressing', data);
     });
 
     socket.on('stop_pressing', (data) => {
-      io.to(app.locals.displayId).emit('remote_stop_pressing', data);
+      io.emit('remote_stop_pressing', data);
     });
 
     socket.on('long_press', (data) => {
-      io.to(app.locals.displayId).emit('remote_long_press', data);
+      io.emit('remote_long_press', data);
     });
 
     socket.on('close_radial', (data) => {
-      io.to(app.locals.displayId).emit('remote_close_radial', data);
+      io.emit('remote_close_radial', data);
     });
 
     socket.on('cancel', (data) => {
-      io.to(app.locals.displayId).emit('remote_cancel', data);
+      io.emit('remote_cancel', data);
     });
 
     socket.on('selected_post_type', (data) => {
-      io.to(app.locals.displayId).emit('remote_selected_post_type', data);
+      io.emit('remote_selected_post_type', data);
     });
 
     socket.on('dragging_container', (data) => {
+      console.log('dragging_container DATA -> ', data);
       io.to(data).emit('dragging_container');
     });
 
     socket.on('radial_open', (data) => {
+      console.log('radial_open DATA -> ', data);
       io.to(data).emit('radial_open');
     });
 
     socket.on('post_credits', (data) => {
       console.log('credits');
-      io.to(app.locals.displayId).emit('post_credits', data);
+      io.emit('post_credits', data);
     });
 
     socket.on('posting', (data) => {
       console.log('POSTING');
-      io.to(app.locals.displayId).emit('posting', data);
+      io.emit('posting', data);
     });
 
     socket.on('disconnect', () => {
       console.log('User disconnected');
       const key = findKey(socket.id);
       deleteId(key);
-      io.to(app.locals.displayId).emit('disconnect_user', key);
+      io.emit('disconnect_user', key);
       if (app.locals.clients.length === app.locals.maxClients - 1
         && app.locals.clients[app.locals.clients.length - 1].clientId !== null) {
         const clientKey = makeId(8);
         app.locals.clients.push({ clientKey, clientId: null });
-        io.to(app.locals.displayId).emit('reload_qr');
+        io.emit('reload_qr');
       }
       console.log(app.locals.clients);
     });

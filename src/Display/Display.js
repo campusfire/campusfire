@@ -55,6 +55,10 @@ function sortContainersZIndex(containers) {
   return sortedContainers;
 }
 
+const initColors = {
+  maroon: false, gold: false, forestgreen: false, mediumorchid: false, orange: false, lightskyblue: false, aqua: false, chocolate: false,
+}
+
 class Display extends Component {
   constructor(props) {
     super(props);
@@ -64,9 +68,7 @@ class Display extends Component {
       cursors: {},
       keyChecked: false,
       qrPath: '/qr',
-      colors: {
-        maroon: false, gold: false, forestgreen: false, mediumorchid: false, orange: false, lightskyblue: false, aqua: false, chocolate: false,
-      },
+      colors: { ...initColors },
       key: null,
       // socket: null,
     };
@@ -93,6 +95,7 @@ class Display extends Component {
 
       socket.on('client_list', (clients) => { // refresh cursors on page reloads
         const { cursors } = this.state;
+        this.setState({ colors: { ...initColors } })
         clients.forEach((client) => {
           if (client.clientId) {
             const color = this.pickColor();
@@ -220,8 +223,6 @@ class Display extends Component {
       console.log('name_socket', name_socket);
       socket.on(name_socket, async (contents_to_remove) => {
         contents_to_remove = contents_to_remove.map((elt) => elt._id);
-        console.log('contents_to_remove', contents_to_remove);
-        console.log('containers on the screen --> ', this.state.containers);
         if (contents_to_remove.length > 0) {
           this.setState((prevState) => ({
             ...prevState,
@@ -256,13 +257,13 @@ class Display extends Component {
                 right,
                 top,
                 bottom,
-                depth : target.z
+                depth: target.z
               };
             },
           );
           console.log('boundigBoxes', boundingBoxes);
           //we need to sort containers by depth
-          boundingBoxes.sort((a,b)=>(b.depth - a.depth));
+          boundingBoxes.sort((a, b) => (b.depth - a.depth));
           //then we take the first one (the one at the foreground)
           const draggedContainer = boundingBoxes.find((boundingBox) => {
             const {
@@ -545,7 +546,7 @@ class Display extends Component {
               <img src={scanMe} alt="" className="scanMe" />
             </div>
             <footer>
-              <img src={qrPath} alt="" className="qr"/>
+              <img src={qrPath} alt="" className="qr" />
               <div id="loggedUsers_wrapper">
                 {loggedUsers}
               </div>
