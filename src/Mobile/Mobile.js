@@ -369,7 +369,7 @@ class Mobile extends Component {
             <div style={styleType('Text')}>
               <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'space-around', 'alignItems': 'center', marginTop: '20px', width: '100%' }}>
                 <div>
-                  <textarea id="textInput" onKeyUp={this.handleEnterKey} onChange={(text) => this.setDisablePostButton(text.target.value.trim()=="")} maxLength="130" cols="25" rows="3" />
+                  <textarea id="textInput" onKeyUp={this.handleEnterKey} onChange={(text) => this.setDisablePostButton(text.target.value.trim()==="")} maxLength="130" cols="25" rows="3" />
                 </div>
                 <div>
                   <p style={{ color: 'black', margin: 0 }}>
@@ -433,7 +433,7 @@ class Mobile extends Component {
             </div>
 
             <div style={styleType('Embeded')}>
-              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%' }}>
+              <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'space-around', 'alignItems': 'center', marginTop: '20px', width: '100%' }}>
                 <div>
                   <textarea id="embededInput" onKeyUp={this.handleEnterKey} maxLength="130" cols="25" rows="3" />
                 </div>
@@ -459,7 +459,7 @@ class Mobile extends Component {
                   </form>
                 </div>
               </div>
-              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width: '100%' }}>
+              <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', marginTop: '20px', width: '100%' }}>
                 <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
                 <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
               </div>

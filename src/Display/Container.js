@@ -24,11 +24,11 @@ function Container(props) {
         return (
           <Video id={id} src={content} x={x} y={y} z={z} />
         );
+      }
     case 'EMBEDED':
       return (
         <Embeded id={id} postId={content} x={x} y={y} z={z} />
       );
-      }
       
     default:
       return null;
