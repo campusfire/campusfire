@@ -111,7 +111,7 @@ class Mobile extends Component {
           element = 'Text';
           break;
         case angle >= 180 && angle < 270:
-          element = 'Video';
+          element = 'Embeded';
           break;
         case angle >= 270 && angle < 360:
           element = 'Credits';
@@ -234,6 +234,16 @@ class Mobile extends Component {
         } else {
           socket.emit('debug', 'no file');
         }
+        break;
+      case 'Embeded':
+        if (input.value !== '') {
+          // Extract post id from post url
+          input.value = input.value.substring(28, 39)
+          socket.emit('posting', {
+            contentType: 'EMBEDED', content: input.value, clientKey: key,
+          });
+        }
+        input.value = '';
         break;
       default:
         break;
@@ -417,6 +427,39 @@ class Mobile extends Component {
               <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%' }}>
                 <div>
                   <input id="videoInput" type="file" accept="video/*" onChange={this.onFileChange} />
+                </div>
+                <div>
+                  <p style={{ color: 'black', margin: 0 }}>
+                    Durée de vie
+                    </p>
+                  <form noValidate>
+                    <TextField
+                      style={{ width: '120px' }}
+                      id="time"
+                      type="time"
+                      variant="outlined"
+                      value={this.state.lifetime}
+                      inputlabelprops={{
+                        shrink: true,
+                      }}
+                      inputprops={{
+                        step: 60, // 1 min
+                      }}
+                      onChange={(event) => this.setLifetime(event.target.value)}
+                    />
+                  </form>
+                </div>
+              </div>
+              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'center', marginTop: '20px', width: '100%' }}>
+                <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<CloudUploadIcon />} onClick={this.handlePost}>Poster</Button>
+                <CancelPresentationTwoToneIcon style={styleIcon} onClick={this.handleCancel} />
+              </div>
+            </div>
+
+            <div style={styleType('Embeded')}>
+              <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%' }}>
+                <div>
+                  <textarea id="embededInput" onKeyUp={this.handleEnterKey} maxLength="130" cols="25" rows="3" />
                 </div>
                 <div>
                   <p style={{ color: 'black', margin: 0 }}>
