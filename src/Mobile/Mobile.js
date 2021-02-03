@@ -237,6 +237,8 @@ class Mobile extends Component {
         break;
       case 'Embeded':
         if (input.value !== '') {
+          // Extract post id from post url
+          input.value = input.value.substring(28, 39)
           socket.emit('posting', {
             contentType: 'EMBEDED', content: input.value, clientKey: key,
           });
