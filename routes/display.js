@@ -96,10 +96,13 @@ app.post('/content/:key', (req, res) => {
   });
 });
 
-app.put('/content/:key', (req, res) => {
-  Content.findOne({ _id: req.params.key }, (err, content) => {
+app.put('/content/:id_content', (req, res) => {
+  console.log('(MODIFY_post) id', req.params.id_content);
+  Content.findOne({ _id: req.params.id_content }, (err, content) => {
     if (err) res.send('fail');
     else {
+      content.lifetime = req.body.lifetime
+      content.payload = req.body.content;
       content.position.x = req.body.x;
       content.position.y = req.body.y;
       content.position.z = req.body.z;

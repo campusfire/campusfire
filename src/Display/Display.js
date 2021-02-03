@@ -234,17 +234,19 @@ class Display extends Component {
         const { containers } = this.state;
         const { content, lifetime, id } = data;
         console.log('(edit_post) data', data);
-        const newContainerContent = {
+        let newContainerContent = {
           content,
           lifetime
         };
         const newContainers = containers.map(container => {
           if (container.id == id) {
-            return ({ ...container, ...newContainerContent })
+            newContainerContent = { ...container, ...newContainerContent };
+            return newContainerContent
           }
           return container
         });
         this.setState({ containers: newContainers });
+        await updateContainer(newContainerContent)
       });
 
       socket.on('remote_click', async (data) => {
