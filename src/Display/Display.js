@@ -124,14 +124,10 @@ class Display extends Component {
           this.setState({ cursors });
         }
         else if (topBox != undefined && cursors[data[2]].editable == false) { //if cursor is above a post and wasn't before => set to editable
-          const topContainer = containers.find( (obj) => { //select the top container
-            if (obj.id == topBox.id) {
-              return obj;
-            }
-          })
+          const topContainer = containers.find( (obj) => obj.id == topBox.id)
           if (topContainer.creatorKey == data[2] ) {
             console.log("Editable");
-            socket.emit('editable_post', { postId : topBox.id, clientKey : data[2]});
+            socket.emit('editable_post', { clientKey : data[2], postType : topContainer.contentType, postContent : topContainer.content, postLifetime : topContainer.lifetime});
             cursors[data[2]].editable = true;
             this.setState({ cursors });
           }

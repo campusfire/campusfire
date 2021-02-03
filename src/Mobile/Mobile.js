@@ -34,6 +34,10 @@ class Mobile extends Component {
       lifetime: defaultLifetime,
       showPopup: false,
       showEditable: false,
+      editablePostContent: null,
+      editablePostLifetime: null,
+      editing: false,
+      textAreaValue : '',
     };
     this.postType = null;
     this.longPressed = false;
@@ -51,6 +55,8 @@ class Mobile extends Component {
     this.setLifetime = this.setLifetime.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
+    this.capitalizeFirstLetter = this.capitalizeFirstLetter.bind(this);
+    this.handleOnChangeTextArea = this.handleOnChangeTextArea.bind(this);
   }
 
   async componentDidMount() {
@@ -86,12 +92,13 @@ class Mobile extends Component {
       });
 
       socket.on('post_is_editable', (data) => {
-        this.state.showEditable = true;
-        socket.emit('EditClicked');
+        this.setState({showEditable:true, editablePostContent: data.postContent, editablePostLifetime : data.postLifetime});
+        this.postType = this.capitalizeFirstLetter(data.postType);
       });
 
       socket.on('post_is_not_editable', (data) => {
-        this.state.showEditable = false;
+        this.setState({showEditable:false, editablePostContent: null, editablePostLifetime : null});
+        this.postType = null;
       });
 
 
@@ -101,6 +108,10 @@ class Mobile extends Component {
       socket.emit('store_client_info', { clientKey: key });
       socket.emit('cursor', { clientKey: key });
     }
+  }
+
+  capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   }
 
   handleMove(_, data) {
@@ -208,21 +219,21 @@ class Mobile extends Component {
     const { socket, key, file } = this.state;
     event.stopPropagation();
     const { postType } = this;
-    const input = document.getElementById(`${postType.toLowerCase()}Input`);
+    // const input = document.getElementById(`${postType.toLowerCase()}Input`);
     const { lifetime } = this.state;
     switch (this.postType) {
       case 'Text':
         console.log(`Lifetime : ${lifetime}`);
-        if (input.value !== '') {
+        if (this.state.textAreaValue !== '') {
           const lifetimeHours = Number(lifetime.split(':')[0]);
           const lifetimeInMinutes = Number(lifetime.split(':')[1]) + 60 * lifetimeHours;
           console.log('lifetime in minutes', lifetimeInMinutes);
           socket.emit('posting', {
-            contentType: 'TEXT', content: input.value, clientKey: key, lifetime: lifetimeInMinutes,
+            contentType: 'TEXT', content: this.state.textAreaValue, clientKey: key, lifetime: lifetimeInMinutes,
           });
-          this.setState({ lifetime: defaultLifetime });
+          this.setState({ lifetime: defaultLifetime, textAreaValue: '' });
         }
-        input.value = '';
+        // input.value = '';
         break;
       case 'Video':
       case 'Image':
@@ -312,6 +323,10 @@ class Mobile extends Component {
         }));
   }
 
+  handleEditClick() {
+    this.setState({ showEditable: false, editing: true});
+  }
+
   // displayHelp() {
   //   alert(`Utilise ton smartphone pour déplacer le curseur à l\'écran. Appui long pour ajouter un élément.\nPlus d\'info sur ${<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />}`);
   // }
@@ -324,17 +339,19 @@ class Mobile extends Component {
     }));
   }
 
-  handleEditClick(e) {
-    const { socket } = this.state;
-    socket.emit('EditClicked');
+  handleOnChangeTextArea(event) {
+    console.log('(handleOnChangeTextArea) Changing', event.target.value)
+      this.setState({textAreaValue: event.target.value});
   }
+
 
   render() {
     const {
-      keyChecked, mode, backgroundColor, input
+      keyChecked, mode, backgroundColor, input, editing,
     } = this.state;
+
     const styleType = (inputType) => ({
-      display: input && this.postType === inputType ? 'flex' : 'none',
+      display: (input || editing) && this.postType === inputType ? 'flex' : 'none',
       'flex-direction': 'column',
       'flex-wrap': 'wrap',
       'justify-content': 'space-around',
@@ -368,8 +385,8 @@ class Mobile extends Component {
             <div>
               {this.state.showEditable
                 ? <Button onClick={this.handleEditClick}>
-                  'Edit'
-                  </Button>
+                Edit
+                </Button>
                 : null
               }
             </div>
@@ -377,7 +394,8 @@ class Mobile extends Component {
             <div style={styleType('Text')}>
               <div style={{ display: 'flex', 'flex-wrap': 'wrap', 'justify-content': 'space-around', 'align-items': 'center', marginTop: '20px', width: '100%' }}>
                 <div>
-                  <textarea id="textInput" onKeyUp={this.handleEnterKey} maxLength="130" cols="25" rows="3" />
+                  <textarea id="textInput" value={this.state.textAreaValue}
+                  onchange={this.handleOnChangeTextArea} onKeyUp={this.handleEnterKey} maxLength="130" cols="25" rows="3" />
                 </div>
                 <div>
                   <p style={{ color: 'black', margin: 0 }}>
@@ -389,7 +407,7 @@ class Mobile extends Component {
                       id="time"
                       type="time"
                       variant="outlined"
-                      value={this.state.lifetime}
+                      value={editing ? this.state.editablePostLifetime : this.state.lifetime}
                       inputlabelprops={{
                         shrink: true,
                       }}
