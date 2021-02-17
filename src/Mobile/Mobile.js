@@ -133,7 +133,7 @@ class Mobile extends Component {
   handleTouchStart(e) {
     const { socket, key } = this.state;
     // socket.emit('debug', 'touch start');
-    if (socket && !this.longPressed) {
+    if (socket && !this.longPressed && !this.state.showPopup) {
       socket.emit('pressing', { clientKey: key, clientId: socket.id });
     }
     this.createMoveInterval();
@@ -147,7 +147,7 @@ class Mobile extends Component {
     const {
       socket, key, distance, longPressTimer,
     } = this.state;
-    if (socket && distance <= this.threshold) {
+    if (socket && distance <= this.threshold && !this.state.showPopup) {
       // socket.emit('debug', 'long press');
       e.preventDefault();
       clearTimeout(longPressTimer);
