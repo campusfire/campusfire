@@ -243,11 +243,32 @@ class Mobile extends Component {
         break;
       case 'Embeded':
         if (input.value !== '') {
+          if (input.value.substring(0,26) == 'https://www.instagram.com/') {
+            const instaPostNoAddress = input.value.split('https://www.instagram.com/')
+            const instaPostSegmented = instaPostNoAddress[1].split('/')
+            if (instaPostSegmented[0] == 'p') {
+              socket.emit('posting', {
+                contentType: 'EMBEDED', content: instaPostSegmented[1], clientKey: key,
+              });
+            }else if (instaPostSegmented[0] == 'reel') {
+              socket.emit('posting', {
+                contentType: 'TEXT', content: "Reels not supported", clientKey: key, lifetime: 1,
+              });
+            }else{
+              socket.emit('posting', {
+                contentType: 'TEXT', content: "This doesn't look like an Instagram link", clientKey: key, lifetime: 1,
+              });
+            }
           // Extract post id from post url
-          input.value = input.value.substring(28, 39)
+          /*input.value = input.value.substring(28, 39)
           socket.emit('posting', {
             contentType: 'EMBEDED', content: input.value, clientKey: key,
-          });
+          });*/
+          }else{
+            socket.emit('posting', {
+              contentType: 'TEXT', content: "This doesn't look like an Instagram link", clientKey: key, lifetime: 1,
+            });
+          }
         }
         input.value = '';
         this.setState({ lifetime: defaultLifetime });
