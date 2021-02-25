@@ -94,7 +94,8 @@ class Mobile extends Component {
 
       socket.on('post_is_editable', (data) => {
         console.log('DATA editable', data);
-        console.log('lifetime', this.lifetimeIntToString(data.postLifetime))
+        console.log('lifetime', this.lifetimeIntToString(data.postLifetime));
+        this.setState({ input: true });
         this.setState({ showEditable: true, editablePostId: data.id, textAreaValue: data.postContent, lifetime: this.lifetimeIntToString(data.postLifetime) });
         this.postType = this.capitalizeFirstLetter(data.postType);
       });
