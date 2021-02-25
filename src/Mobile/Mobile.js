@@ -171,7 +171,7 @@ class Mobile extends Component {
   handleTouchStart(e) {
     const { socket, key } = this.state;
     // socket.emit('debug', 'touch start');
-    if (socket && !this.longPressed) {
+    if (socket && !this.longPressed && !this.state.showPopup) {
       socket.emit('pressing', { clientKey: key, clientId: socket.id });
     }
     this.createMoveInterval();
@@ -185,7 +185,7 @@ class Mobile extends Component {
     const {
       socket, key, distance, longPressTimer,
     } = this.state;
-    if (socket && distance <= this.threshold) {
+    if (socket && distance <= this.threshold && !this.state.showPopup) {
       // socket.emit('debug', 'long press');
       e.preventDefault();
       clearTimeout(longPressTimer);
@@ -287,14 +287,36 @@ class Mobile extends Component {
         this.setDisablePostButton(true);
         break;
       case 'Embeded':
-        if (textAreaValue !== '') {
+        if (input.value !== '') {
+          if (input.value.substring(0,26) == 'https://www.instagram.com/') {
+            const instaPostNoAddress = input.value.split('https://www.instagram.com/')
+            const instaPostSegmented = instaPostNoAddress[1].split('/')
+            if (instaPostSegmented[0] == 'p') {
+              socket.emit('posting', {
+                contentType: 'EMBEDED', content: instaPostSegmented[1], clientKey: key,
+              });
+            }else if (instaPostSegmented[0] == 'reel') {
+              socket.emit('posting', {
+                contentType: 'TEXT', content: "Reels not supported", clientKey: key, lifetime: 1,
+              });
+            }else{
+              socket.emit('posting', {
+                contentType: 'TEXT', content: "This doesn't look like an Instagram link", clientKey: key, lifetime: 1,
+              });
+            }
           // Extract post id from post url
-          textAreaValue = textAreaValue.substring(28, 39)
+          /*input.value = input.value.substring(28, 39)
           socket.emit('posting', {
-            contentType: 'EMBEDED', content: textAreaValue, clientKey: key,
-          });
+            contentType: 'EMBEDED', content: input.value, clientKey: key,
+          });*/
+          }else{
+            socket.emit('posting', {
+              contentType: 'TEXT', content: "This doesn't look like an Instagram link", clientKey: key, lifetime: 1,
+            });
+          }
         }
-        textAreaValue = '';
+        input.value = '';
+        this.setState({ lifetime: defaultLifetime });
         break;
       default:
         break;
