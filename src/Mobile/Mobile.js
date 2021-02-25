@@ -249,7 +249,7 @@ class Mobile extends Component {
             socket.emit('edit_post', {
               contentType: 'TEXT', content: textAreaValue, clientKey: key, lifetime: lifetimeInMinutes, id: editablePostId
             });
-            this.setState({ lifetime: defaultLifetime, textAreaValue: '', editablePostId: null });
+            this.setState({ lifetime: defaultLifetime, textAreaValue: '', editablePostId: null, editing: false });
           } else {
             socket.emit('posting', {
               contentType: 'TEXT', content: textAreaValue, clientKey: key, lifetime: lifetimeInMinutes,
@@ -364,7 +364,7 @@ class Mobile extends Component {
   }
 
   handleEditClick() {
-    this.setState({ showEditable: false, editing: true });
+    this.setState({ showEditable: false, editing: true, input: true });
   }
 
   // displayHelp() {
