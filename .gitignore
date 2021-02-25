@@ -28,3 +28,8 @@ yarn.lock
 
 /qr.png
 /postit.json
+
+/public/uploads/*.jpeg
+/public/uploads/*.jpg
+/public/uploads/*.png
+/public/uploads/*.mp4
