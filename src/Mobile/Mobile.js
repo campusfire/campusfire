@@ -11,6 +11,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import CancelPresentationTwoToneIcon from '@material-ui/icons/CancelPresentationTwoTone';
+import EditIcon from '@material-ui/icons/Edit';
 
 const defaultLifetime = '01:00';
 
@@ -422,11 +423,9 @@ class Mobile extends Component {
               }
             </header>
 
-            <div>
+            <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', marginTop: '20px', width: '100%' }}>
               {this.state.showEditable
-                ? <Button onClick={this.handleEditClick}>
-                  Edit
-                </Button>
+                ? <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<EditIcon />} onClick={this.handleEditClick}>Edit</Button>
                 : null
               }
             </div>
