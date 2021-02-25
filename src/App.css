@@ -142,6 +142,19 @@ footer{
   transform: rotate(3deg);
 }
 
+.embeded{
+  position: absolute;
+  width: 320px;
+  height: 330px;
+}
+
+.embededIframe{
+  position: relative;
+  width: 320px;
+  height: 330px;
+  border-radius: 20px 20px 5px 5px;
+}
+
 .pointer{
   position: absolute;
   height: 16px;
@@ -212,14 +225,14 @@ footer{
   background-image:url('Assets/text.png');
 }
 
-.pieSliceImage {
+.pieSliceMedia {
   border-radius: 0 100% 0 0;
-  background-image:url('Assets/image.png');
+  background-image:url('Assets/media.png');
 }
 
-.pieSliceVideo {
+.pieSliceEmbeded {
   border-radius: 0 0 0 100%;
-  background-image:url('Assets/video.png');
+  background-image:url('Assets/instagram-logo-black-transparent.png');
 }
 
 .pieSliceCredits {

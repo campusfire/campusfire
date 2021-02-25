@@ -155,6 +155,11 @@ module.exports = function (app, io) {
       io.emit('posting', data);
     });
 
+    socket.on('edit_post', (data) => {
+      console.log('edit_post');
+      io.to(app.locals.displayId).emit('edit_post', data);
+    });
+
     socket.on('disconnect', () => {
       console.log('User disconnected');
       const key = findKey(socket.id);
@@ -167,6 +172,28 @@ module.exports = function (app, io) {
         io.emit('reload_qr');
       }
       console.log(app.locals.clients);
+    });
+
+    socket.on('editable_post', (data) => {
+      const editorClient = app.locals.clients.find((client) => {
+        if (client.clientKey == data.clientKey) {
+          return (client);
+        }
+      });
+      //console.log("sending editable to :",editorClient.clientId);
+      //console.log("data sent :",data);
+      io.to(editorClient.clientId).emit('post_is_editable', data);
+    });
+
+    socket.on('not_editable_post', (data) => {
+      const editorClient = app.locals.clients.find((client) => {
+        if (client.clientKey == data.clientKey) {
+          return (client);
+        }
+      });
+      //console.log("sending not editable to :",editorClient.clientId);
+      //console.log("data sent :",data);
+      io.to(editorClient.clientId).emit('post_is_not_editable', data);
     });
 
     // DEVELOPMENT ONLY!
