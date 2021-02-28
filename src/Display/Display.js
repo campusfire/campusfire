@@ -51,7 +51,6 @@ function sortContainersZIndex(containers) {
     }
   ));
   updateAllContainers(sortedContainers);
-  // console.log('sorted', sortedContainers);
   return sortedContainers;
 }
 
@@ -77,7 +76,6 @@ class Display extends Component {
 
   async componentDidMount() {
     const { match: { params: { key } } } = this.props;
-    //console.log("La key est :",key)
     await this.checkKey(key);
     const { keyChecked, colors } = this.state;
     if (keyChecked) {
@@ -121,7 +119,6 @@ class Display extends Component {
         //now checking if cursor is above an editabe post
         const topBox = this.selectTopContainer({ clientKey: data[2], clientId: "foo" });
         if (topBox == undefined && cursors[data[2]].editable == true) { // if cursor is above no post and was above a post before => not editable anymore
-          console.log("Not editable anymore");
           socket.emit('not_editable_post', { clientKey: data[2] });
           cursors[data[2]].editable = false;
           this.setState({ cursors });
@@ -138,7 +135,6 @@ class Display extends Component {
 
       socket.on('remote_pressing', (data) => {
         const { cursors } = this.state;
-        // console.log('remote pressing');
         if (data.clientKey != null) {
           cursors[data.clientKey].pressing = true;
           this.setState({ cursors });
@@ -147,7 +143,6 @@ class Display extends Component {
 
       socket.on('remote_stop_pressing', async (data) => {
         const { cursors, containers: updatedContainers } = this.state;
-        // console.log('remote stop pressing');
         if (data.clientKey != null) {
           // Reset cursor color
           cursors[data.clientKey].pressing = false;
@@ -185,11 +180,9 @@ class Display extends Component {
           // Envoi de la couleur au mobile pour set le background
           socket.emit('set_color', { client: senderKey, color });
         }
-        // console.log(cursors);
       });
 
       socket.on('disconnect_user', (senderKey) => { // removes cursor when user disconnects
-        //console.log("Key of disconnected user :",senderKey);
         const { cursors, containers } = this.state;
         if (cursors[senderKey]) {
 
@@ -211,7 +204,6 @@ class Display extends Component {
         const { cursors, containers: newContainers } = this.state;
         const { contentType, content, lifetime, clientKey } = data;
         const cursor = cursors[clientKey];
-        //console.log("data", data)
         const container = {
           contentType,
           content,
@@ -221,7 +213,6 @@ class Display extends Component {
           lifetime,
           creatorKey: clientKey,
         };
-        // console.log('container', container);
         const { id_content } = JSON.parse(await (await this.postContainer(container)).text()); // back
         container['id'] = id_content;
         newContainers.push(container); // front
@@ -236,7 +227,6 @@ class Display extends Component {
       socket.on('edit_post', async (data) => {
         const { containers } = this.state;
         const { content, lifetime, id } = data;
-        console.log('(edit_post) data', data);
         let newContainerContent = {
           content,
           lifetime
@@ -254,7 +244,7 @@ class Display extends Component {
 
       socket.on('remote_click', async (data) => {
         const { cursors } = this.state;
-        console.log('click', cursors[data.clientKey].x, cursors[data.clientKey].y);
+        // console.log('click', cursors[data.clientKey].x, cursors[data.clientKey].y);
       });
 
       const name_socket = `refresh_posts_${key}`;
@@ -275,7 +265,6 @@ class Display extends Component {
         if (draggedContainer) {
           cursors[data.clientKey].draggedContainerId = draggedContainer.id;
           document.getElementById(`postit_${draggedContainer.id}`).style.boxShadow = `0 0 0 5px ${cursors[data.clientKey].color}`;
-          // console.log('dragging container');
         } else {
           cursors[data.clientKey].showRadial = true;
           socket.emit('radial_open', data.clientId);
@@ -287,7 +276,6 @@ class Display extends Component {
 
       socket.on('remote_cancel', (data) => {
         const { cursors } = this.state;
-        // console.log('remote cancel');
         if (data.clientKey != null) {
           cursors[data.clientKey].posting = false;
           this.setState({ cursors });
@@ -295,7 +283,6 @@ class Display extends Component {
       });
 
       socket.on('remote_close_radial', (data) => {
-        // console.log('remote close radial');
         if (data.clientKey != null) {
           this.closeRadial(data.clientKey);
         }
@@ -338,12 +325,10 @@ class Display extends Component {
 
   getState() {
     const { containers } = this.state;
-    // console.log('state', containers);
   }
 
   closeRadial(clientId) {
     const { cursors } = this.state;
-    // console.log('close radial', cursors[clientId]);
     cursors[clientId].showRadial = false;
     this.setState({
       cursors,
@@ -420,7 +405,6 @@ class Display extends Component {
           };
         },
       );
-      //console.log('boundigBoxes', boundingBoxes);
       //we need to sort containers by depth
       boundingBoxes.sort((a, b) => (b.depth - a.depth));
       //then we take the first one (the one at the foreground)
@@ -430,7 +414,6 @@ class Display extends Component {
         } = boundingBox;
         return (x > left && x < right && y > top && y < bottom);
       })
-      //console.log(typeof draggedContainer);
       return (draggedContainer);
     }
 
@@ -466,7 +449,6 @@ class Display extends Component {
     this.setState({
       containers,
     });
-    // console.log(containers);
     this.getState();
   }
 
@@ -526,6 +508,7 @@ class Display extends Component {
     const containersToRender = containers.map((container) => (
       <Container
         id={`postit_${container.id}`}
+        key={container.id}
         contentType={container.contentType}
         content={container.content}
         x={container.x}

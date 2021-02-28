@@ -18,7 +18,6 @@ const defaultLifetime = '01:00';
 class Mobile extends Component {
   constructor(props) {
     super(props);
-    console.log("Mobile constructor :", this);
     this.state = {
       socket: null,
       distance: 0,
@@ -94,8 +93,6 @@ class Mobile extends Component {
       });
 
       socket.on('post_is_editable', (data) => {
-        console.log('DATA editable', data);
-        console.log('lifetime', this.lifetimeIntToString(data.postLifetime));
         this.setState({ showEditable: true, editablePostId: data.id, textAreaValue: data.postContent, lifetime: this.lifetimeIntToString(data.postLifetime) });
         this.postType = this.capitalizeFirstLetter(data.postType);
       });
@@ -241,11 +238,9 @@ class Mobile extends Component {
     const { lifetime, textAreaValue, editing, editablePostId } = this.state;
     switch (this.postType) {
       case 'Text':
-        console.log(`Lifetime : ${lifetime}`);
         if (textAreaValue !== '') {
           const lifetimeHours = Number(lifetime.split(':')[0]);
           const lifetimeInMinutes = Number(lifetime.split(':')[1]) + 60 * lifetimeHours;
-          console.log('lifetime in minutes', lifetimeInMinutes);
           if (editing) {
             socket.emit('edit_post', {
               contentType: 'TEXT', content: textAreaValue, clientKey: key, lifetime: lifetimeInMinutes, id: editablePostId
@@ -265,7 +260,6 @@ class Mobile extends Component {
         if (file) {
           const lifetimeHours = Number(lifetime.split(':')[0]);
           const lifetimeInMinutes = Number(lifetime.split(':')[1]) + 60 * lifetimeHours;
-          console.log('lifetime in minutes', lifetimeInMinutes);
           // socket.emit('debug', `file: ${file.name}`);
           const formData = new FormData();
           formData.append('file', file);
