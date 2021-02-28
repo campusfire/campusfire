@@ -101,7 +101,7 @@ class Mobile extends Component {
       });
 
       socket.on('post_is_not_editable', (data) => {
-        this.setState({ showEditable: false, textAreaValue: null, lifetime: null });
+        this.setState({ showEditable: false, textAreaValue: '', lifetime: defaultLifetime });
         this.postType = null;
       });
 
@@ -187,7 +187,7 @@ class Mobile extends Component {
     } = this.state;
     if (socket && distance <= this.threshold && !this.state.showPopup) {
       // socket.emit('debug', 'long press');
-      e.preventDefault();
+      e.persist();
       clearTimeout(longPressTimer);
       // window.navigator.vibrate(200);
       socket.emit('long_press', { clientKey: key, clientId: socket.id });
@@ -328,9 +328,7 @@ class Mobile extends Component {
     const { socket, key } = this.state;
     event.stopPropagation();
     // HERE NEED TO CHANGE two ways of changing value for textarea
-    const input = document.getElementById(`${this.postType.toLowerCase()}Input`);
-    input.value = '';
-    this.setState({ file: null, input: false });
+    this.setState({ file: null, input: false, textAreaValue: '', editing: false });
     this.postType = null;
     if (socket) {
       socket.emit('cancel', { clientKey: key, clientId: socket.id });
@@ -414,10 +412,10 @@ class Mobile extends Component {
 
     const styleType = (inputType) => ({
       display: (input || editing) && this.postType === inputType ? 'flex' : 'none',
-      'flex-direction': 'column',
-      'flex-wrap': 'wrap',
-      'justify-content': 'space-around',
-      'align-content': 'space-around'
+      'flexDirection': 'column',
+      'flexWrap': 'wrap',
+      'justifyContent': 'space-around',
+      'alignContent': 'space-around'
     })
     const styleIcon = {
       marginLeft: '10px',
@@ -467,7 +465,7 @@ class Mobile extends Component {
                       id="time"
                       type="time"
                       variant="outlined"
-                      value={editing ? this.state.editablePostLifetime : this.state.lifetime}
+                      value={this.state.lifetime}
                       inputlabelprops={{
                         shrink: true,
                       }}
