@@ -513,7 +513,8 @@ class Mobile extends Component {
             <div style={styleType('Embeded')}>
               <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'space-around', 'alignItems': 'center', marginTop: '20px', width: '100%' }}>
                 <div>
-                  <textarea id="embededInput" onKeyUp={this.handleEnterKey} maxLength="130" cols="25" rows="3" />
+                <textarea id="textInput" value={this.state.textAreaValue}
+                    onChange={this.handleOnChangeTextArea} onKeyUp={this.handleEnterKey} maxLength="130" cols="25" rows="3" />
                 </div>
                 <div>
                   <p style={{ color: 'black', margin: 0 }}>
