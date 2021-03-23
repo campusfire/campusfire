@@ -16,14 +16,14 @@ db.once('open', async () => {
   const display = new Display({ name: 'Campus Fire', token: 'fire' });
   await display.save();
 
-  const content1 = new Content({
-    type: 'TEXT',
-    payload: 'Coucou campus',
-    position: { x: 20, y: 20, z: 1 },
-    // eslint-disable-next-line no-underscore-dangle
-    display: display._id,
-  });
-  await content1.save();
+  // const content1 = new Content({
+  //   type: 'TEXT',
+  //   payload: 'Coucou campus',
+  //   position: { x: 20, y: 20, z: 1 },
+  //   // eslint-disable-next-line no-underscore-dangle
+  //   display: display._id,
+  // });
+  // await content1.save();
 
   console.log('ok');
 });
