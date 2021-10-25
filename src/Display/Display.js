@@ -429,7 +429,7 @@ class Display extends Component {
       (container) => container.id === cursors[key].draggedContainerId,
     );
     let { x, y } = containers[containerIndex];
-
+    const containerId = containers[containerIndex].id;
     if (key !== null) {
       x += dx;
       y += dy;
@@ -437,10 +437,15 @@ class Display extends Component {
     const {
       left, right, top, bottom,
     } = document.getElementById('root').getBoundingClientRect();
-    if (x <= 0 || x >= right - left - 300) {
+    const {
+      left: containerLeft, right: containerRight, top: containerTop, bottom: containerBottom,
+    } = document.getElementById(`postit_${containerId}`).getBoundingClientRect();
+    const containerHeight = containerBottom - containerTop;
+    const containerWidth = containerRight - containerLeft;
+    if (x <= 0 || x >= right - left - containerWidth) {
       x -= dx;
     }
-    if (y <= 0 || y >= bottom - top - 300) {
+    if (y <= 0 || y >= bottom - top - containerHeight) {
       y -= dy;
     }
     containers[containerIndex].x = x;
