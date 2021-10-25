@@ -112,8 +112,10 @@ footer{
 
 .postit-img {
   position: absolute;
-  max-width: 150px;
-  max-height: 150px;
+  /*max-width: 150px;*/
+  /*max-height: 150px;*/
+  max-width: 300px;
+  max-height: 300px;
   border-radius: 20px;
   border: 3px solid white;
 }

@@ -437,10 +437,10 @@ class Display extends Component {
     const {
       left, right, top, bottom,
     } = document.getElementById('root').getBoundingClientRect();
-    if (x <= 0 || x >= right - left) {
+    if (x <= 0 || x >= right - left - 300) {
       x -= dx;
     }
-    if (y <= 0 || y >= bottom - top) {
+    if (y <= 0 || y >= bottom - top - 300) {
       y -= dy;
     }
     containers[containerIndex].x = x;
