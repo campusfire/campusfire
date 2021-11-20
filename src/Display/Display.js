@@ -131,18 +131,19 @@ class Display extends Component {
             this.setState({ cursors });
           }
         }
-        if (topBox != undefined && cursors[data[2]].likeable == true) {//if cursor is above a likeable post and wasn't before => set it to likeable
+
+        if (topBox == undefined && cursors[data[2].likeable == false]) {// if cursor is above no post and was above a post before 
+          socket.emit('not_likeable_post', { clientKey: data[2] });
+          cursors[data[2]].likeable = false;
+          this.setState( { cursors});
+        }
+        else if (topBox != undefined && cursors[data[2]].likeable == true) {//if cursor is above a likeable post and wasn't before => set it to likeable
           const topContainer = containers.find((obj) => obj.id == topBox.id)
           if (topContainer.creatorKey != data[2]) {
             socket.emit('likeable_post', {clientKey: data[2], id: topContainer.id, postType: topContainer.contentType, postContent: topContainer.content, postLifetime: topContainer.lifetime})
             cursors[data[2]].likeable = true;
             this.setState({ cursors });
         }
-      }
-        else if (topBox == undefined && cursors[data[2].likeable == false]) {// if cursor is above no post and was above a psot before 
-          socket.emit('not_likeable_post', { clientKey: data[2], id: topContainer.id, postType: topContainer.contentType, postContent: topContainer.content, postLifetime: topContainer.lifetime });
-          cursors[data[2]].likeable = false;
-          this.setState( { cursors});
       }
       });
 
