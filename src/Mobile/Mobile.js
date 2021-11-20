@@ -12,6 +12,7 @@ import Button from '@material-ui/core/Button';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import CancelPresentationTwoToneIcon from '@material-ui/icons/CancelPresentationTwoTone';
 import EditIcon from '@material-ui/icons/Edit';
+import LikeIcon from '@material-ui/icons/ThumbUp'
 
 const defaultLifetime = '01:00';
 
@@ -398,6 +399,10 @@ class Mobile extends Component {
     this.setState({ showEditable: false, editing: true, input: true });
   }
 
+  handleLikeClick() {
+    this.setState({ showLike: false});
+  }
+
   // displayHelp() {
   //   alert(`Utilise ton smartphone pour déplacer le curseur à l\'écran. Appui long pour ajouter un élément.\nPlus d\'info sur ${<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />}`);
   // }
@@ -461,7 +466,7 @@ class Mobile extends Component {
             </div>
             <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', marginTop: '20px', width: '100%' }}>
               {this.state.showLike
-              ? <p> Ceci est un texte pour montrer qu'on peut like</p>
+              ? <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<LikeIcon />} onClick={this.handleLikeClick}>Like</Button>
               : null
               }
             </div>
