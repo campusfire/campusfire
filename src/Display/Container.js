@@ -13,7 +13,7 @@ function Container(props) {
   switch (contentType) {
     case 'TEXT':
       return (
-        <PostIt id={id} text={content} x={x} y={y} z={z} lifetime={lifetime} />
+        <PostIt id={id} text={content} x={x} y={y} z={z} />
       );
     case 'MEDIA':
       if (regExp.test(content)) {
