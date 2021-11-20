@@ -37,6 +37,7 @@ class Mobile extends Component {
       editablePostId: null,
       textAreaValue: '',
       disablePostButton: true,
+      showLike: false,
     };
     this.postType = null;
     this.longPressed = false;
@@ -101,6 +102,14 @@ class Mobile extends Component {
         this.setState({ showEditable: false, textAreaValue: '', lifetime: defaultLifetime });
         this.postType = null;
       });
+
+      socket.on('post_is_likeable', (data) => {
+        this.setState({showLike: true, likeablePostId: data.id});
+      });
+
+      socket.on('post_is_not_likeable', (data) => {
+        this.setState({showLike: false});
+      })
 
 
       this.setState({
@@ -449,6 +458,9 @@ class Mobile extends Component {
                 ? <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<EditIcon />} onClick={this.handleEditClick}>Edit</Button>
                 : null
               }
+            </div>
+            <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', marginTop: '20px', width: '100%' }}>
+              <p> Ceci est un texte pour montrer qu'on peut like</p>
             </div>
 
             <div style={styleType('Text')}>
