@@ -68,7 +68,7 @@ app.get('/content/:key', (req, res) => {
             //   }
             // });
             const query = { _id: contents[i]._id };
-            Content.updateOne(query, { deletedOn: Date.now }, (err3, result) => {
+            Content.updateOne(query, { deletedOn: Date.now() }, (err3, result) => {
               if (err3) {
                 res.send(err3);
               } else {

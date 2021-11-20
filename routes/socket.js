@@ -48,7 +48,7 @@ module.exports = function (app, io) {
           // await asyncDeleteMultipleFiles(filterMediaToDeleteFromContentsAndReturnNames(contents_to_delete_in_db));
           const contents_to_delete_in_db_ids = contents_to_delete_in_db.map((elt) => mongoose.Types.ObjectId(elt._id));
           // await Content.remove({ _id: { $in: contents_to_delete_in_db_ids } });
-          await Content.updateMany({ _id: { $in: contents_to_delete_in_db_ids } }, { deletedOn: Date.now });
+          await Content.updateMany({ _id: { $in: contents_to_delete_in_db_ids } }, { deletedOn: Date.now() });
         });
       }
     });
