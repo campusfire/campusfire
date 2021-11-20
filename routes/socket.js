@@ -196,6 +196,25 @@ module.exports = function (app, io) {
       io.to(editorClient.clientId).emit('post_is_not_editable', data);
     });
 
+    socket.on('likeable_post', (data) => {
+      const editorClient = app.locals.clients.find((client) => {
+        if (client.clientKey == data.clientKey) {
+          return (client);
+        }
+      });
+      io.to(editorClient.clientId).emit('post_is_not_editable', data);
+    });
+
+
+    socket.on('not_likeable_post', (data) => {
+      const editorClient = app.locals.clients.find((client) => {
+        if (client.clientKey == data.clientKey) {
+          return (client);
+        }
+      });
+      io.to(editorClient.clientId).emit('post_is_not_likeable', data);
+    });
+
     // DEVELOPMENT ONLY!
     socket.on('debug', (content) => {
       console.log('debug', content);
