@@ -99,7 +99,7 @@ class Display extends Component {
           if (client.clientId) {
             const color = this.pickColor();
             cursors[client.clientKey] = {
-              x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false,
+              x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false, likeable: false,
             };
           }
         });
@@ -132,7 +132,7 @@ class Display extends Component {
           }
         }
 
-        if (topBox == undefined && cursors[data[2].likeable == true]) {// if cursor is above no post and was above a post before 
+        if (topBox == undefined && cursors[data[2]].likeable == true) {// if cursor is above no post and was above a post before 
           socket.emit('not_likeable_post', { clientKey: data[2] });
           cursors[data[2]].likeable = false;
           this.setState( { cursors});
@@ -187,7 +187,7 @@ class Display extends Component {
         if (senderKey != null) {
           const color = this.pickColor();
           cursors[senderKey] = {
-            x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false,
+            x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false, likeable: false,
           };
           this.setState({ cursors });
 

@@ -202,7 +202,7 @@ module.exports = function (app, io) {
           return (client);
         }
       });
-      io.to(editorClient.clientId).emit('post_is_not_editable', data);
+      io.to(editorClient.clientId).emit('post_is_likeable', data);
     });
 
 

@@ -39,6 +39,7 @@ class Mobile extends Component {
       textAreaValue: '',
       disablePostButton: true,
       showLike: false,
+      likeablePostId: null,
     };
     this.postType = null;
     this.longPressed = false;
@@ -56,6 +57,7 @@ class Mobile extends Component {
     this.setLifetime = this.setLifetime.bind(this);
     this.togglePopup = this.togglePopup.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
+    this.handleLikeClick = this.handleLikeClick.bind(this);
     this.capitalizeFirstLetter = this.capitalizeFirstLetter.bind(this);
     this.handleOnChangeTextArea = this.handleOnChangeTextArea.bind(this);
     this.lifetimeIntToString = this.lifetimeIntToString.bind(this);
