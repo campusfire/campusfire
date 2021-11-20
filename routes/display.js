@@ -60,11 +60,19 @@ app.get('/content/:key', (req, res) => {
             });
           } else {
             contents_to_delete_in_db.push(contents[i]);
-            Content.deleteOne({ _id: contents[i]._id }, (err3, result) => {
+            // Content.deleteOne({ _id: contents[i]._id }, (err3, result) => {
+            //   if (err3) {
+            //     res.send(err3);
+            //   } else {
+            //     console.log(`Object with id ${contents[i]._id} deleted from database`);
+            //   }
+            // });
+            const query = { _id: contents[i]._id };
+            Content.updateOne(query, { deletedOn: Date.now }, (err3, result) => {
               if (err3) {
                 res.send(err3);
               } else {
-                console.log(`Object with id ${contents[i]._id} deleted from database`);
+                console.log(`Object with id ${contents[i]._id} successfully archived`);
               }
             });
           }

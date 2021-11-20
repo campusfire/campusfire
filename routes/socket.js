@@ -33,7 +33,7 @@ module.exports = function (app, io) {
   }
 
   // this job runs every minute
-  schedule.scheduleJob({ start: new Date(Date.now() + 10000), rule: '*/5 * * * * *' }, () => {
+  schedule.scheduleJob({ start: new Date(Date.now() + 10000), rule: '*/1 * * * * *' }, () => {
     Display.find({}, (err, allDisplays) => {
       if (err) console.log(err);
       else {
@@ -47,7 +47,8 @@ module.exports = function (app, io) {
           io.emit(name_socket, contents_to_delete_in_db);
           // await asyncDeleteMultipleFiles(filterMediaToDeleteFromContentsAndReturnNames(contents_to_delete_in_db));
           const contents_to_delete_in_db_ids = contents_to_delete_in_db.map((elt) => mongoose.Types.ObjectId(elt._id));
-          await Content.remove({ _id: { $in: contents_to_delete_in_db_ids } });
+          // await Content.remove({ _id: { $in: contents_to_delete_in_db_ids } });
+          await Content.updateMany({ _id: { $in: contents_to_delete_in_db_ids } }, { deletedOn: Date.now });
         });
       }
     });
