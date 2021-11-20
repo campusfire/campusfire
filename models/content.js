@@ -14,6 +14,7 @@ const contentSchema = mongoose.Schema({
   },
   payload: String,
   createdOn: { type: Date, default: Date.now },
+  deletedOn: { type: Date, default: Date.now },
   lifetime: { type: Number, default: 40 },
   position: {
     x: Number,
