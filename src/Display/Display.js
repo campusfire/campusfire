@@ -7,7 +7,7 @@ import Pointer from './Pointer';
 import Radial from './Radial';
 import Container from './Container';
 
-const creditsContent = 'Crédits : Gabriel Carlotti, Joséphine Solier, Victor Yvergniaux, Simon Sauvestre, Sébastien Gahat, François Carlué, Antoine Rousselot-Vigier, Romain Grondin, Thomas Rugliano, Adrien Laffargue, Fanis Michalakis, Maxime Vivier, Christian Martin, Antoine Mirande, Jules Seguin, François Brucker, Christian Jalain';
+const creditsContent = 'Crédits : Gabriel Carlotti, Joséphine Solier, Victor Yvergniaux, Simon Sauvestre, Sébastien Gahat, François Carlué, Antoine Rousselot-Vigier, Romain Grondin, Thomas Rugliano, Adrien Laffargue, Fanis Michalakis, Maxime Vivier, Christian Martin, Antoine Mirande, Jules Seguin, Léo Laurent, Simon Rose, Patrick Ouedraogo, François Brucker, Christian Jalain';
 
 const getContainers = async (displayKey) => fetch(`/content/${displayKey}`, {
   method: 'GET',
