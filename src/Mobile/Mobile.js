@@ -460,7 +460,10 @@ class Mobile extends Component {
               }
             </div>
             <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', marginTop: '20px', width: '100%' }}>
-              <p> Ceci est un texte pour montrer qu'on peut like</p>
+              {this.state.showLike
+              ? <p> Ceci est un texte pour montrer qu'on peut like</p>
+              : null
+              }
             </div>
 
             <div style={styleType('Text')}>
