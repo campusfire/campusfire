@@ -45,7 +45,7 @@ module.exports = function (app, io) {
             console.log('Refresh post to delete : ', contents_to_delete_in_db);
           }
           io.emit(name_socket, contents_to_delete_in_db);
-          await asyncDeleteMultipleFiles(filterMediaToDeleteFromContentsAndReturnNames(contents_to_delete_in_db));
+          // await asyncDeleteMultipleFiles(filterMediaToDeleteFromContentsAndReturnNames(contents_to_delete_in_db));
           const contents_to_delete_in_db_ids = contents_to_delete_in_db.map((elt) => mongoose.Types.ObjectId(elt._id));
           await Content.remove({ _id: { $in: contents_to_delete_in_db_ids } });
         });

@@ -69,7 +69,7 @@ app.get('/content/:key', (req, res) => {
             });
           }
         }
-        await asyncDeleteMultipleFiles(filterMediaToDeleteFromContentsAndReturnNames(contents_to_delete_in_db));
+        // await asyncDeleteMultipleFiles(filterMediaToDeleteFromContentsAndReturnNames(contents_to_delete_in_db));
         res.send(JSON.stringify(retour));
       });
     }
