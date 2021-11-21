@@ -16,6 +16,7 @@ const contentSchema = mongoose.Schema({
   createdOn: { type: Date, default: Date.now },
   deletedOn: { type: Date, default: null },
   lifetime: { type: Number, default: 40 },
+  author_id: { type: String, default: null},
   position: {
     x: Number,
     y: Number,
