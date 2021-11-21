@@ -99,6 +99,7 @@ app.post('/content/:key', (req, res) => {
       const newContent = new Content({
         type: req.body.contentType,
         payload: req.body.content,
+        author_id:req.body.creatorKey,
         position: {
           x: req.body.x,
           y: req.body.y,
