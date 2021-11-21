@@ -63,7 +63,7 @@ app.get('/content/:key', (req, res) => {
         const contents_to_delete_in_db = [];
 
         for (let i = 0; i < contents.length; i += 1) {
-          if (alreadyArchivedTest(contents[i].deletedOn) && expirationTest(contents[i].lifetime, contents[i].createdOn)) {
+          if (expirationTest(contents[i].lifetime, contents[i].createdOn)) {
             retour.push({
               id: contents[i]._id,
               contentType: contents[i].type,
@@ -72,7 +72,7 @@ app.get('/content/:key', (req, res) => {
               y: contents[i].position.y,
               lifetime: contents[i].lifetime,
             });
-          } else {
+          } else if (!alreadyArchivedTest(contents[i].deletedOn)) {
             contents_to_delete_in_db.push(contents[i]);
             // Content.deleteOne({ _id: contents[i]._id }, (err3, result) => {
             //   if (err3) {
