@@ -59,6 +59,7 @@ class Mobile extends Component {
     this.togglePopup = this.togglePopup.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleLikeClick = this.handleLikeClick.bind(this);
+    this.handleDislikeClick = this.handleDislikeClick.bind(this);
     this.capitalizeFirstLetter = this.capitalizeFirstLetter.bind(this);
     this.handleOnChangeTextArea = this.handleOnChangeTextArea.bind(this);
     this.lifetimeIntToString = this.lifetimeIntToString.bind(this);
@@ -403,15 +404,15 @@ class Mobile extends Component {
   }
 
   handleLikeClick() {
-    const {socket, key, likeablePostId} = this.state;
-    this.setState({ showLike: false});
+    const {socket, key, likeablePostId, lifetime} = this.state;
+    this.setState({ showLike: false });
     socket.emit('post_is_liked', {clientKey: key, postId: likeablePostId});
   }
 
   handleDislikeClick() {
     const {socket, key, likeablePostId} = this.state;
-    this.setState({showLike: false});
-    socket.emit("post_is_liked", {clientKey: key, postId: likeablePostId});
+    this.setState({ showLike: false });
+    socket.emit('post_is_liked', {clientKey: key, postId: likeablePostId});
   }
 
   // displayHelp() {
