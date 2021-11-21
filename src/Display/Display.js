@@ -99,7 +99,7 @@ class Display extends Component {
           if (client.clientId) {
             const color = this.pickColor();
             cursors[client.clientKey] = {
-              x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false, likeable: false, liked_posts= [],
+              x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false, likeable: false, liked_posts: [],
             };
           }
         });
@@ -187,7 +187,7 @@ class Display extends Component {
         if (senderKey != null) {
           const color = this.pickColor();
           cursors[senderKey] = {
-            x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false, likeable: false, liked_posts= [],
+            x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false, likeable: false, liked_posts: [],
           };
           this.setState({ cursors });
 
