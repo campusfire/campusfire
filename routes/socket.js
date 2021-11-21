@@ -224,6 +224,10 @@ module.exports = function (app, io) {
       io.to(editorClient.clientId).emit('post_is_not_likeable', data);
     });
 
+    socket.on('post_is_liked', (data) => {
+      io.emit('post_is_liked', data);
+    })
+
     // DEVELOPMENT ONLY!
     socket.on('debug', (content) => {
       console.log('debug', content);
