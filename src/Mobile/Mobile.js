@@ -12,7 +12,8 @@ import Button from '@material-ui/core/Button';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import CancelPresentationTwoToneIcon from '@material-ui/icons/CancelPresentationTwoTone';
 import EditIcon from '@material-ui/icons/Edit';
-import LikeIcon from '@material-ui/icons/ThumbUp'
+import LikeIcon from '@material-ui/icons/ThumbUp';
+import DislikeIcon from '@material-ui/icons/ThumbDown';
 
 const defaultLifetime = '01:00';
 
@@ -407,6 +408,12 @@ class Mobile extends Component {
     socket.emit('post_is_liked', {clientKey: key, postId: likeablePostId});
   }
 
+  handleDislikeClick() {
+    const {socket, key, likeablePostId} = this.state;
+    this.setState({showLike: false});
+    socket.emit("post_is_liked", {clientKey: key, postId: likeablePostId});
+  }
+
   // displayHelp() {
   //   alert(`Utilise ton smartphone pour déplacer le curseur à l\'écran. Appui long pour ajouter un élément.\nPlus d\'info sur ${<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />}`);
   // }
@@ -470,7 +477,10 @@ class Mobile extends Component {
             </div>
             <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', marginTop: '20px', width: '100%' }}>
               {this.state.showLike
-              ? <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<LikeIcon />} onClick={this.handleLikeClick}>Like</Button>
+              ? <div>
+                <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<LikeIcon />} onClick={this.handleLikeClick}>Like</Button>
+                <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<DislikeIcon />} onClick={this.handleDislikeClick}>Dislike</Button>
+               </div>
               : null
               }
             </div>
