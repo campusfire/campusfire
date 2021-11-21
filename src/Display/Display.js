@@ -346,7 +346,7 @@ class Display extends Component {
       socket.on('post_is_liked' , (data) => {
         const { cursors } = this.state;
         cursors[data.clientKey].liked_posts.push(data.postId);
-        this.setState({ cursors })
+        this.setState({ cursors });
       });
     }
   }

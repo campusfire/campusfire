@@ -402,9 +402,9 @@ class Mobile extends Component {
   }
 
   handleLikeClick() {
-    const {socket, key, likeablePostId} = this.state
+    const {socket, key, likeablePostId} = this.state;
     this.setState({ showLike: false});
-    socket.emit('post_is_liked', {clientKey: key, postId: likeablePostId})
+    socket.emit('post_is_liked', {clientKey: key, postId: likeablePostId});
   }
 
   // displayHelp() {
