@@ -335,10 +335,22 @@ class Display extends Component {
         });
       });
 
-      socket.on('post_is_liked' , (data) => {
-        const { cursors } = this.state;
-        cursors[data.clientKey].liked_posts.push(data.postId);
-        this.setState({ cursors });
+      socket.on('post_is_liked' , async (data) => {
+        const { cursors, containers } = this.state;
+        const { clientKey, postId, lifetime_chg } = data;
+        cursors[clientKey].liked_posts.push(postId);
+        let newContainerContent = {};
+        const newContainers = containers.map(container => {
+          if (container.id == postId) {
+            let lifetime = container.lifetime + lifetime_chg;
+            newContainerContent = {lifetime};
+            newContainerContent = { ...container, ...newContainerContent };
+            return newContainerContent
+          }
+          return container
+        });
+        this.setState({ cursors, containers: newContainers });
+        await updateContainer(newContainerContent);
       });
     }
   }

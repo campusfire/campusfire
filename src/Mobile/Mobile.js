@@ -135,13 +135,6 @@ class Mobile extends Component {
     return stringNumber.length < 2 ? '0' + stringNumber : stringNumber
   }
 
-  lifetimeStringToInt(lifetime) {
-    console.log(lifetime);
-    const nbHeures = Number(lifetime.substring(0, 2));
-    const nbMin = Number(lifetime.substring(3, 5));
-    return nbHeures * 60 + nbMin
-  }
-
   capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   }
@@ -412,18 +405,15 @@ class Mobile extends Component {
   }
 
   handleLikeClick() {
-    const {socket, key, likeablePostId, lifetime} = this.state;
-    const newLifetime = this.lifetimeStringToInt(lifetime) + 10;
+    const { socket, key, likeablePostId } = this.state;
     this.setState({ showLike: false });
-    socket.emit('edit_post', { content: 'A CHANGER', lifetime: newLifetime, id: likeablePostId});
-    socket.emit('post_is_liked', {clientKey: key, postId: likeablePostId});
+    socket.emit('post_is_liked', {clientKey: key, postId: likeablePostId, lifetime_chg: 10 });
   }
 
   handleDislikeClick() {
-    const {socket, key, likeablePostId, lifetime} = this.state;
-    const newLifetime = this.lifetimeStringToInt(lifetime) - 10;
+    const { socket, key, likeablePostId } = this.state;
     this.setState({ showLike: false });
-    socket.emit('post_is_liked', {clientKey: key, postId: likeablePostId});
+    socket.emit('post_is_liked', {clientKey: key, postId: likeablePostId, lifetime_chg: -10 });
   }
 
   // displayHelp() {
