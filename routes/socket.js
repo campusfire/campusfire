@@ -39,7 +39,7 @@ module.exports = function (app, io) {
       else {
         allDisplays.map(async (display) => {
           const name_socket = `refresh_posts_${display.token}`;
-          const all_contents_to_check_expiry_date = await Content.find({ display: display._id }).select('lifetime _id createdOn payload type');
+          const all_contents_to_check_expiry_date = await Content.find({ display: display._id }).select('lifetime _id createdOn deletedOn payload type');
           const contents_not_archived_in_db = all_contents_to_check_expiry_date.filter((content) => !alreadyArchivedTest(content.deletedOn));
           const contents_to_delete_in_db = contents_not_archived_in_db.filter((content) => !expirationTest(content.lifetime, content.createdOn));
           const contents_to_keep_in_db = all_contents_to_check_expiry_date.filter((content) => expirationTest(content.lifetime, content.createdOn));
