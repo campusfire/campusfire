@@ -3,7 +3,7 @@ const schedule = require('node-schedule');
 const mongoose = require('mongoose');
 const Display = require('../models/display');
 const Content = require('../models/content');
-const { expirationTest } = require('./display');
+const { expirationTest, fadingLevel } = require('./display');
 const { makeId } = require('./utils');
 const { filterMediaToDeleteFromContentsAndReturnNames, asyncDeleteMultipleFiles } = require('./display');
 
@@ -33,7 +33,7 @@ module.exports = function (app, io) {
   }
 
   // this job runs every minute
-  schedule.scheduleJob({ start: new Date(Date.now() + 10000), rule: '*/1 * * * * *' }, () => {
+  schedule.scheduleJob({ start: new Date(Date.now() + 10000), rule: '*/5 * * * * *' }, () => {
     Display.find({}, (err, allDisplays) => {
       if (err) console.log(err);
       else {
@@ -41,10 +41,18 @@ module.exports = function (app, io) {
           const name_socket = `refresh_posts_${display.token}`;
           const all_contents_to_check_expiry_date = await Content.find({ display: display._id }).select('lifetime _id createdOn payload type');
           const contents_to_delete_in_db = all_contents_to_check_expiry_date.filter((content) => !expirationTest(content.lifetime, content.createdOn));
+          const contents_to_keep_in_db = all_contents_to_check_expiry_date.filter((content) => expirationTest(content.lifetime, content.createdOn));
+          const fading_levels = [];
           if (contents_to_delete_in_db.length > 0) {
             console.log('Refresh post to delete : ', contents_to_delete_in_db);
           }
-          io.emit(name_socket, contents_to_delete_in_db);
+          if (contents_to_keep_in_db.length > 0) {
+            contents_to_keep_in_db.forEach((content) => {
+              fading_levels.push(fadingLevel(content.lifetime, content.createdOn));
+            });
+          }
+          const data = { contents_to_delete_in_db, contents_to_keep_in_db, fading_levels };
+          io.emit(name_socket, data);
           // await asyncDeleteMultipleFiles(filterMediaToDeleteFromContentsAndReturnNames(contents_to_delete_in_db));
           const contents_to_delete_in_db_ids = contents_to_delete_in_db.map((elt) => mongoose.Types.ObjectId(elt._id));
           // await Content.remove({ _id: { $in: contents_to_delete_in_db_ids } });

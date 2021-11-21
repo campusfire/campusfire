@@ -249,13 +249,21 @@ class Display extends Component {
 
       const name_socket = `refresh_posts_${key}`;
       console.log('name_socket', name_socket);
-      socket.on(name_socket, async (contents_to_remove) => {
+      socket.on(name_socket, async (data) => {
+        let { contents_to_delete_in_db: contents_to_remove, contents_to_keep_in_db: contents_to_keep, fading_levels } = data;
         contents_to_remove = contents_to_remove.map((elt) => elt._id);
+        contents_to_keep = contents_to_keep.map((elt) => elt._id);
         if (contents_to_remove.length > 0) {
           this.setState((prevState) => ({
             ...prevState,
             containers: prevState.containers.filter((cont) => !contents_to_remove.includes(cont.id)),
           }));
+        }
+        if (contents_to_keep.length > 0) {
+          for (let i = 0; i < contents_to_keep.length; i++) {
+            const content = contents_to_keep[i];
+            document.getElementById(`postit_${content}`).style.opacity = fading_levels[i];
+          }
         }
       });
 
@@ -454,7 +462,7 @@ class Display extends Component {
     this.setState({
       containers,
     });
-    this.getState();
+    // this.getState();
   }
 
   // TODO: lint

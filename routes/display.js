@@ -24,7 +24,15 @@ const asyncDeleteMultipleFiles = (list_names_in_upload) => {
 
 const filterMediaToDeleteFromContentsAndReturnNames = (list_of_contents) => list_of_contents.map((content) => (content.type === 'TEXT' ? undefined : content.payload)).filter((e) => e);
 
-
+const fadingLevel = (post_lifetime, post_date) => {
+  const post_lifetime_spent = moment().diff(moment(post_date), 'm');
+  const post_lifetime_remaining = post_lifetime - post_lifetime_spent;
+  let opacity_level = 1;
+  if (post_lifetime_remaining < 60) {
+    opacity_level = post_lifetime_remaining / 60;
+  }
+  return opacity_level; // return opacity level between 0 and 1
+};
 
 const expirationTest = (post_lifetime, post_date) => {
   const moment_post = moment(post_date);
@@ -182,6 +190,7 @@ app.get('/qr', (req, res) => {
 module.exports = {
   app,
   expirationTest,
+  fadingLevel,
   filterMediaToDeleteFromContentsAndReturnNames,
   asyncDeleteMultipleFiles,
 };
