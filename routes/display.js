@@ -37,7 +37,7 @@ const fadingLevel = (post_lifetime, post_date) => {
 const expirationTest = (post_lifetime, post_date) => {
   const moment_post = moment(post_date);
   moment_post.add(post_lifetime, 'm');
-  return moment().isBefore(moment_post); // return true if post expired
+  return moment().isBefore(moment_post); // return false if post expired
 };
 
 const alreadyArchivedTest = (post_deletion_date) => {
@@ -63,7 +63,7 @@ app.get('/content/:key', (req, res) => {
         const contents_to_delete_in_db = [];
 
         for (let i = 0; i < contents.length; i += 1) {
-          if (expirationTest(contents[i].lifetime, contents[i].createdOn)) {
+          if (alreadyArchivedTest(contents[i].deletedOn) && expirationTest(contents[i].lifetime, contents[i].createdOn)) {
             retour.push({
               id: contents[i]._id,
               contentType: contents[i].type,
