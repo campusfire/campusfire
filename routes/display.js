@@ -40,6 +40,12 @@ const expirationTest = (post_lifetime, post_date) => {
   return moment().isBefore(moment_post); // return true if post expired
 };
 
+const alreadyArchivedTest = (post_deletion_date) => {
+  let is_archived = true;
+  if (post_deletion_date == null) { is_archived = false; }
+  return is_archived; // return true if post is already archived
+};
+
 app.get('/display/:key', (req, res) => {
   Display.findOne({ token: req.params.key }, (err, display) => {
     if (err) res.send('ko');
@@ -104,7 +110,7 @@ app.post('/content/:key', (req, res) => {
           y: req.body.y,
         },
         display: display._id,
-        lifetime: req.body.lifetime || 60, //default lifetime is 60 minutes
+        lifetime: req.body.lifetime || 60, // default lifetime is 60 minutes
       });
       const id_content = await newContent.save();
       res.json({ id_content: id_content._id });
@@ -190,6 +196,7 @@ app.get('/qr', (req, res) => {
 module.exports = {
   app,
   expirationTest,
+  alreadyArchivedTest,
   fadingLevel,
   filterMediaToDeleteFromContentsAndReturnNames,
   asyncDeleteMultipleFiles,

@@ -3,7 +3,7 @@ const schedule = require('node-schedule');
 const mongoose = require('mongoose');
 const Display = require('../models/display');
 const Content = require('../models/content');
-const { expirationTest, fadingLevel } = require('./display');
+const { expirationTest, alreadyArchivedTest, fadingLevel } = require('./display');
 const { makeId } = require('./utils');
 const { filterMediaToDeleteFromContentsAndReturnNames, asyncDeleteMultipleFiles } = require('./display');
 
@@ -40,7 +40,8 @@ module.exports = function (app, io) {
         allDisplays.map(async (display) => {
           const name_socket = `refresh_posts_${display.token}`;
           const all_contents_to_check_expiry_date = await Content.find({ display: display._id }).select('lifetime _id createdOn payload type');
-          const contents_to_delete_in_db = all_contents_to_check_expiry_date.filter((content) => !expirationTest(content.lifetime, content.createdOn));
+          const contents_not_archived_in_db = all_contents_to_check_expiry_date.filter((content) => !alreadyArchivedTest(content.deletedOn));
+          const contents_to_delete_in_db = contents_not_archived_in_db.filter((content) => !expirationTest(content.lifetime, content.createdOn));
           const contents_to_keep_in_db = all_contents_to_check_expiry_date.filter((content) => expirationTest(content.lifetime, content.createdOn));
           const fading_levels = [];
           if (contents_to_delete_in_db.length > 0) {
