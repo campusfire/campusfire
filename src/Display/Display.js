@@ -99,7 +99,7 @@ class Display extends Component {
           if (client.clientId) {
             const color = this.pickColor();
             cursors[client.clientKey] = {
-              x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false, likeable: false,
+              x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false, likeable: false, liked_posts= [],
             };
           }
         });
@@ -137,7 +137,7 @@ class Display extends Component {
           cursors[data[2]].likeable = false;
           this.setState( { cursors});
         }
-        else if (topBox != undefined && cursors[data[2]].likeable == false) {//if cursor is above a likeable post and wasn't before => set it to likeable
+        else if (topBox != undefined && cursors[data[2]].likeable == false && !cursors[data[2]].liked_posts.includes(topBox.id)) {//if cursor is above a likeable post and wasn't before => set it to likeable
           const topContainer = containers.find((obj) => obj.id == topBox.id)
           if (topContainer.creatorKey != data[2]) {
             socket.emit('likeable_post', {clientKey: data[2], id: topContainer.id, postType: topContainer.contentType, postContent: topContainer.content, postLifetime: topContainer.lifetime})
@@ -333,6 +333,11 @@ class Display extends Component {
           containers: sortedContainers,
           cursors,
         });
+      });
+
+      socket.on('post_is_liked' , (data) => {
+        cursors[data.clientKey].liked_posts.push(data.postId);
+        this.setState({ cursors })
       });
     }
   }
