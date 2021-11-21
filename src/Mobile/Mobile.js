@@ -135,6 +135,13 @@ class Mobile extends Component {
     return stringNumber.length < 2 ? '0' + stringNumber : stringNumber
   }
 
+  lifetimeStringToInt(lifetime) {
+    console.log(lifetime);
+    const nbHeures = Number(lifetime.substring(0, 2));
+    const nbMin = Number(lifetime.substring(3, 5));
+    return nbHeures * 60 + nbMin
+  }
+
   capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   }
@@ -279,6 +286,7 @@ class Mobile extends Component {
         this.setDisablePostButton(true);
         break;
       case 'Media':
+        console.log(file);
         if (file) {
           const lifetimeHours = Number(lifetime.split(':')[0]);
           const lifetimeInMinutes = Number(lifetime.split(':')[1]) + 60 * lifetimeHours;
@@ -405,12 +413,15 @@ class Mobile extends Component {
 
   handleLikeClick() {
     const {socket, key, likeablePostId, lifetime} = this.state;
+    const newLifetime = this.lifetimeStringToInt(lifetime) + 10;
     this.setState({ showLike: false });
+    socket.emit('edit_post', { content: 'A CHANGER', lifetime: newLifetime, id: likeablePostId});
     socket.emit('post_is_liked', {clientKey: key, postId: likeablePostId});
   }
 
   handleDislikeClick() {
-    const {socket, key, likeablePostId} = this.state;
+    const {socket, key, likeablePostId, lifetime} = this.state;
+    const newLifetime = this.lifetimeStringToInt(lifetime) - 10;
     this.setState({ showLike: false });
     socket.emit('post_is_liked', {clientKey: key, postId: likeablePostId});
   }
