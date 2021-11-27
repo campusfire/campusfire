@@ -279,7 +279,6 @@ class Mobile extends Component {
         this.setDisablePostButton(true);
         break;
       case 'Media':
-        console.log(file);
         if (file) {
           const lifetimeHours = Number(lifetime.split(':')[0]);
           const lifetimeInMinutes = Number(lifetime.split(':')[1]) + 60 * lifetimeHours;
@@ -436,8 +435,10 @@ class Mobile extends Component {
 
   render() {
     const {
-      keyChecked, mode, backgroundColor, input, editing,
+      keyChecked, mode, backgroundColor, input, editing, key
     } = this.state;
+
+    if (keyChecked && key) {document.getElementById("key").innerHTML = "N'oublie pas de sauvegarder ta clé pour réclamer ton prix : " + key;};
 
     const styleType = (inputType) => ({
       display: (input || editing) && this.postType === inputType ? 'flex' : 'none',
@@ -458,6 +459,7 @@ class Mobile extends Component {
           <div className="Mobile" onTouchStart={!input ? this.handleTouchStart : undefined} onTouchEnd={!input ? this.handleTouchEnd : undefined} style={{ backgroundColor }}>
             <header>
               <img src={logo} className="Mobile-logo" alt="logo" />
+              <div id="key"></div>
               <img src={help} className="helpButton" alt="help" onClick={this.togglePopup} />
               {this.state.showPopup
                 ?
