@@ -42,6 +42,27 @@ function updateAllContainers(containers) {
   }); */
 }
 
+const getUsers = async (displayKey) => fetch(`/user/${displayKey}`, {
+  method: 'GET',
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  },
+}).then((data) => data.json())
+  .then((users) => users)
+  .catch((err) => Promise.reject(err));
+
+function updateUser(user) {
+  return fetch(`/user/${user.id}`, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify(user),
+  });
+}
+
 function sortContainersZIndex(containers) {
   containers.sort((a, b) => ((a.z || 0) - (b.z || 0)));
   const sortedContainers = containers.map((container, index) => (
@@ -64,7 +85,7 @@ class Display extends Component {
 
     this.state = {
       containers: [],
-      users: [],
+      users: {},
       cursors: {},
       keyChecked: false,
       qrPath: '/qr',
@@ -86,6 +107,10 @@ class Display extends Component {
       postits.forEach((postit) => { containers.push(postit); });
       const sortedContainers = sortContainersZIndex(containers);
       this.setState({ containers: sortedContainers, key });
+      // const { users } = this.state;
+      // const usersGotten = await getUsers(key);
+      // usersGotten.forEach((user) => { users[user.user_key] = user; });
+      // this.setState({ users });
 
       // socket
       const socket = io();
@@ -95,7 +120,7 @@ class Display extends Component {
 
       socket.on('client_list', (clients) => { // refresh cursors on page reloads
         const { cursors } = this.state;
-        this.setState({ colors: { ...initColors } })
+        this.setState({ colors: { ...initColors } });
         clients.forEach((client) => {
           if (client.clientId) {
             const color = this.pickColor();
@@ -184,7 +209,7 @@ class Display extends Component {
       });
 
       socket.on('display_cursor', async (senderKey) => { // to display cursor on user connection
-        const { cursors } = this.state;
+        const { cursors, users } = this.state;
         if (senderKey != null) {
           const color = this.pickColor();
           cursors[senderKey] = {
@@ -197,20 +222,28 @@ class Display extends Component {
 
           const user = {
             user_key: senderKey,
+            nb_like: 0,
+            nb_dislike: 0,
+            nb_post: 0,
+            disconnectedOn: null,
           };
-
-          await this.postUser(user);
+          const { id_user } = JSON.parse(await (await this.postUser(user)).text()); // back
+          user.id = id_user;
+          users[senderKey] = user;
         }
       });
 
-      socket.on('disconnect_user', (senderKey) => { // removes cursor when user disconnects
-        const { cursors, containers } = this.state;
+      socket.on('disconnect_user', async (senderKey) => { // removes cursor when user disconnects
+        const { cursors, users } = this.state;
         if (cursors[senderKey]) {
-
           colors[cursors[senderKey].color] = false;
           delete cursors[senderKey];
           this.setState({ cursors });
         }
+        const user = users[senderKey];
+        user.disconnectedOn = Date.now();
+        await updateUser(user);
+        delete users[senderKey];
       });
 
       socket.on('reload_qr', () => { // reload qr on user connection

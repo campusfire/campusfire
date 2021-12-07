@@ -136,6 +136,31 @@ app.put('/content/:id_content', (req, res) => {
   });
 });
 
+app.get('/user/:key', (req, res) => {
+  Display.findOne({ token: req.params.key }, (err, display) => {
+    if (err) res.send(JSON.stringify([]));
+    else {
+      User.find({ display: display._id }, async (err2, users) => {
+        if (err2) res.send(JSON.stringify([]));
+
+        for (let i = 0; i < users.length; i += 1) {
+          if (users[i].deletedOn == null) {
+            retour.push({
+              id: users[i]._id,
+              user_key: users[i].user_key,
+              nb_like: users[i].nb_like,
+              nb_dislike: users[i].nb_dislike,
+              nb_post: users[i].nb_post,
+              disconnectedOn: users[i].disconnectedOn,
+            });
+          }
+        }
+        res.send(JSON.stringify(retour));
+      });
+    }
+  });
+});
+
 app.post('/user/:key', (req, res) => {
   Display.findOne({ token: req.params.key }, async (err, display) => {
     if (err) res.send('fail');
@@ -146,6 +171,20 @@ app.post('/user/:key', (req, res) => {
       });
       const new_user = await newUser.save();
       res.json({ id_user: new_user._id });
+    }
+  });
+});
+
+app.put('/user/:id_user', (req, res) => {
+  User.findOne({ _id: req.params.id_user }, (err, user) => {
+    if (err) res.send('fail');
+    else {
+      user.nb_like = req.body.nb_like;
+      user.nb_dislike = req.body.nb_dislike;
+      user.nb_post = req.body.nb_post;
+      user.disconnectedOn = req.body.disconnectedOn;
+      user.save();
+      res.send('ok');
     }
   });
 });
