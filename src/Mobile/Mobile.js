@@ -121,7 +121,7 @@ class Mobile extends Component {
         socket,
       });
       socket.emit('store_client_info', { clientKey: key });
-      socket.emit('cursor', { clientKey: key });
+      socket.emit('connect_user', { clientKey: key });
     }
   }
 

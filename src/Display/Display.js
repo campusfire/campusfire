@@ -64,6 +64,7 @@ class Display extends Component {
 
     this.state = {
       containers: [],
+      users: [],
       cursors: {},
       keyChecked: false,
       qrPath: '/qr',
@@ -182,7 +183,7 @@ class Display extends Component {
         }
       });
 
-      socket.on('display_cursor', (senderKey) => { // to display cursor on user connection
+      socket.on('display_cursor', async (senderKey) => { // to display cursor on user connection
         const { cursors } = this.state;
         if (senderKey != null) {
           const color = this.pickColor();
@@ -193,6 +194,12 @@ class Display extends Component {
 
           // Envoi de la couleur au mobile pour set le background
           socket.emit('set_color', { client: senderKey, color });
+
+          const user = {
+            user_key: senderKey,
+          };
+
+          await this.postUser(user);
         }
       });
 
@@ -521,6 +528,24 @@ class Display extends Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(container),
+      });
+      return res;
+    } catch (err) {
+      console.log('fetch error', err);
+      return 'ERROR';
+    }
+  }
+
+  async postUser(user) {
+    const { key } = this.state;
+    try {
+      const res = await fetch(`/user/${key}`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
       });
       return res;
     } catch (err) {

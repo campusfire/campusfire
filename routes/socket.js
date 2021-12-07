@@ -3,6 +3,7 @@ const schedule = require('node-schedule');
 const mongoose = require('mongoose');
 const Display = require('../models/display');
 const Content = require('../models/content');
+const User = require('../models/user');
 const { expirationTest, alreadyArchivedTest, fadingLevel } = require('./display');
 const { makeId } = require('./utils');
 const { filterMediaToDeleteFromContentsAndReturnNames, asyncDeleteMultipleFiles } = require('./display');
@@ -79,7 +80,9 @@ module.exports = function (app, io) {
         // console.log(data.clientKey);
         if (c.clientKey === data.clientKey) {
           app.locals.clients[i].clientId = socket.id;
+          io.emit('create_user_in_db', data.clientKey);
           // console.log(`${app.locals.clients[i].clientId} ${app.locals.clients[i].clientKey}`);
+          console.log("YO");
           console.log(app.locals.clients);
           break;
         }
@@ -102,7 +105,7 @@ module.exports = function (app, io) {
       console.log(data);
     });
 
-    socket.on('cursor', (data) => {
+    socket.on('connect_user', (data) => {
       // console.log('Mobile id:' + cursorId);
       io.emit('display_cursor', data.clientKey);
     });

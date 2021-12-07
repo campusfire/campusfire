@@ -5,6 +5,7 @@ const path = require('path');
 const moment = require('moment');
 const Display = require('../models/display');
 const Content = require('../models/content');
+const User = require('../models/user');
 
 const app = express.Router();
 
@@ -124,7 +125,7 @@ app.put('/content/:id_content', (req, res) => {
   Content.findOne({ _id: req.params.id_content }, (err, content) => {
     if (err) res.send('fail');
     else {
-      content.lifetime = req.body.lifetime
+      content.lifetime = req.body.lifetime;
       content.payload = req.body.content;
       content.position.x = req.body.x;
       content.position.y = req.body.y;
@@ -133,7 +134,21 @@ app.put('/content/:id_content', (req, res) => {
       res.send('ok');
     }
   });
-})
+});
+
+app.post('/user/:key', (req, res) => {
+  Display.findOne({ token: req.params.key }, async (err, display) => {
+    if (err) res.send('fail');
+    else {
+      const newUser = new User({
+        display: display._id,
+        user_key: req.body.clientKey,
+      });
+      const new_user = await newUser.save();
+      res.json({ id_user: new_user._id });
+    }
+  });
+});
 
 app.get('/postit.json', (req, res) => {
   res.sendFile(path.resolve(`${__dirname}/../postit.json`));
