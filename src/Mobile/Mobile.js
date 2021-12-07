@@ -473,12 +473,12 @@ class Mobile extends Component {
               }
             </header>
 
-            <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', marginTop: '20px', width: '100%' }}>
+            {/* <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', marginTop: '20px', width: '100%' }}>
               {this.state.showEditable
                 ? <Button variant="contained" style={{ marginRight: '10px' }} startIcon={<EditIcon />} onClick={this.handleEditClick}>Edit</Button>
                 : null
               }
-            </div>
+            </div> */}
             <div style={{ display: 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', marginTop: '20px', width: '100%' }}>
               {this.state.showLike
               ? <div>
