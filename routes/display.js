@@ -142,7 +142,7 @@ app.post('/user/:key', (req, res) => {
     else {
       const newUser = new User({
         display: display._id,
-        user_key: req.body.clientKey,
+        user_key: req.body.user_key,
       });
       const new_user = await newUser.save();
       res.json({ id_user: new_user._id });
