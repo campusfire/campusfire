@@ -211,7 +211,7 @@ module.exports = function (app, io) {
 
     socket.on('likeable_post', (data) => {
       const editorClient = app.locals.clients.find((client) => {
-        if (client.clientKey == data.clientKey) {
+        if (client.clientKey === data.clientKey) {
           return (client);
         }
       });
@@ -221,7 +221,7 @@ module.exports = function (app, io) {
 
     socket.on('not_likeable_post', (data) => {
       const editorClient = app.locals.clients.find((client) => {
-        if (client.clientKey == data.clientKey) {
+        if (client.clientKey === data.clientKey) {
           return (client);
         }
       });

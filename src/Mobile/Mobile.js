@@ -109,11 +109,11 @@ class Mobile extends Component {
       });
 
       socket.on('post_is_likeable', (data) => {
-        this.setState({showLike: true, likeablePostId: data.id});
+        this.setState({ showLike: true, likeablePostId: data.id });
       });
 
       socket.on('post_is_not_likeable', (data) => {
-        this.setState({showLike: false});
+        this.setState({ showLike: false });
       })
 
 
@@ -128,11 +128,11 @@ class Mobile extends Component {
   lifetimeIntToString(nb_minutes) {
     const nbHeures = this.fillSingleNumberString((Math.trunc(nb_minutes / 60)).toString());
     const resteMin = this.fillSingleNumberString((nb_minutes % 60).toString());
-    return ([nbHeures, resteMin].join(':'))
+    return ([nbHeures, resteMin].join(':'));
   }
 
   fillSingleNumberString(stringNumber) {
-    return stringNumber.length < 2 ? '0' + stringNumber : stringNumber
+    return stringNumber.length < 2 ? '0' + stringNumber : stringNumber;
   }
 
   capitalizeFirstLetter(string) {
@@ -428,14 +428,14 @@ class Mobile extends Component {
   }
 
   handleOnChangeTextArea(event) {
-    this.setDisablePostButton(event.target.value.trim() === "")
+    this.setDisablePostButton(event.target.value.trim() === "");
     this.setState({ textAreaValue: event.target.value });
   }
 
 
   render() {
     const {
-      keyChecked, mode, backgroundColor, input, editing, key
+      keyChecked, mode, backgroundColor, input, editing, key,
     } = this.state;
 
     if (keyChecked && key) {document.getElementById("key").innerHTML = "N'oublie pas de sauvegarder ta clé pour réclamer ton prix : " + key;};

@@ -158,19 +158,31 @@ class Display extends Component {
           }
         }
 
-        if (topBox == undefined && cursors[data[2]].likeable == true) {// if cursor is above no post and was above a post before 
+        if (topBox !== undefined && !cursors[data[2]].liked_posts.includes(topBox.id)) { // if cursor is above a likeable post that wasn't liked by this user
+          const topContainer = containers.find((obj) => obj.id === topBox.id);
+          if (topContainer.creatorKey !== data[2]) { // and was not created by this user
+            socket.emit('likeable_post', {
+              clientKey: data[2],
+              id: topContainer.id,
+              postType: topContainer.contentType,
+              postContent: topContainer.content,
+              postLifetime: topContainer.lifetime,
+            });
+            if (cursors[data[2]].likeable === false) { // then likeable shall be true
+              cursors[data[2]].likeable = true;
+              this.setState({ cursors });
+            }
+          } else if (cursors[data[2]].likeable === true) { // but if it was created by this user then likeable shall be false
+            socket.emit('not_likeable_post', { clientKey: data[2] });
+            cursors[data[2]].likeable = false;
+            this.setState({ cursors });
+          }
+        }
+        else if (cursors[data[2]].likeable === true) { // in any other case likeable shall be false
           socket.emit('not_likeable_post', { clientKey: data[2] });
           cursors[data[2]].likeable = false;
-          this.setState( { cursors});
+          this.setState({ cursors });
         }
-        else if (topBox != undefined && cursors[data[2]].likeable == false && !cursors[data[2]].liked_posts.includes(topBox.id)) {//if cursor is above a likeable post and wasn't before => set it to likeable
-          const topContainer = containers.find((obj) => obj.id == topBox.id)
-          if (topContainer.creatorKey != data[2]) {
-            socket.emit('likeable_post', {clientKey: data[2], id: topContainer.id, postType: topContainer.contentType, postContent: topContainer.content, postLifetime: topContainer.lifetime})
-            cursors[data[2]].likeable = true;
-            this.setState({ cursors });
-        }
-      }
       });
 
       socket.on('remote_pressing', (data) => {
@@ -497,7 +509,7 @@ class Display extends Component {
             right,
             top,
             bottom,
-            depth: target.z
+            depth: target.z,
           };
         },
       );
@@ -509,7 +521,7 @@ class Display extends Component {
           left, right, top, bottom,
         } = boundingBox;
         return (x > left && x < right && y > top && y < bottom);
-      })
+      });
       return (draggedContainer);
     }
 
