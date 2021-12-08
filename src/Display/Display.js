@@ -240,10 +240,12 @@ class Display extends Component {
           delete cursors[senderKey];
           this.setState({ cursors });
         }
-        const user = users[senderKey];
-        user.disconnectedOn = Date.now();
-        await updateUser(user);
-        delete users[senderKey];
+        if (users[senderKey]) {
+          const user = users[senderKey];
+          user.disconnectedOn = Date.now();
+          await updateUser(user);
+          delete users[senderKey];
+        }
       });
 
       socket.on('reload_qr', () => { // reload qr on user connection
@@ -255,7 +257,7 @@ class Display extends Component {
       });
 
       socket.on('posting', async (data) => {
-        const { cursors, containers: newContainers } = this.state;
+        const { cursors, users, containers: newContainers } = this.state;
         const { contentType, content, lifetime, clientKey } = data;
         const cursor = cursors[clientKey];
         const container = {
@@ -268,7 +270,7 @@ class Display extends Component {
           creatorKey: clientKey,
         };
         const { id_content } = JSON.parse(await (await this.postContainer(container)).text()); // back
-        container['id'] = id_content;
+        container.id = id_content;
         newContainers.push(container); // front
         cursors[data.clientKey].posting = false;
         const sortedContainers = sortContainersZIndex(newContainers);
@@ -276,6 +278,11 @@ class Display extends Component {
           containers: sortedContainers,
           cursors,
         });
+        if (users[clientKey]) {
+          const user = users[clientKey];
+          user.nb_post += 1;
+          await updateUser(user);
+        }
       });
 
       socket.on('edit_post', async (data) => {
@@ -283,7 +290,7 @@ class Display extends Component {
         const { content, lifetime, id } = data;
         let newContainerContent = {
           content,
-          lifetime
+          lifetime,
         };
         const newContainers = containers.map(container => {
           if (container.id == id) {
@@ -384,21 +391,30 @@ class Display extends Component {
       });
 
       socket.on('post_is_liked' , async (data) => {
-        const { cursors, containers } = this.state;
+        const { cursors, users, containers } = this.state;
         const { clientKey, postId, lifetime_chg } = data;
         cursors[clientKey].liked_posts.push(postId);
         let newContainerContent = {};
-        const newContainers = containers.map(container => {
+        const newContainers = containers.map((container) => {
           if (container.id == postId) {
             let lifetime = container.lifetime + lifetime_chg;
-            newContainerContent = {lifetime};
+            newContainerContent = { lifetime };
             newContainerContent = { ...container, ...newContainerContent };
-            return newContainerContent
+            return newContainerContent;
           }
-          return container
+          return container;
         });
         this.setState({ cursors, containers: newContainers });
         await updateContainer(newContainerContent);
+        if (users[clientKey]) {
+          const user = users[clientKey];
+          if (lifetime_chg > 0) {
+            user.nb_like += 1;
+          } else {
+            user.nb_dislike += 1;
+          }
+          await updateUser(user);
+        }
       });
     }
   }
