@@ -234,7 +234,7 @@ class Display extends Component {
       });
 
       socket.on('disconnect_user', async (senderKey) => { // removes cursor when user disconnects
-        const { cursors, users } = this.state;
+        const { cursors, users, colors } = this.state;
         if (cursors[senderKey]) {
           colors[cursors[senderKey].color] = false;
           delete cursors[senderKey];
