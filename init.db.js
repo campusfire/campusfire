@@ -3,6 +3,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const Display = require('./models/display');
 const Content = require('./models/content');
+const User = require('./models/user');
 
 mongoose.connect(process.env.MONGO, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -12,6 +13,7 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', async () => {
   await Display.deleteMany({});
   await Content.deleteMany({});
+  await User.deleteMany({});
 
   const display = new Display({ name: 'Campus Fire', token: 'fire' });
   await display.save();
