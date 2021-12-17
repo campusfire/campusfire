@@ -34,3 +34,4 @@ yarn.lock
 /public/uploads/*.png
 /public/uploads/*.PNG
 /public/uploads/*.mp4
+/public/uploads/*.webp
