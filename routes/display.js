@@ -29,8 +29,8 @@ const fadingLevel = (post_lifetime, post_date) => {
   const post_lifetime_spent = moment().diff(moment(post_date), 'm');
   const post_lifetime_remaining = post_lifetime - post_lifetime_spent;
   let opacity_level = 1;
-  if (post_lifetime_remaining < 60) {
-    opacity_level = post_lifetime_remaining / 60;
+  if (post_lifetime_remaining < 80) {
+    opacity_level = post_lifetime_remaining / 60 * 0.75;
   }
   return opacity_level; // return opacity level between 0 and 1
 };
