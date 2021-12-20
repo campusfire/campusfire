@@ -49,14 +49,14 @@ const alreadyArchivedTest = (post_deletion_date) => {
 
 app.get('/display/:key', (req, res) => {
   Display.findOne({ token: req.params.key }, (err, display) => {
-    if (err) res.send('ko');
+    if (display == null) res.send('ko');
     else res.send('ok');
   });
 });
 
 app.get('/content/:key', (req, res) => {
   Display.findOne({ token: req.params.key }, (err, display) => {
-    if (err) res.send(JSON.stringify([]));
+    if (display == null) res.send(JSON.stringify([]));
     else {
       Content.find({ display: display._id }, async (err2, contents) => {
         if (err2) res.send(JSON.stringify([]));
@@ -101,7 +101,7 @@ app.get('/content/:key', (req, res) => {
 
 app.post('/content/:key', (req, res) => {
   Display.findOne({ token: req.params.key }, async (err, display) => {
-    if (err) res.send('fail');
+    if (display == null) res.send('fail');
     else {
       const newContent = new Content({
         type: req.body.contentType,
@@ -137,14 +137,12 @@ app.put('/content/:id_content', (req, res) => {
 });
 
 app.get('/user/:key', (req, res) => {
-  Display.findOne({ token: req.params.key }, (err, display) => {
-    if (err) res.send(JSON.stringify([]));
-    else {
-      User.find({ display: display._id }, async (err2, users) => {
-        if (err2) res.send(JSON.stringify([]));
+      User.find({ user_key: req.params.key }, async (err, users) => {
+        retour = [];
+        if (err) res.send(JSON.stringify([]));
 
         for (let i = 0; i < users.length; i += 1) {
-          if (users[i].deletedOn == null) {
+          if (users[i].disonnectedOn == null) {
             retour.push({
               id: users[i]._id,
               user_key: users[i].user_key,
@@ -157,13 +155,11 @@ app.get('/user/:key', (req, res) => {
         }
         res.send(JSON.stringify(retour));
       });
-    }
-  });
 });
 
 app.post('/user/:key', (req, res) => {
   Display.findOne({ token: req.params.key }, async (err, display) => {
-    if (err) res.send('fail');
+    if (display == null) res.send('fail');
     else {
       const newUser = new User({
         display: display._id,

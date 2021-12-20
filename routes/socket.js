@@ -82,7 +82,6 @@ module.exports = function (app, io) {
           app.locals.clients[i].clientId = socket.id;
           io.emit('create_user_in_db', data.clientKey);
           // console.log(`${app.locals.clients[i].clientId} ${app.locals.clients[i].clientKey}`);
-          console.log("YO");
           console.log(app.locals.clients);
           break;
         }
