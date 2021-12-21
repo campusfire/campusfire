@@ -68,7 +68,7 @@ app.locals.clients.push({ clientKey, clientId: null });
 app.get('/ping', (req, res) => res.send('pong'));
 
 app.get('/key', (req, res) => {
-  res.send(clientKey);
+  res.send(app.locals.clients[app.locals.clients.length - 1].clientKey);
 });
 
 app.get('/', (req, res) => {
