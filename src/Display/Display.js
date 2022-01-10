@@ -124,8 +124,13 @@ class Display extends Component {
         clients.forEach((client) => {
           if (client.clientId) {
             const color = this.pickColor();
+            const {
+              left, right, top, bottom,
+            } = document.getElementById('root').getBoundingClientRect();
+            const x = (right - left) / 2;
+            const y = (bottom - top) / 2;
             cursors[client.clientKey] = {
-              x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false, likeable: false, liked_posts: [],
+              x: x, y: y, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false, likeable: false, liked_posts: [],
             };
           }
         });
@@ -224,8 +229,13 @@ class Display extends Component {
         const { cursors, users } = this.state;
         if (senderKey != null) {
           const color = this.pickColor();
+          const {
+            left, right, top, bottom,
+          } = document.getElementById('root').getBoundingClientRect();
+          const x = (right - left) / 2;
+          const y = (bottom - top) / 2;
           cursors[senderKey] = {
-            x: 16, y: 16, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false, likeable: false, liked_posts: [],
+            x: x, y: y, color, showRadial: false, draggedContainerId: null, posting: false, pressing: false, editable: false, likeable: false, liked_posts: [],
           };
           this.setState({ cursors });
 
