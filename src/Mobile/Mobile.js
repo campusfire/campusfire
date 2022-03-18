@@ -154,16 +154,16 @@ class Mobile extends Component {
     if (distance > this.threshold) {
       switch (true) {
         case angle >= 0 && angle < 90:
-          element = 'Media';
+          element = 'UpRight';
           break;
         case angle >= 90 && angle < 180:
-          element = 'Text';
+          element = 'UpLeft';
           break;
         case angle >= 180 && angle < 270:
-          element = 'Embeded';
+          element = 'DownLeft';
           break;
         case angle >= 270 && angle < 360:
-          element = 'Credits';
+          element = 'DownRight';
           break;
         default:
           element = 'None';
@@ -172,6 +172,7 @@ class Mobile extends Component {
     } else {
       element = 'None';
     }
+    // TODO changer
     this.postType = element;
     if (this.radialOption !== element) {
       socket.emit('dir', [element, key]);
@@ -216,24 +217,24 @@ class Mobile extends Component {
       if (!this.longPressed && distance === 0) {
         socket.emit('click', { clientKey: key, clientId: socket.id });
       } else if (this.longPressed) {
-        // if (distance <= this.threshold) {
-        //   // socket.emit('debug', 'close radial');
-        //   socket.emit('close_radial', { clientKey: key, clientId: socket.id });
-        // } else if (this.postType !== 'Credits') {
-        //   this.setState({ input: true });
-        //   socket.emit('selected_post_type', { clientKey: key, clientId: socket.id });
-        // } else {
-        //   socket.emit('post_credits', { clientKey: key, clientId: socket.id });
-        //   this.postType = null;
-        // }
         if (distance <= this.threshold) {
-          const element = 'Media';
-          this.postType = element;
+          // socket.emit('debug', 'close radial');
+          socket.emit('close_radial', { clientKey: key, clientId: socket.id });
+        } else if (this.postType !== 'Credits') {
           this.setState({ input: true });
           socket.emit('selected_post_type', { clientKey: key, clientId: socket.id });
         } else {
-          socket.emit('close_radial', { clientKey: key, clientId: socket.id });
+          socket.emit('post_credits', { clientKey: key, clientId: socket.id });
+          this.postType = null;
         }
+        // if (distance <= this.threshold) {
+        //   const element = 'Media';
+        //   this.postType = element;
+        //   this.setState({ input: true });
+        //   socket.emit('selected_post_type', { clientKey: key, clientId: socket.id });
+        // } else {
+        //   socket.emit('close_radial', { clientKey: key, clientId: socket.id });
+        // }
         this.setState({ mode: 'dynamic' });
       }
     }
@@ -376,7 +377,7 @@ class Mobile extends Component {
         if (!this.longPressed) {
           socket.emit('move', [radian, distance, key]);
         } else {
-          // this.handleRadialOptionChange(degree);
+          this.handleRadialOptionChange(degree);
         }
       }
     }, 50);

@@ -575,7 +575,7 @@ class Display extends Component {
     // this.getState();
   }
 
-  // TODO: lint
+  // TODO: lint (?) et Postytype
   selectDir(data) {
     const menu = document.querySelector(`#radial_${data[1]}`);
     if (menu !== null) {
