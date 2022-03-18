@@ -154,16 +154,16 @@ class Mobile extends Component {
     if (distance > this.threshold) {
       switch (true) {
         case angle >= 0 && angle < 90:
-          element = 'UpRight';
+          element = 'Text';
           break;
         case angle >= 90 && angle < 180:
-          element = 'UpLeft';
+          element = 'Media';
           break;
         case angle >= 180 && angle < 270:
-          element = 'DownLeft';
+          element = 'Embeded';
           break;
         case angle >= 270 && angle < 360:
-          element = 'DownRight';
+          element = 'Credits';
           break;
         default:
           element = 'None';

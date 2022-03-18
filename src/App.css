@@ -247,6 +247,22 @@ footer{
   /* background-image:url('Assets/credits.png'); */
 }
 
+.pieSliceText {
+   background-image:url('Assets/text.png');
+}
+
+.pieSliceMedia {
+   background-image:url('Assets/media.png');
+}
+
+.pieSliceEmbeded {
+   background-image:url('Assets/instagram-logo-black-transparent.png');
+}
+
+.pieSliceCredits {
+   background-image:url('Assets/credits.png');
+}
+
 .pulse {
   position: absolute;
   margin-top: -27.5px;
