@@ -687,6 +687,7 @@ class Display extends Component {
       if (cursor[1].showRadial) {
         result.push(
           <Radial
+            num_radial= {"postPie"}
             socket={this.socket}
             key={cursor[0]}
             id={cursor[0]}
