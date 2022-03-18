@@ -581,7 +581,6 @@ class Display extends Component {
     if (menu !== null) {
       const element = data[0];
       const classToSelect = element === 'None' ? 'innerCircle' : `pieSlice${element}`;
-      this.postType = element;
       menu.querySelector(`.${classToSelect}`).style.backgroundColor = 'white';
       menu.querySelectorAll(`div:not(.${classToSelect})`).forEach((el) => {
         el.style.backgroundColor = 'grey';
@@ -687,7 +686,7 @@ class Display extends Component {
       if (cursor[1].showRadial) {
         result.push(
           <Radial
-            num_radial= {"postPie"}
+            pieType= {"postPie"}
             socket={this.socket}
             key={cursor[0]}
             id={cursor[0]}

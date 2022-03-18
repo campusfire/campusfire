@@ -3,10 +3,10 @@ import '../App.css';
 
 function Radial(props) {
   const {
-    color, x, y, id, num_radial
+    color, x, y, id, pieType
   } = props;
 
-  switch (num_radial){
+  switch (pieType){
     case "postPie":
       var UpLeft = "pieSliceMedia";
       var UpRight = "pieSliceText";
@@ -27,7 +27,7 @@ function Radial(props) {
       break;
   }; 
   
-  console.log(UpLeft)
+
   return (
     <div id={`radial_${id}`} className="pieWrap" style={{ left: `${x - 100}px`, top: `${y - 100}px` }}>
       <div className="innerCircle" style={{ backgroundColor: color }} />
