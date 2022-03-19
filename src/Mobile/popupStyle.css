@@ -19,11 +19,12 @@
   top: 15%;
   bottom: 15%;
   margin: auto;
-  border-radius: 20px;
+  border-radius: 10px;
   background: white;
 }
 
 .popup_scrollable {
+  font-family: roboto;
   position: absolute;
   z-index: 1001;
   left: 5%;
@@ -31,7 +32,7 @@
   top: 5%;
   bottom: 15%;
   margin: auto;
-  border-radius: 20px;
+  border-radius: 10px;
   background: white;
   overflow-y: scroll;
 }
@@ -42,7 +43,7 @@
   right: 2%;
   top: 2%;
   margin: auto;
-  border-radius: 20px;
+  border-radius: 10px;
 }
 
 h1 {
@@ -51,5 +52,5 @@ h1 {
 
 p {
   color: black;
-  padding: 5%;
+  padding: 15px;
 }

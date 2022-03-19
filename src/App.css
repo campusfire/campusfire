@@ -93,6 +93,9 @@ footer{
   right: 4px;
   opacity: 0.8;
 }
+.helpButton:hover{
+  cursor: pointer;
+}
 
 .postit{
   position: absolute;
